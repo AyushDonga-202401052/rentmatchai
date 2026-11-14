@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
   ArrowLeft,
@@ -28,7 +28,7 @@ import {
 import { useAuth } from '../../../context/AuthContext';
 import { useProperty } from '../../../context/PropertyContext';
 import { PropertyService } from '../../../services/propertyService';
-import { PROPERTY_STATUS } from '../../../constants/initialData';
+import { PROPERTY_STATUS, type Property } from '../../../constants/initialData';
 import { usePageCurtains } from '../../../components/ui/page-curtains';
 import { PropertyDetailSkeleton } from '@/src/components/property';
 import { BlurFade } from '@/src/components/ui/blur-fade';
@@ -42,24 +42,48 @@ function PropertyDetailsContent() {
   const id = params?.id as string;
   const { navigateWithCurtains } = usePageCurtains();
 
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const {
     properties,
+    propertiesLoading,
     saved,
     toggleSave,
     openEditProperty,
     togglePropertyStatus,
     openDeleteProperty,
     openEnquiry,
+    showToast,
   } = useProperty();
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [fetchedProperty, setFetchedProperty] = useState<Property | null>(null);
+  const [isFetchingProperty, setIsFetchingProperty] = useState(false);
 
-  // Find property from context or database
-  const property =
-    properties.find((p) => String(p.id) === String(id)) || PropertyService.getProperty(id);
+  const property = properties.find((p) => String(p.id) === String(id)) || fetchedProperty;
 
-  if (!property && properties.length === 0) {
+  useEffect(() => {
+    if (propertiesLoading || properties.some((item) => String(item.id) === String(id))) return;
+    let active = true;
+    setIsFetchingProperty(true);
+    PropertyService.getProperty(id, token, user)
+      .then((result) => {
+        if (active) setFetchedProperty(result);
+      })
+      .catch((error: unknown) => {
+        if (!active) return;
+        const message = error instanceof Error ? error.message : 'Failed to load property.';
+        if (!message.includes('404')) showToast(message, 'error', 'Property Load Error');
+        setFetchedProperty(null);
+      })
+      .finally(() => {
+        if (active) setIsFetchingProperty(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [id, properties, propertiesLoading, token, user, showToast]);
+
+  if (!property && (propertiesLoading || isFetchingProperty)) {
     return <PropertyDetailSkeleton />;
   }
 
