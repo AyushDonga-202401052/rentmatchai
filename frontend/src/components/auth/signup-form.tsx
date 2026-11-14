@@ -210,7 +210,11 @@ export function SignupForm({
             onLoadingChange={setLoading}
             onSuccess={(session) => {
               notify.success(`Welcome to RentMatch AI, ${session.user.firstName}!`, 'Account Created');
-              navigateWithCurtains(getSafeDestination(session.user.role), 'Dashboard');
+              const target = getSafeDestination(session.user.role);
+              navigateWithCurtains(target, 'Dashboard');
+              setTimeout(() => {
+                router.push(target);
+              }, 450);
             }}
             onError={(err) => {
               setIsInvalid(true);

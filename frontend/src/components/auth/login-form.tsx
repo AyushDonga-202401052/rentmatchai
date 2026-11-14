@@ -117,7 +117,11 @@ export function LoginForm({
             onLoadingChange={setLoading}
             onSuccess={(session) => {
               notify.success(`Welcome back, ${session.user.firstName}!`, 'Signed In');
-              navigateWithCurtains(getSafeDestination(session.user.role), 'Dashboard');
+              const target = getSafeDestination(session.user.role);
+              navigateWithCurtains(target, 'Dashboard');
+              setTimeout(() => {
+                router.push(target);
+              }, 450);
             }}
             onError={(err) => {
               setIsInvalid(true);

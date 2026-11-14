@@ -1,4 +1,9 @@
 from typing import Literal
+import socket
+import urllib3.util.connection as urllib3_conn
+
+# Force IPv4 socket connection to prevent IPv6 DNS/connect timeouts when validating Google tokens
+urllib3_conn.allowed_gai_family = lambda: socket.AF_INET
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
@@ -6,8 +11,14 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func
 
+from requests.adapters import HTTPAdapter
 from google.oauth2 import id_token
 from google.auth.transport import requests
+
+class TimeoutHTTPAdapter(HTTPAdapter):
+    def send(self, request, **kwargs):
+        kwargs.setdefault('timeout', 10)
+        return super().send(request, **kwargs)
 
 # Import your database connection and security logic
 from app.core.config import settings
@@ -97,15 +108,23 @@ def google_auth(auth_in: GoogleAuthRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail="Server OAuth configuration missing")
 
     try:
+        session = requests.requests.Session()
+        session.mount('https://', TimeoutHTTPAdapter())
+        req = requests.Request(session=session)
         idinfo = id_token.verify_oauth2_token(
             auth_in.token,
-            requests.Request(),
+            req,
             client_id
         )
-    except ValueError:
+    except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired Google token",
+            detail=f"Invalid or expired Google token: {str(e)}",
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Google token verification failed: {str(e)}",
         )
 
     email = idinfo.get("email")
