@@ -91,7 +91,15 @@ export function LoginForm({
     setLoading(true);
     try {
       const res = await loginWithGoogle();
-      notify.success(`Welcome back, ${res.user.firstName}!`, 'Signed In');
+      if (res.isFallback) {
+        notify.alert(
+          'Google authentication is currently inoperative or offline. Signed in with fallback demo account (Alex Morgan).',
+          'Fallback Demo Active',
+          { duration: 6000 }
+        );
+      } else {
+        notify.success(`Welcome back, ${res.user.firstName}!`, 'Signed In');
+      }
       const target = getSafeDestination(res.user.role);
       navigateWithCurtains(target, 'Dashboard');
     } catch (err: unknown) {

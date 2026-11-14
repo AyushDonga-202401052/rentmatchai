@@ -22,6 +22,7 @@ interface ApiToken {
 export interface AuthSession {
   token: string;
   user: User;
+  isFallback?: boolean;
 }
 
 export interface RegisterData {
@@ -146,7 +147,7 @@ export const AuthService = {
           }),
         });
         const user = await fetchCurrentUser(result.access_token);
-        const session = { token: result.access_token, user };
+        const session: AuthSession = { token: result.access_token, user, isFallback: false };
         this.setSession(session);
         return session;
       } catch (err: unknown) {
@@ -189,7 +190,7 @@ export const AuthService = {
       } : null,
     };
 
-    const session: AuthSession = { token: demoToken, user: demoUser };
+    const session: AuthSession = { token: demoToken, user: demoUser, isFallback: true };
     this.setSession(session);
     return session;
   },

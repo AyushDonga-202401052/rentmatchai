@@ -191,7 +191,20 @@ export default function AuthModal({
     try {
       const res = await loginWithGoogle(role);
       setAuthStatus('success');
-      if (onAuthSuccess) onAuthSuccess(`Signed in with Google as ${res.user.firstName}!`);
+      if (res.isFallback) {
+        notify.alert(
+          'Google authentication is currently inoperative or offline. Signed in with fallback demo account (Alex Morgan).',
+          'Fallback Demo Active',
+          { duration: 6000 }
+        );
+      }
+      if (onAuthSuccess) {
+        onAuthSuccess(
+          res.isFallback
+            ? 'Signed in with demo Google account'
+            : `Signed in with Google as ${res.user.firstName}!`
+        );
+      }
       setTimeout(() => {
         resetForm();
         onClose();

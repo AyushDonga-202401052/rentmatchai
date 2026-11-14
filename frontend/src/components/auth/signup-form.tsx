@@ -119,7 +119,15 @@ export function SignupForm({
     setLoading(true);
     try {
       const res = await loginWithGoogle(role);
-      notify.success(`Welcome to RentMatch AI, ${res.user.firstName}!`, 'Account Created');
+      if (res.isFallback) {
+        notify.alert(
+          'Google authentication is currently inoperative or offline. Signed in with fallback demo account (Alex Morgan).',
+          'Fallback Demo Active',
+          { duration: 6000 }
+        );
+      } else {
+        notify.success(`Welcome to RentMatch AI, ${res.user.firstName}!`, 'Account Created');
+      }
       const target = getSafeDestination(res.user.role);
       navigateWithCurtains(target, 'Dashboard');
     } catch (err: unknown) {
