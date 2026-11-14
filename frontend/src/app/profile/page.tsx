@@ -4,7 +4,6 @@ import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import { useProperty } from '../../context/PropertyContext';
-import { PropertyService } from '../../services/propertyService';
 import { PROPERTY_STATUS, type Property } from '../../constants/initialData';
 import { PropertyCard } from '@/src/components/property';
 import {
@@ -70,10 +69,9 @@ function ProfileContent() {
 
   const loadListerProperties = useCallback(() => {
     if (user?.id) {
-      const props = PropertyService.getPropertiesByLister(user.id);
-      setListerProperties(props);
+      setListerProperties(properties.filter((property) => property.listerId === user.id));
     }
-  }, [user]);
+  }, [user, properties]);
 
   useEffect(() => {
     const tabParam = searchParams.get('tab');

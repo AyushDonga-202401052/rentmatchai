@@ -15,7 +15,6 @@ import {
   Phone,
   Sparkles,
   Building2,
-  KeyRound,
   CheckCircle2,
 } from 'lucide-react';
 import { ScrollArea } from '@/src/components/ui/scroll-area';
@@ -122,6 +121,14 @@ export default function AuthModal({
       return;
     }
 
+    if (!lastName.trim()) {
+      const msg = 'Please enter your last name.';
+      notify.error(msg, 'Validation Error');
+      setErrorMessage(msg);
+      setAuthStatus('failed');
+      return;
+    }
+
     if (!email.trim() || !email.includes('@')) {
       const msg = 'Please enter a valid email address.';
       notify.error(msg, 'Validation Error');
@@ -130,8 +137,8 @@ export default function AuthModal({
       return;
     }
 
-    if (!password || password.length < 6) {
-      const msg = 'Password must contain at least 6 characters.';
+    if (!password || password.length < 8) {
+      const msg = 'Password must contain at least 8 characters.';
       notify.error(msg, 'Validation Error');
       setErrorMessage(msg);
       setAuthStatus('failed');
@@ -189,24 +196,12 @@ export default function AuthModal({
         resetForm();
         onClose();
       }, 400);
-    } catch {
-      const msg = 'Google Authentication was cancelled or failed.';
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Google sign-in is unavailable.';
       notify.error(msg, 'Google Sign-In Error');
       setAuthStatus('failed');
       setErrorMessage(msg);
     }
-  };
-
-  const handleQuickDemoLogin = (demoRole: UserRole) => {
-    if (demoRole === USER_ROLES.PROPERTY_LISTER) {
-      setEmail('lister@rentmatch.ai');
-      setPassword('Lister@123');
-    } else {
-      setEmail('tenant@rentmatch.ai');
-      setPassword('Tenant@123');
-    }
-    setTab('login');
-    setErrorMessage('');
   };
 
   return (
@@ -371,31 +366,6 @@ export default function AuthModal({
                 <span>{authStatus === 'validating' ? 'Validating credentials...' : 'Sign In'}</span>
               </button>
 
-              {/* Quick Demo Credentials */}
-              <div className="p-3.5 rounded-2xl border border-zinc-200/70 dark:border-zinc-800/70 bg-zinc-50/70 dark:bg-zinc-900/50 mt-4">
-                <div className="flex items-center gap-1.5 text-[11px] font-bold text-zinc-600 dark:text-zinc-300 mb-2">
-                  <KeyRound size={12} />
-                  <span>Instant Demo Credentials (1-Click Fill):</span>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    className="flex items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-[11px] font-semibold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer active:scale-95"
-                    onClick={() => handleQuickDemoLogin(USER_ROLES.PROPERTY_LISTER)}
-                  >
-                    <Building2 size={12} />
-                    <span>Lister (Rajesh)</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="flex items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-[11px] font-semibold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer active:scale-95"
-                    onClick={() => handleQuickDemoLogin(USER_ROLES.TENANT)}
-                  >
-                    <User size={12} />
-                    <span>Tenant (Ananya)</span>
-                  </button>
-                </div>
-              </div>
             </form>
           )}
 

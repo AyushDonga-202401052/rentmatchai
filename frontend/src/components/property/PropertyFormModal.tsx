@@ -37,7 +37,7 @@ export default function PropertyFormModal({
   initialProperty = null,
   onSuccess,
 }: PropertyFormModalProps) {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const { notify } = useToast();
   const isEditing = Boolean(initialProperty);
 
@@ -148,13 +148,14 @@ export default function PropertyFormModal({
     }
 
     try {
+      if (!token) throw new Error('Please sign in again before managing properties.');
       if (isEditing && initialProperty) {
-        const updated = await PropertyService.updateProperty(user!.id, initialProperty.id, payload);
+        const updated = await PropertyService.updateProperty(token, initialProperty.id, payload, user);
         setFormState('success');
         if (onSuccess) onSuccess(updated, 'Listing updated successfully!');
         setTimeout(onClose, 350);
       } else {
-        const created = await PropertyService.createProperty(user!.id, payload, user);
+        const created = await PropertyService.createProperty(token, payload, user);
         setFormState('success');
         if (onSuccess) onSuccess(created, 'New property published successfully and is now Active!');
         setTimeout(onClose, 350);
@@ -193,6 +194,9 @@ export default function PropertyFormModal({
               {isEditing
                 ? 'Update rental terms, amenities or description. Changes reflect immediately.'
                 : 'Fill in property specifications to make it available to tenants.'}
+            </p>
+            <p className="text-[11px] text-amber-700 dark:text-amber-300 mt-2">
+              The backend currently saves core listing details only; photos and amenities are not persisted yet.
             </p>
           </div>
           <button

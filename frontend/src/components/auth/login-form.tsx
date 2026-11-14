@@ -192,8 +192,8 @@ export function LoginForm({
                   </FieldLabel>
                   <button
                     type="button"
-                    onClick={() => notify.info('Password reset instructions sent to your email.', 'Password Reset')}
-                    className="text-xs text-[#E8510E] hover:text-[#D04509] dark:text-[#F06A32] font-semibold cursor-pointer"
+                    onClick={() => notify.info('Password reset is not available yet.', 'Password Reset')}
+                    className="text-xs text-violet-600 hover:text-violet-700 dark:text-violet-400 font-semibold cursor-pointer"
                   >
                     Forgot password?
                   </button>

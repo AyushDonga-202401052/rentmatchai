@@ -38,6 +38,14 @@ def get_properties(
         
     return query.offset(skip).limit(limit).all()
 
+@router.get("/mine", response_model=List[PropertyResponse])
+def get_my_properties(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Fetch all listings owned by the authenticated user, regardless of status."""
+    return db.query(Property).filter(Property.owner_id == current_user.id).all()
+
 @router.get("/{property_id}", response_model=PropertyResponse)
 def get_property(property_id: UUID, db: Session = Depends(get_db)):
     """Fetch a single property by its UUID."""

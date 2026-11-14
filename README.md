@@ -106,10 +106,8 @@ The FastAPI backend exposes versioned REST endpoints under `/api/v1`:
 
 | Method | Endpoint | Authorization | Description |
 | :--- | :--- | :--- | :--- |
-| `POST` | `/api/v1/auth/register` | Public | Register a new tenant or property lister account |
-| `POST` | `/api/v1/auth/login` | Public | Authenticate with JSON credentials, returns JWT tokens |
-| `POST` | `/api/v1/auth/token` | Public | OAuth2 password form authentication for Swagger docs |
-| `POST` | `/api/v1/auth/refresh` | Public | Exchange refresh token for a new access token pair |
+| `POST` | `/api/v1/register` | Public | Register a new tenant or landlord account |
+| `POST` | `/api/v1/login` | Public | OAuth2 form login (`username`, `password`), returns a JWT |
 | `POST` | `/api/v1/auth/logout` | Bearer Token | Invalidate current client session |
 | `GET` | `/api/v1/auth/me` | Bearer Token | Retrieve currently authenticated user profile |
 | `PATCH` | `/api/v1/auth/me` | Bearer Token | Update user profile attributes (full name, phone) |
@@ -171,7 +169,7 @@ python -m app.create_admin --email admin@rentmatch.ai --password "Admin@12345"
 uvicorn app.main:app --reload --port 8000
 ```
 
-The backend API will be live at `http://localhost:8000`.
+The backend API will be live at `http://localhost:8000`; Swagger is at `http://localhost:8000/docs`.
 
 ### 3. Frontend Setup
 
@@ -182,6 +180,10 @@ cd frontend
 
 # Install Node dependencies
 npm install
+
+# Optional. Defaults to http://localhost:8000/api/v1
+# Create .env.local with:
+# NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1
 
 # Start Next.js development server
 npm run dev
@@ -228,9 +230,12 @@ GEMINI_API_KEY=your_gemini_api_key
 ### Frontend Configuration (`frontend/.env.local`)
 
 ```ini
-NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
 ```
+
+Frontend registration/login and property listing CRUD use the FastAPI API. The current backend
+does not yet persist shortlist entries, property images/amenities, inquiries, or AI search data.
 
 ---
 
