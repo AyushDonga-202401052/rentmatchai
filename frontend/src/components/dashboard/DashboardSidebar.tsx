@@ -64,7 +64,8 @@ export function DashboardSidebar({
     return pathname === href;
   };
 
-  const displayName = `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'User';
+  const safeLastName = user?.lastName && user.lastName !== 'User' ? user.lastName : '';
+  const displayName = [user?.firstName, safeLastName].filter(Boolean).join(' ') || 'User';
   const displayEmail = user?.email || '';
   const displayAvatar = user?.avatar && !user.avatar.includes('dicebear') ? user.avatar : undefined;
 

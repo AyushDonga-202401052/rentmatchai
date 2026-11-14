@@ -81,7 +81,7 @@ function ProfileContent() {
   useEffect(() => {
     if (user) {
       setFirstName(user.firstName || '');
-      setLastName(user.lastName || '');
+      setLastName(user.lastName && user.lastName !== 'User' ? user.lastName : '');
       setPhone(user.phone || '');
       setCompany(user.company || '');
       if (user.preferences) {
@@ -198,7 +198,9 @@ function ProfileContent() {
     return true;
   });
 
-  const userInitials = `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase();
+  const safeLastName = user?.lastName && user.lastName !== 'User' ? user.lastName : '';
+  const fullName = user ? [user.firstName, safeLastName].filter(Boolean).join(' ') : 'User';
+  const userInitials = `${user?.firstName?.[0] || ''}${safeLastName?.[0] || ''}`.toUpperCase() || user?.firstName?.[0]?.toUpperCase() || 'U';
 
   return (
     <div className="min-h-screen bg-[#F9F5EF] dark:bg-[#171513] text-zinc-950 dark:text-zinc-50 pb-24 sm:pb-32">
@@ -217,7 +219,7 @@ function ProfileContent() {
             <div className="space-y-1.5">
               <div className="flex flex-wrap items-center gap-2.5">
                 <h1 className="text-2xl sm:text-3xl font-black text-zinc-950 dark:text-white tracking-tight">
-                  {user.firstName} {user.lastName}
+                  {fullName}
                 </h1>
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 shadow-2xs">
                   {isLister ? (

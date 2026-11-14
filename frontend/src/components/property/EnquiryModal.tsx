@@ -15,7 +15,8 @@ interface EnquiryModalProps {
 export default function EnquiryModal({ property, onClose }: EnquiryModalProps) {
   const { user } = useAuth();
   const { notify } = useToast();
-  const [name, setName] = useState(user ? `${user.firstName} ${user.lastName}`.trim() : '');
+  const safeLastName = user?.lastName && user.lastName !== 'User' ? user.lastName : '';
+  const [name, setName] = useState(user ? [user.firstName, safeLastName].filter(Boolean).join(' ') : '');
   const [email, setEmail] = useState(user?.email || '');
   const [phone, setPhone] = useState(user?.phone || '');
   const [message, setMessage] = useState(

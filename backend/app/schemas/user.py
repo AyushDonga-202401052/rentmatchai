@@ -14,7 +14,7 @@ class UserCreate(BaseModel):
 class UserResponse(BaseModel):
     id: uuid.UUID
     first_name: str
-    last_name: str
+    last_name: Optional[str] = ""
     email: EmailStr
     phone: Optional[str] = None
     role: Optional[str] = None

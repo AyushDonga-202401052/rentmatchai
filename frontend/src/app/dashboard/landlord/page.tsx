@@ -55,7 +55,8 @@ export default function LandlordDashboardPage() {
       .reduce((sum, p) => sum + p.rent, 0);
   }, [myProperties]);
 
-  const displayName = user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : 'Property Lister';
+  const safeLastName = user?.lastName && user.lastName !== 'User' ? user.lastName : '';
+  const displayName = user?.firstName ? [user.firstName, safeLastName].filter(Boolean).join(' ') : 'Property Lister';
 
   const handleOpenDetails = (id: string) => {
     navigateWithCurtains(`/properties/${id}`, 'Property Details');

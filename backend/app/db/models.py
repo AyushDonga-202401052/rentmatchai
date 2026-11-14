@@ -18,7 +18,6 @@ class User(Base):
     __tablename__ = "users"
     __table_args__ = (
         CheckConstraint("LENGTH(TRIM(first_name)) > 0", name="users_first_name_not_empty"),
-        CheckConstraint("LENGTH(TRIM(last_name)) > 0", name="users_last_name_not_empty"),
         CheckConstraint(
             "password_hash IS NOT NULL OR google_sub IS NOT NULL",
             name="users_auth_method_required",
@@ -30,7 +29,7 @@ class User(Base):
         UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()")
     )
     first_name: Mapped[str] = mapped_column(String(100), nullable=False)
-    last_name: Mapped[str] = mapped_column(String(100), nullable=False)
+    last_name: Mapped[str | None] = mapped_column(String(100), nullable=True, default="")
     email: Mapped[str] = mapped_column(String(255), nullable=False)
     password_hash: Mapped[str | None] = mapped_column(Text)
     google_sub: Mapped[str | None] = mapped_column(String(255), unique=True)

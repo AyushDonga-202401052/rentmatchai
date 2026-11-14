@@ -160,17 +160,18 @@ def google_auth(auth_in: GoogleAuthRequest, db: Session = Depends(get_db)):
             detail="Inactive user account",
         )
 
+    display_name = idinfo.get("name", "")
+    name_parts = display_name.split() if isinstance(display_name, str) else []
+    first_name = (idinfo.get("given_name") or (name_parts[0] if name_parts else email.split("@", 1)[0]))
+    last_name = idinfo.get("family_name") or (" ".join(name_parts[1:]) if len(name_parts) > 1 else "")
+
     if not user:
-        display_name = idinfo.get("name", "")
-        name_parts = display_name.split() if isinstance(display_name, str) else []
-        first_name = (idinfo.get("given_name") or (name_parts[0] if name_parts else email.split("@", 1)[0]))
-        last_name = (idinfo.get("family_name") or (" ".join(name_parts[1:]) if len(name_parts) > 1 else "User"))
         user = User(
             email=email.lower(),
             password_hash=None,
             google_sub=google_sub,
             first_name=first_name.strip()[:100] or "Google",
-            last_name=last_name.strip()[:100] or "User",
+            last_name=last_name.strip()[:100],
             phone=None,
         )
         db.add(user)
@@ -178,10 +179,18 @@ def google_auth(auth_in: GoogleAuthRequest, db: Session = Depends(get_db)):
         db.add(UserRole(user_id=user.id, role=auth_in.role))
         db.commit()
         db.refresh(user)
-    elif not user.google_sub:
-        user.google_sub = google_sub
-        db.commit()
-        db.refresh(user)
+    else:
+        changed = False
+        if not user.google_sub:
+            user.google_sub = google_sub
+            changed = True
+        # If user previously had placeholder "User" as last name, clean it up
+        if user.last_name == "User" and (not idinfo.get("family_name") or len(name_parts) <= 1):
+            user.last_name = last_name.strip()[:100]
+            changed = True
+        if changed:
+            db.commit()
+            db.refresh(user)
 
     access_token = create_access_token(subject=str(user.id))
     return {"access_token": access_token, "token_type": "bearer"}
