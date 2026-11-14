@@ -6,7 +6,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
-from app.api import auth
 from app.core import database
 from app.core.config import settings
 from app.api import auth, profile, properties
@@ -41,12 +40,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# API routers
 app.include_router(auth.router, prefix=settings.API_V1_PREFIX)
-from app.api import auth, profile
-
-# Existing auth router
-app.include_router(auth.router, prefix=settings.API_V1_PREFIX)
-# New profile router
 app.include_router(profile.router, prefix=f"{settings.API_V1_PREFIX}/profile", tags=["profile"])
 
 

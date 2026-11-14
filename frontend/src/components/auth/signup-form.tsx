@@ -87,8 +87,8 @@ export function SignupForm({
       return;
     }
 
-    if (password.length < 6) {
-      notify.error('Password must be at least 6 characters.', 'Password Too Short');
+    if (password.length < 8) {
+      notify.error('Password must be at least 8 characters.', 'Password Too Short');
       setIsInvalid(true);
       return;
     }
@@ -346,7 +346,7 @@ export function SignupForm({
                     setPassword(e.target.value);
                     if (isInvalid) setIsInvalid(false);
                   }}
-                  placeholder="At least 6 characters"
+                  placeholder="At least 8 characters"
                   className="rounded-xl border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 text-xs sm:text-sm h-10 pl-9.5"
                 />
               </div>

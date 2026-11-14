@@ -2,7 +2,7 @@
 
 // React Context for Authentication & Profile State (Sprint 1)
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { AuthService, ProfileService, JWTService, type RegisterData } from '../services/authService';
+import { AuthService, ProfileService, type RegisterData } from '../services/authService';
 import { USER_ROLES, type User, type UserRole } from '../constants/initialData';
 
 interface AuthContextValue {
@@ -42,21 +42,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Initialize session on mount
   useEffect(() => {
-    try {
-      const session = AuthService.getSession();
-      if (session && session.user && session.token) {
-        if (!JWTService.isTokenExpired(session.token)) {
-          setUser(session.user);
-          setToken(session.token);
-        } else {
-          AuthService.clearSession();
-        }
-      }
-    } catch (e) {
-      console.error('Failed to restore auth session:', e);
-    } finally {
-      setLoading(false);
-    }
+    let active = true;
+    AuthService.restoreSession()
+      .then((session) => {
+        if (!active || !session) return;
+        setUser(session.user);
+        setToken(session.token);
+      })
+      .catch((error: unknown) => {
+        AuthService.clearSession();
+        console.error('Failed to restore auth session:', error);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
   }, []);
 
   const openAuthModal = useCallback((tab = 'login', role: UserRole = USER_ROLES.TENANT) => {
@@ -100,16 +102,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const updateProfile = useCallback(async (profileData: Partial<Pick<User, 'firstName' | 'lastName' | 'phone' | 'company' | 'preferences'>>) => {
-    if (!user) throw new Error('Not authenticated');
-    const updated = await ProfileService.updateProfile(user.id, profileData);
+    if (!user || !token) throw new Error('Not authenticated');
+    const updated = await ProfileService.updateProfile(token, user, profileData);
     setUser(updated);
     return updated;
-  }, [user]);
+  }, [user, token]);
 
   const changePassword = useCallback(async (oldPass: string, newPass: string) => {
-    if (!user) throw new Error('Not authenticated');
-    return ProfileService.changePassword(user.id, oldPass, newPass);
-  }, [user]);
+    if (!user || !token) throw new Error('Not authenticated');
+    return ProfileService.changePassword(token, oldPass, newPass);
+  }, [user, token]);
 
   const value: AuthContextValue = {
     user,

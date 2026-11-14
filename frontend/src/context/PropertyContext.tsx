@@ -15,8 +15,9 @@ export interface ToastState {
 interface PropertyContextValue {
   properties: Property[];
   activeProperties: Property[];
+  propertiesLoading: boolean;
   saved: string[];
-  refreshProperties: () => void;
+  refreshProperties: () => Promise<void>;
   toggleSave: (propertyId: string) => void;
   isSaved: (propertyId: string) => boolean;
   toast: ToastState | null;
@@ -61,9 +62,10 @@ const getInitialSaved = (): string[] => {
 };
 
 export function PropertyProvider({ children }: { children: React.ReactNode }) {
-  const { user, isAuthenticated, isLister, openAuthModal } = useAuth();
+  const { user, token, loading: authLoading, isAuthenticated, isLister, openAuthModal } = useAuth();
 
   const [properties, setProperties] = useState<Property[]>([]);
+  const [propertiesLoading, setPropertiesLoading] = useState(true);
   const [saved, setSaved] = useState<string[]>([]);
 
   // Modals state
@@ -106,13 +108,22 @@ export function PropertyProvider({ children }: { children: React.ReactNode }) {
   }, [toast]);
 
   // Load properties on mount
-  const refreshProperties = useCallback(() => {
-    const all = PropertyService.getAllProperties();
-    setProperties(all);
-  }, []);
+  const refreshProperties = useCallback(async () => {
+    if (authLoading) return;
+    setPropertiesLoading(true);
+    try {
+      const all = await PropertyService.getAllProperties(token, user);
+      setProperties(all);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to load properties.';
+      showToast(message, 'error', 'Property Load Error');
+    } finally {
+      setPropertiesLoading(false);
+    }
+  }, [authLoading, token, user, showToast]);
 
   useEffect(() => {
-    refreshProperties();
+    void refreshProperties();
     setSaved(getInitialSaved());
   }, [refreshProperties]);
 
@@ -193,8 +204,9 @@ export function PropertyProvider({ children }: { children: React.ReactNode }) {
     if (!deletingProperty || !user) return;
     setIsDeleting(true);
     try {
-      await PropertyService.deleteProperty(user.id, deletingProperty.id);
-      refreshProperties();
+      if (!token) throw new Error('Please sign in again to manage properties.');
+      await PropertyService.deleteProperty(token, deletingProperty.id);
+      await refreshProperties();
       setIsDeleteModalOpen(false);
       setDeletingProperty(null);
       showToast('Listing permanently deleted.', 'success');
@@ -204,7 +216,7 @@ export function PropertyProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsDeleting(false);
     }
-  }, [deletingProperty, user, refreshProperties, showToast]);
+  }, [deletingProperty, user, token, refreshProperties, showToast]);
 
   // Status toggle handler
   const togglePropertyStatus = useCallback(async (propertyId: string) => {
@@ -214,8 +226,11 @@ export function PropertyProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const updated = await PropertyService.togglePropertyStatus(user.id, propertyId);
-      refreshProperties();
+      if (!token) throw new Error('Please sign in again to manage properties.');
+      const property = properties.find((item) => item.id === propertyId);
+      if (!property) throw new Error('Property not found. Refresh and try again.');
+      const updated = await PropertyService.togglePropertyStatus(token, property, user);
+      await refreshProperties();
       showToast(
         `Listing is now ${updated.status === PROPERTY_STATUS.ACTIVE ? 'Active (Live)' : 'Inactive (Hidden)'}!`,
         'success'
@@ -224,7 +239,7 @@ export function PropertyProvider({ children }: { children: React.ReactNode }) {
       const errMsg = err instanceof Error ? err.message : 'Failed to update property status.';
       showToast(errMsg, 'error');
     }
-  }, [user, refreshProperties, showToast]);
+  }, [user, token, properties, refreshProperties, showToast]);
 
   // Enquiry Modal
   const openEnquiry = useCallback((property: Property) => {
@@ -244,6 +259,7 @@ export function PropertyProvider({ children }: { children: React.ReactNode }) {
       value={{
         properties,
         activeProperties,
+        propertiesLoading,
         saved,
         refreshProperties,
         toggleSave,

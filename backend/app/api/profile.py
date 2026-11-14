@@ -2,15 +2,19 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.api.deps import get_current_user
-from app.db.models import User, RentalPreference
+from app.db.models import User, UserRole, RentalPreference
 from app.schemas.user import UserResponse
 from app.schemas.profile import ProfileUpdate, PreferenceBase, PreferenceResponse
 
 router = APIRouter()
 
 @router.get("/", response_model=UserResponse)
-def get_profile(current_user: User = Depends(get_current_user)):
-    return current_user
+def get_profile(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    role = db.query(UserRole.role).filter(UserRole.user_id == current_user.id).first()
+    return {
+        **UserResponse.model_validate(current_user).model_dump(),
+        "role": role[0] if role else None,
+    }
 
 @router.put("/", response_model=UserResponse)
 def update_profile(profile_in: ProfileUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
