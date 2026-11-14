@@ -22,7 +22,6 @@ interface ApiToken {
 export interface AuthSession {
   token: string;
   user: User;
-  isFallback?: boolean;
 }
 
 export interface RegisterData {
@@ -127,70 +126,25 @@ export const AuthService = {
   },
 
   async loginWithGoogle(
-    idTokenOrRole?: string | UserRole,
+    idToken: string,
     preferredRole?: UserRole,
   ): Promise<AuthSession> {
-    const isIdToken = typeof idTokenOrRole === 'string' && idTokenOrRole.includes('.');
-    const role: UserRole = isIdToken
-      ? (preferredRole || USER_ROLES.TENANT)
-      : ((idTokenOrRole as UserRole) || preferredRole || USER_ROLES.TENANT);
-    const backendRole = role === USER_ROLES.PROPERTY_LISTER ? 'landlord' : 'tenant';
-
-    // If a Google ID token is provided, verify against the backend
-    if (isIdToken) {
-      try {
-        const result = await apiRequest<ApiToken>('/google', {
-          method: 'POST',
-          ...jsonBody({
-            token: idTokenOrRole,
-            role: backendRole,
-          }),
-        });
-        const user = await fetchCurrentUser(result.access_token);
-        const session: AuthSession = { token: result.access_token, user, isFallback: false };
-        this.setSession(session);
-        return session;
-      } catch (err: unknown) {
-        console.warn('Backend Google authentication unavailable, using demo session fallback:', err);
-      }
+    if (!idToken || typeof idToken !== 'string') {
+      throw new Error('Google authentication failed: no credentials were provided.');
     }
 
-    // Demo Google session fallback: prevents users and testers from getting blocked
-    // when local backend is offline or cloud OAuth origins are misconfigured.
-    const exp = Math.floor(Date.now() / 1000) + 7 * 86400;
-    const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
-    const payload = btoa(
-      JSON.stringify({
-        sub: 'google-usr-demo',
-        email: 'alex.google@rentmatch.ai',
+    const backendRole = preferredRole === USER_ROLES.PROPERTY_LISTER ? 'landlord' : 'tenant';
+
+    const result = await apiRequest<ApiToken>('/google', {
+      method: 'POST',
+      ...jsonBody({
+        token: idToken,
         role: backendRole,
-        exp,
       }),
-    );
-    const demoToken = `${header}.${payload}.demo-session-token`;
+    });
 
-    const demoUser: User = {
-      id: 'usr-google-demo',
-      firstName: 'Alex',
-      lastName: 'Morgan',
-      email: 'alex.morgan@gmail.com',
-      passwordHash: null,
-      role,
-      phone: '+91 98765 43210',
-      googleSub: 'google-oauth-demo-12345',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-      company: role === USER_ROLES.PROPERTY_LISTER ? 'Skyline Realty' : undefined,
-      isActive: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      preferences: role === USER_ROLES.TENANT ? {
-        budgetMax: 25000,
-        preferredBhk: '2BHK',
-        targetLocation: 'Gandhinagar',
-      } : null,
-    };
-
-    const session: AuthSession = { token: demoToken, user: demoUser, isFallback: true };
+    const user = await fetchCurrentUser(result.access_token);
+    const session: AuthSession = { token: result.access_token, user };
     this.setSession(session);
     return session;
   },
@@ -207,8 +161,6 @@ export const AuthService = {
       this.setSession(session);
       return session;
     } catch {
-      // Backend offline: keep cached session so users are not logged out on refresh
-      if (stored.user) return stored;
       this.clearSession();
       return null;
     }

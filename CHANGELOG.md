@@ -5,6 +5,12 @@ All notable changes to RentMatch AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.3] - 2026-11-15
+
+### Removed & Fixed
+- Completely removed fallback dummy user sessions and mock tokens; inoperative Google sign-in strictly halts and displays the error without logging in.
+- Introduced `GoogleAuthButton` preserving the custom theme button UI from `fb4c61d` with native Google Identity Services popup triggering and backend token verification.
+
 ## [0.1.2] - 2026-11-15
 
 ### Added
