@@ -15,7 +15,7 @@ interface AuthContextValue {
   loading: boolean;
   login: (email: string, password: string) => Promise<{ user: User; token: string }>;
   register: (data: RegisterData) => Promise<{ user: User; token: string }>;
-  loginWithGoogle: (idToken: string, preferredRole?: UserRole) => Promise<{ user: User; token: string }>;
+  loginWithGoogle: (idTokenOrRole?: string | UserRole, preferredRole?: UserRole) => Promise<{ user: User; token: string }>;
   logout: () => void;
   updateProfile: (profileData: Partial<Pick<User, 'firstName' | 'lastName' | 'phone' | 'company' | 'preferences'>>) => Promise<User>;
   changePassword: (oldPass: string, newPass: string) => Promise<boolean>;
@@ -87,8 +87,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return res;
   }, [closeAuthModal]);
 
-  const loginWithGoogle = useCallback(async (idToken: string, preferredRole?: UserRole) => {
-    const res = await AuthService.loginWithGoogle(idToken, preferredRole);
+  const loginWithGoogle = useCallback(async (idTokenOrRole?: string | UserRole, preferredRole?: UserRole) => {
+    const res = await AuthService.loginWithGoogle(idTokenOrRole, preferredRole);
     setUser(res.user);
     setToken(res.token);
     closeAuthModal();
