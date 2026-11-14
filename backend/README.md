@@ -58,6 +58,10 @@ Also set a real `SECRET_KEY` in `.env`:
 python -c "import secrets; print(secrets.token_urlsafe(48))"
 ```
 
+For Google sign-in, set `GOOGLE_CLIENT_ID` in `backend/.env` to the Google OAuth Web client ID.
+The same client ID must be exposed to the frontend as `NEXT_PUBLIC_GOOGLE_CLIENT_ID`. Configure
+the frontend's local and deployed origins as authorized JavaScript origins in Google Cloud Console.
+
 ## 3. Create the tables with Alembic
 
 Run these from the `backend/` folder:

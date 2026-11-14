@@ -12,7 +12,7 @@ Full Next.js (App Router) + TypeScript implementation of the RentMatch AI fronte
   - Registration and login use the FastAPI API; passwords must be at least 8 characters.
   - Matches the **Sprint 1 State Machine** (`Validating Registration` ➔ `User Registered` / `Registration Failed` ➔ `Retry`).
 - **Google OAuth**:
-  - Google sign-in is not connected yet; the button reports that clearly rather than creating a demo session.
+  - Google Identity Services returns an ID token, which the FastAPI backend verifies before creating or linking an account.
 - **JWT Session**:
   - Access tokens are issued and validated by FastAPI and persisted in browser storage for the current session.
 - **Role-Based Authorization & Protection**:
@@ -43,8 +43,7 @@ Full Next.js (App Router) + TypeScript implementation of the RentMatch AI fronte
    ```bash
    cd frontend
    npm install
-   # Optional: create .env.local to use a non-default API URL
-   # NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1
+   # Create .env.local from .env.example and set the API URL and Google Web client ID.
    npm run dev
    ```
 2. Open your browser:
@@ -52,8 +51,12 @@ Full Next.js (App Router) + TypeScript implementation of the RentMatch AI fronte
    http://localhost:3000/
    ```
 
-   The default API URL is `http://localhost:8000/api/v1`. Features not yet supported by the backend
-   (including Google sign-in, password changes, shortlist persistence, messaging, and AI search) are
+   The default API URL is `http://localhost:8000/api/v1`. Configure the same Google Web client ID
+   in `frontend/.env.local` as `NEXT_PUBLIC_GOOGLE_CLIENT_ID` and in `backend/.env` as
+   `GOOGLE_CLIENT_ID`. Add the frontend origin (for example, `http://localhost:3000`) to the
+   OAuth client's authorized JavaScript origins in Google Cloud Console. Restart both servers after
+   changing environment files. Features not yet supported by the backend
+   (including password changes, shortlist persistence, messaging, and AI search) are
    not part of this integration.
 3. To create an optimized production build:
    ```bash

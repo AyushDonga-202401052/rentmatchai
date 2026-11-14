@@ -125,8 +125,18 @@ export const AuthService = {
     return session;
   },
 
-  async loginWithGoogle(_preferredRole?: UserRole): Promise<AuthSession> {
-    throw new Error('Google sign-in is not connected to the backend yet.');
+  async loginWithGoogle(idToken: string, preferredRole?: UserRole): Promise<AuthSession> {
+    const result = await apiRequest<ApiToken>('/google', {
+      method: 'POST',
+      ...jsonBody({
+        token: idToken,
+        role: preferredRole === USER_ROLES.PROPERTY_LISTER ? 'landlord' : 'tenant',
+      }),
+    });
+    const user = await fetchCurrentUser(result.access_token);
+    const session = { token: result.access_token, user };
+    this.setSession(session);
+    return session;
   },
 
   async restoreSession(): Promise<AuthSession | null> {
