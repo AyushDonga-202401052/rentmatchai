@@ -3,14 +3,15 @@
 import React from 'react';
 import { useAuth } from '@/src/context/AuthContext';
 import { DashboardShellSkeleton } from '@/src/components/dashboard/DashboardShellSkeleton';
-import TenantDashboardPage from './tenant/page';
-import LandlordDashboardPage from './landlord/page';
+import TenantDashboardView from '@/src/components/dashboard/TenantDashboardView';
+import LandlordDashboardView from '@/src/components/dashboard/LandlordDashboardView';
 
 /**
- * Main Dashboard Entry Point
+ * Main Unified Dashboard Entry Point
+ * All authenticated users view clean '/dashboard' in their URL.
  * Automatically resolves and displays the appropriate tailored dashboard view:
- * - Property Lister / Landlord: LandlordDashboardPage
- * - Tenant / Renter: TenantDashboardPage
+ * - Property Lister / Landlord: LandlordDashboardView
+ * - Tenant / Renter: TenantDashboardView
  */
 export default function DashboardPage() {
   const { isLister, loading } = useAuth();
@@ -20,8 +21,8 @@ export default function DashboardPage() {
   }
 
   if (isLister) {
-    return <LandlordDashboardPage />;
+    return <LandlordDashboardView />;
   }
 
-  return <TenantDashboardPage />;
+  return <TenantDashboardView />;
 }

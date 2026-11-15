@@ -5,6 +5,14 @@ All notable changes to RentMatch AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.16] - 2026-11-15
+
+### Changed
+- Unified all dashboard routing under the single, clean `/dashboard` URL for all users regardless of role (Tenant/Renter or Landlord/Lister).
+- Extracted `TenantDashboardView` and `LandlordDashboardView` to dedicated dashboard components, conditionally rendered at `/dashboard` via `AuthContext`.
+- Updated login redirects, signup redirects, Navbar dashboard links, and Sidebar navigation to route directly to `/dashboard`.
+- Added automatic permanent redirects in `next.config.ts` as well as route fallbacks in `tenant/page.tsx` and `landlord/page.tsx` so legacy links `/dashboard/tenant`, `/dashboard/landlord`, and `/dashboard/renter` redirect cleanly to `/dashboard`.
+
 ## [0.1.15] - 2026-11-15
 
 ### Fixed

@@ -237,7 +237,7 @@ export function DashboardSidebar({
                 icon={LayoutDashboard}
                 label="Dashboard"
                 active={isItemActive('/dashboard')}
-                onClick={() => handleNavClick('/dashboard/tenant', 'Dashboard')}
+                onClick={() => handleNavClick('/dashboard', 'Dashboard')}
                 isExpanded={isExpanded}
               />
 
@@ -339,7 +339,7 @@ export function DashboardSidebar({
                 icon={LayoutDashboard}
                 label="Dashboard"
                 active={isItemActive('/dashboard')}
-                onClick={() => handleNavClick('/dashboard/landlord', 'Dashboard')}
+                onClick={() => handleNavClick('/dashboard', 'Dashboard')}
                 isExpanded={isExpanded}
               />
 

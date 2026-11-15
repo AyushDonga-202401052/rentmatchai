@@ -44,9 +44,17 @@ export function LoginForm({
       !redirectParam.startsWith('//') &&
       !redirectParam.includes('\\')
     ) {
+      if (
+        redirectParam === '/dashboard/tenant' ||
+        redirectParam === '/dashboard/landlord' ||
+        redirectParam === '/dashboard/renter' ||
+        redirectParam === '/dashboard/Renter'
+      ) {
+        return '/dashboard';
+      }
       return redirectParam;
     }
-    return userRole === USER_ROLES.PROPERTY_LISTER ? '/dashboard/landlord' : '/dashboard/tenant';
+    return '/dashboard';
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
