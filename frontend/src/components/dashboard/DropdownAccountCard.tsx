@@ -68,13 +68,10 @@ export const DropdownAccountCardMD = ({
         {/* The Card Box (starts underneath the PFP and smoothly extends out to the right) */}
         <AriaButton
           aria-label={name}
-          className={({ isPressed, isFocusVisible }) =>
-            cx(
-              'relative h-9.5 cursor-pointer rounded-xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200/90 dark:bg-zinc-900/60 dark:hover:bg-zinc-800/70 dark:border-zinc-800/80 transition-all duration-250 ease-out outline-offset-2 outline-focus-ring flex items-center overflow-hidden',
-              isExpanded ? 'w-full pl-11 pr-2' : 'w-10 pl-0 pr-0 justify-center',
-              (isPressed || isFocusVisible) && 'outline-2'
-            )
-          }
+          className={cx(
+            'relative h-9.5 cursor-pointer rounded-xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200/90 dark:bg-zinc-900/60 dark:hover:bg-zinc-800/70 dark:border-zinc-800/80 transition-[width,background-color] duration-250 ease-out outline-none focus:outline-none focus-visible:outline-none ring-0 flex items-center overflow-hidden',
+            isExpanded ? 'w-full pl-11 pr-2' : 'w-10 pl-0 pr-0 justify-center'
+          )}
         >
           {/* Inner content that slides out from under PFP */}
           <div
@@ -101,7 +98,7 @@ export const DropdownAccountCardMD = ({
       <Dropdown.Popover
         placement={isExpanded ? 'top start' : 'right bottom'}
         offset={isExpanded ? 8 : 12}
-        className="w-[236px] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xl p-1 text-zinc-800 dark:text-zinc-200 z-50 animate-in fade-in slide-in-from-bottom-1 duration-150 ease-out"
+        className="w-[236px] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xl ring-0 outline-none focus:outline-none focus-visible:outline-none p-1 text-zinc-800 dark:text-zinc-200 z-50"
       >
         <div className="border-b border-zinc-100 dark:border-zinc-800/80 px-4 py-3">
           <p className="truncate text-sm font-semibold text-zinc-900 dark:text-white">
@@ -114,7 +111,7 @@ export const DropdownAccountCardMD = ({
           </p>
         </div>
 
-        <Dropdown.Menu className="py-1">
+        <Dropdown.Menu className="py-1 outline-none focus:outline-none focus-visible:outline-none">
           <Dropdown.Item
             icon={User01}
             onAction={() => handleNavigate('/profile?tab=personal', 'Profile & Account')}
