@@ -5,6 +5,15 @@ All notable changes to RentMatch AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.9] - 2026-11-15
+
+### Fixed
+- Fixed sidebar vertical jitter/shake by giving `BrandLogo` and its header container a fixed 40px/44px height, eliminating vertical height shifts when expanding or collapsing.
+- Suppressed subscript badge numbers when the respective route is active (e.g., viewing Inbox or Shortlist hides its collapsed unread badge).
+
+### Changed
+- Redesigned the bottom profile card with a floating, prominent circular avatar (`size-10`) layered over the card box, where the box sits underneath on the left and smoothly extends outward to the right on hover and retracts under it when collapsed.
+
 ## [0.1.8] - 2026-11-15
 
 ### Fixed

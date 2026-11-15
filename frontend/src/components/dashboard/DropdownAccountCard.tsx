@@ -56,18 +56,11 @@ export const DropdownAccountCardMD = ({
 
   return (
     <Dropdown.Root onOpenChange={onOpenChange}>
-      <AriaButton
-        aria-label={!isExpanded ? name : undefined}
-        className={({ isPressed, isFocusVisible }) =>
-          cx(
-            'relative w-full h-10 cursor-pointer rounded-xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200/90 dark:bg-zinc-900/60 dark:hover:bg-zinc-800/70 dark:border-zinc-800/80 transition-colors duration-150 outline-offset-2 outline-focus-ring flex items-center px-2 overflow-hidden',
-            (isPressed || isFocusVisible) && 'outline-2'
-          )
-        }
-      >
-        <div className="w-8 h-8 shrink-0 flex items-center justify-center">
+      <div className="relative flex items-center h-11 w-full">
+        {/* Floating/Prominent Profile Picture (sits on top, larger than the box) */}
+        <div className="absolute left-1 z-20 size-10 rounded-full shrink-0 flex items-center justify-center ring-2 ring-white dark:ring-[#211E1B] shadow-md bg-zinc-100 dark:bg-zinc-800 pointer-events-none transition-transform duration-200">
           <Avatar
-            size="sm"
+            size="md"
             src={avatarUrl}
             alt={name}
             initials={name ? name.split(' ').map((n) => n[0]).filter(Boolean).join('').slice(0, 2).toUpperCase() : 'U'}
@@ -75,25 +68,38 @@ export const DropdownAccountCardMD = ({
           />
         </div>
 
-        <div
-          className={`overflow-hidden transition-all duration-200 flex-1 flex items-center justify-between min-w-0 ${
-            isExpanded
-              ? 'opacity-100 max-w-[150px] ml-2'
-              : 'opacity-0 max-w-0 ml-0 pointer-events-none'
-          }`}
+        {/* The Card Box (starts underneath the PFP and smoothly extends out to the right) */}
+        <AriaButton
+          aria-label={name}
+          className={({ isPressed, isFocusVisible }) =>
+            cx(
+              'relative h-9.5 cursor-pointer rounded-xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200/90 dark:bg-zinc-900/60 dark:hover:bg-zinc-800/70 dark:border-zinc-800/80 transition-all duration-250 ease-out outline-offset-2 outline-focus-ring flex items-center overflow-hidden',
+              isExpanded ? 'w-full pl-12 pr-2' : 'w-10 pl-0 pr-0 justify-center',
+              (isPressed || isFocusVisible) && 'outline-2'
+            )
+          }
         >
-          <div className="min-w-0 flex-1 leading-tight whitespace-nowrap">
-            <div className="truncate text-xs font-semibold text-zinc-900 dark:text-zinc-100">{name}</div>
-            <div className="truncate text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">
-              {role === 'tenant' ? 'Tenant' : 'Landlord'}
+          {/* Inner content that slides out from under PFP */}
+          <div
+            className={`overflow-hidden transition-all duration-200 flex-1 flex items-center justify-between min-w-0 ${
+              isExpanded
+                ? 'opacity-100 max-w-[150px]'
+                : 'opacity-0 max-w-0 pointer-events-none'
+            }`}
+          >
+            <div className="min-w-0 flex-1 leading-tight whitespace-nowrap">
+              <div className="truncate text-xs font-semibold text-zinc-900 dark:text-zinc-100">{name}</div>
+              <div className="truncate text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">
+                {role === 'tenant' ? 'Tenant' : 'Landlord'}
+              </div>
+            </div>
+
+            <div className="shrink-0 size-4 flex items-center justify-center text-zinc-400 dark:text-zinc-500 ml-1">
+              <ChevronSelectorVertical className="size-3.5 stroke-[2.25px]" />
             </div>
           </div>
-
-          <div className="shrink-0 size-4 flex items-center justify-center text-zinc-400 dark:text-zinc-500 ml-1">
-            <ChevronSelectorVertical className="size-3.5 stroke-[2.25px]" />
-          </div>
-        </div>
-      </AriaButton>
+        </AriaButton>
+      </div>
 
       <Dropdown.Popover
         placement={isExpanded ? 'top start' : 'right bottom'}

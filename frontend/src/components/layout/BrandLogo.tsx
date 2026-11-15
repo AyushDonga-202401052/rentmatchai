@@ -24,7 +24,7 @@ export default function BrandLogo({
   const { icon, text, sub } = sizeMap[size] || sizeMap.md;
 
   return (
-    <div className={`flex items-center gap-2.5 ${className}`}>
+    <div className={`h-10 flex items-center ${className}`}>
       {/* Brand Pixel Art Logo Emblem */}
       <div
         className={`${icon} relative flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105`}
@@ -39,16 +39,20 @@ export default function BrandLogo({
         />
       </div>
 
-      {!hideText && (
-        <div className="flex flex-col leading-none">
-          <span className={`font-black tracking-tight text-zinc-950 dark:text-white ${text}`}>
-            RentMatch<span className="text-[#E8510E] dark:text-[#F06A32] font-semibold text-[0.85em]">.ai</span>
-          </span>
-          <span className={`font-bold uppercase tracking-[0.2em] text-[9px] text-zinc-400 dark:text-zinc-500 mt-0.5 ${sub}`}>
-            Editorial Rentals
-          </span>
-        </div>
-      )}
+      <div
+        className={`overflow-hidden transition-all duration-200 flex flex-col justify-center leading-none min-w-0 ${
+          hideText
+            ? 'opacity-0 max-w-0 ml-0 pointer-events-none'
+            : 'opacity-100 max-w-[160px] ml-2.5'
+        }`}
+      >
+        <span className={`font-black tracking-tight text-zinc-950 dark:text-white truncate whitespace-nowrap ${text}`}>
+          RentMatch<span className="text-[#E8510E] dark:text-[#F06A32] font-semibold text-[0.85em]">.ai</span>
+        </span>
+        <span className={`font-bold uppercase tracking-[0.2em] text-[9px] text-zinc-400 dark:text-zinc-500 mt-0.5 truncate whitespace-nowrap ${sub}`}>
+          Editorial Rentals
+        </span>
+      </div>
     </div>
   );
 }

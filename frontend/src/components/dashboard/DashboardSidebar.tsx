@@ -202,12 +202,12 @@ export function DashboardSidebar({
       }`}
     >
       {/* Top Block: Logo and Close (mobile) */}
-      <div className="shrink-0">
-        <div className="flex items-center justify-between px-1 pb-2 pt-0.5">
+      <div className="shrink-0 h-11 flex items-center px-1 pb-1">
+        <div className="w-full flex items-center justify-between">
           <Link
             href="/"
             onClick={() => onCloseMobileDrawer?.()}
-            className="flex items-center gap-2 group hover:opacity-90 transition-opacity focus:outline-hidden overflow-hidden"
+            className="flex items-center gap-2 group hover:opacity-90 transition-opacity focus:outline-hidden overflow-hidden h-10"
             title={!isExpanded ? 'RentMatch AI' : undefined}
           >
             <BrandLogo size="sm" hideText={!isExpanded} />
@@ -268,7 +268,7 @@ export function DashboardSidebar({
                 active={pathname === '/dashboard/inbox'}
                 onClick={() => handleNavClick('/dashboard/inbox', 'Inbox')}
                 isExpanded={isExpanded}
-                collapsedBadge="3"
+                collapsedBadge={pathname === '/dashboard/inbox' ? undefined : '3'}
                 badge={
                   <span
                     className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
@@ -298,7 +298,13 @@ export function DashboardSidebar({
                 active={pathname === '/dashboard/shortlist' || pathname === '/shortlist'}
                 onClick={() => handleNavClick('/dashboard/shortlist', 'My Shortlist')}
                 isExpanded={isExpanded}
-                collapsedBadge={shortlistCount > 0 ? shortlistCount : undefined}
+                collapsedBadge={
+                  pathname === '/dashboard/shortlist' || pathname === '/shortlist'
+                    ? undefined
+                    : shortlistCount > 0
+                      ? shortlistCount
+                      : undefined
+                }
                 badge={
                   shortlistCount > 0 ? (
                     <span
@@ -364,7 +370,7 @@ export function DashboardSidebar({
                 active={pathname === '/dashboard/inbox'}
                 onClick={() => handleNavClick('/dashboard/inbox', 'Inbox')}
                 isExpanded={isExpanded}
-                collapsedBadge="3"
+                collapsedBadge={pathname === '/dashboard/inbox' ? undefined : '3'}
                 badge={
                   <span
                     className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
@@ -385,7 +391,13 @@ export function DashboardSidebar({
                 active={pathname === '/profile' && typeof window !== 'undefined' && window.location.search.includes('listings')}
                 onClick={() => handleNavClick('/profile?tab=listings', 'My Properties')}
                 isExpanded={isExpanded}
-                collapsedBadge={myPropertiesCount > 0 ? myPropertiesCount : undefined}
+                collapsedBadge={
+                  pathname === '/profile' && typeof window !== 'undefined' && window.location.search.includes('listings')
+                    ? undefined
+                    : myPropertiesCount > 0
+                      ? myPropertiesCount
+                      : undefined
+                }
                 badge={
                   myPropertiesCount > 0 ? (
                     <span
