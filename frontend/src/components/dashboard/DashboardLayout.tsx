@@ -58,8 +58,8 @@ export function DashboardLayout({
   return (
     <DashboardGuard>
       <div className="min-h-[100dvh] w-full flex bg-zinc-50 dark:bg-[#171513] text-zinc-900 dark:text-zinc-100 overflow-x-hidden transition-colors duration-200">
-        {/* Desktop Fixed Left Sidebar */}
-        <div className="hidden lg:flex shrink-0 h-[100dvh] sticky top-0 z-30">
+        {/* Desktop Fixed Left Sidebar (maintains 68px width in layout flow so main content never shifts on hover) */}
+        <div className="hidden lg:block shrink-0 w-[68px] h-[100dvh] sticky top-0 z-30">
           <DashboardSidebar />
         </div>
 

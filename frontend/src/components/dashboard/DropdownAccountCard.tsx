@@ -12,7 +12,7 @@ import { Button as AriaButton } from 'react-aria-components';
 
 import { Dropdown } from '@/src/components/base/dropdown/dropdown';
 import { cx } from '@/src/utils/cx';
-import { AvatarLabelGroup } from '@/src/components/base/avatar/avatar-label-group';
+import { Avatar } from '@/src/components/base/avatar/avatar';
 import { usePageCurtains } from '@/src/components/ui/page-curtains';
 
 export interface DropdownAccountCardProps {
@@ -24,6 +24,8 @@ export interface DropdownAccountCardProps {
   onToggleDarkMode: () => void;
   onSignOut: () => void;
   onCloseMobileDrawer?: () => void;
+  isExpanded?: boolean;
+  onOpenChange?: (isOpen: boolean) => void;
 }
 
 export const DropdownAccountCardMD = ({
@@ -35,6 +37,8 @@ export const DropdownAccountCardMD = ({
   onToggleDarkMode,
   onSignOut,
   onCloseMobileDrawer,
+  isExpanded = true,
+  onOpenChange,
 }: DropdownAccountCardProps) => {
   const router = useRouter();
   const { navigateWithCurtains } = usePageCurtains();
@@ -51,31 +55,52 @@ export const DropdownAccountCardMD = ({
   };
 
   return (
-    <Dropdown.Root>
+    <Dropdown.Root onOpenChange={onOpenChange}>
       <AriaButton
+        aria-label={!isExpanded ? name : undefined}
         className={({ isPressed, isFocusVisible }) =>
           cx(
-            'relative w-full cursor-pointer rounded-xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200/90 dark:bg-zinc-900/60 dark:hover:bg-zinc-800/70 dark:border-zinc-800/80 p-2 text-left transition-all outline-offset-2 outline-focus-ring',
+            'relative w-full cursor-pointer rounded-xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200/90 dark:bg-zinc-900/60 dark:hover:bg-zinc-800/70 dark:border-zinc-800/80 transition-all outline-offset-2 outline-focus-ring flex items-center',
+            isExpanded ? 'p-2' : 'p-1.5 justify-center',
             (isPressed || isFocusVisible) && 'outline-2'
           )
         }
       >
-        <AvatarLabelGroup
-          size="md"
-          src={avatarUrl}
-          initials={name ? name.split(' ').map((n) => n[0]).filter(Boolean).join('').slice(0, 2).toUpperCase() : 'U'}
-          title={name}
-          subtitle={role === 'tenant' ? 'Tenant' : 'Landlord'}
-        />
-
-        <div className="absolute top-2.5 right-2 flex size-7 items-center justify-center rounded-md pointer-events-none">
-          <ChevronSelectorVertical className="size-4 shrink-0 stroke-[2.25px] text-zinc-400 dark:text-zinc-500" />
+        <div className="w-8 h-8 shrink-0 flex items-center justify-center">
+          <Avatar
+            size="sm"
+            src={avatarUrl}
+            alt={name}
+            initials={name ? name.split(' ').map((n) => n[0]).filter(Boolean).join('').slice(0, 2).toUpperCase() : 'U'}
+            status="online"
+          />
         </div>
+
+        <div
+          className={`overflow-hidden transition-all duration-200 flex-1 flex items-center justify-between min-w-0 ${
+            isExpanded
+              ? 'opacity-100 max-w-[160px] ml-2.5 mr-6'
+              : 'opacity-0 max-w-0 ml-0 pointer-events-none'
+          }`}
+        >
+          <div className="min-w-0 flex-1 leading-tight">
+            <div className="truncate text-xs font-semibold text-zinc-900 dark:text-zinc-100">{name}</div>
+            <div className="truncate text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">
+              {role === 'tenant' ? 'Tenant' : 'Landlord'}
+            </div>
+          </div>
+        </div>
+
+        {isExpanded && (
+          <div className="absolute top-2.5 right-2 flex size-7 items-center justify-center rounded-md pointer-events-none">
+            <ChevronSelectorVertical className="size-4 shrink-0 stroke-[2.25px] text-zinc-400 dark:text-zinc-500" />
+          </div>
+        )}
       </AriaButton>
 
       <Dropdown.Popover
-        placement="top start"
-        offset={8}
+        placement={isExpanded ? 'top start' : 'right bottom'}
+        offset={isExpanded ? 8 : 12}
         className="w-64 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xl p-1 text-zinc-800 dark:text-zinc-200 z-50 animate-in fade-in zoom-in-95 duration-150"
       >
         <div className="border-b border-zinc-100 dark:border-zinc-800/80 px-4 py-3">
@@ -96,22 +121,6 @@ export const DropdownAccountCardMD = ({
           >
             View Profile
           </Dropdown.Item>
-
-          <Dropdown.Section
-            selectionMode="single"
-            selectedKeys={new Set(isDarkMode ? ['dark'] : [])}
-            onSelectionChange={() => {
-              onToggleDarkMode();
-            }}
-          >
-            <Dropdown.Item
-              id="dark"
-              icon={Moon01}
-              selectionIndicator="toggle"
-            >
-              Dark Mode
-            </Dropdown.Item>
-          </Dropdown.Section>
 
           <Dropdown.Separator className="my-1 bg-zinc-200/80 dark:bg-zinc-800/80" />
 

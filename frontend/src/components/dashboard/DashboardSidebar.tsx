@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -31,6 +31,82 @@ interface DashboardSidebarProps {
   isMobileDrawer?: boolean;
 }
 
+interface SidebarButtonProps {
+  icon: React.ComponentType<{ size?: number; strokeWidth?: number; className?: string }>;
+  label: string;
+  badge?: React.ReactNode;
+  active?: boolean;
+  onClick: () => void;
+  isExpanded: boolean;
+  variant?: 'nav' | 'cta';
+}
+
+function SidebarButton({
+  icon: Icon,
+  label,
+  badge,
+  active = false,
+  onClick,
+  isExpanded,
+  variant = 'nav',
+}: SidebarButtonProps) {
+  if (variant === 'cta') {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        title={!isExpanded ? label : undefined}
+        className={`w-full h-10 flex items-center rounded-xl text-xs font-semibold bg-zinc-950 hover:bg-zinc-850 text-white dark:bg-white dark:hover:bg-zinc-150 dark:text-zinc-950 transition-all duration-150 cursor-pointer shadow-xs active:scale-[0.98] ${
+          isExpanded ? 'px-2' : 'px-2 justify-center'
+        }`}
+      >
+        <div className="w-8 h-8 shrink-0 flex items-center justify-center">
+          <Plus size={16} strokeWidth={2.2} className="shrink-0" />
+        </div>
+        <div
+          className={`overflow-hidden transition-all duration-200 flex-1 flex items-center min-w-0 ${
+            isExpanded
+              ? 'opacity-100 max-w-[170px] ml-2'
+              : 'opacity-0 max-w-0 ml-0 pointer-events-none'
+          }`}
+        >
+          <span className="truncate whitespace-nowrap">{label}</span>
+        </div>
+      </button>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      title={!isExpanded ? label : undefined}
+      className={`w-full h-10 flex items-center rounded-xl text-xs transition-all duration-150 cursor-pointer active:scale-[0.98] ${
+        isExpanded ? 'px-2' : 'px-2 justify-center'
+      } ${
+        active
+          ? 'bg-zinc-950 text-white font-medium shadow-2xs dark:bg-zinc-100 dark:text-zinc-950'
+          : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/80 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-900/70 font-medium'
+      }`}
+    >
+      <div className="w-8 h-8 shrink-0 flex items-center justify-center">
+        <Icon size={16} strokeWidth={1.8} className="shrink-0" />
+      </div>
+
+      <div
+        className={`overflow-hidden transition-all duration-200 flex-1 flex items-center justify-between min-w-0 ${
+          isExpanded
+            ? 'opacity-100 max-w-[170px] ml-2'
+            : 'opacity-0 max-w-0 ml-0 pointer-events-none'
+        }`}
+      >
+        <span className="truncate whitespace-nowrap">{label}</span>
+        {badge}
+      </div>
+    </button>
+  );
+}
+
 export function DashboardSidebar({
   onCloseMobileDrawer,
   isMobileDrawer = false,
@@ -41,6 +117,37 @@ export function DashboardSidebar({
   const { navigateWithCurtains } = usePageCurtains();
   const { resolvedTheme, theme, setTheme } = useTheme();
 
+  // Permanent collapsible state: expands on hover or when an action popover is open
+  const [isHovered, setIsHovered] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const leaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleMouseEnter = () => {
+    if (leaveTimerRef.current) {
+      clearTimeout(leaveTimerRef.current);
+      leaveTimerRef.current = null;
+    }
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    if (leaveTimerRef.current) {
+      clearTimeout(leaveTimerRef.current);
+    }
+    leaveTimerRef.current = setTimeout(() => {
+      setIsHovered(false);
+    }, 150);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (leaveTimerRef.current) {
+        clearTimeout(leaveTimerRef.current);
+      }
+    };
+  }, []);
+
+  const isExpanded = isMobileDrawer || isHovered || isMenuOpen;
   const isDark = resolvedTheme === 'dark' || theme === 'dark';
 
   const handleNavClick = (href: string, title: string) => {
@@ -75,6 +182,8 @@ export function DashboardSidebar({
 
   return (
     <aside
+      onMouseEnter={!isMobileDrawer ? handleMouseEnter : undefined}
+      onMouseLeave={!isMobileDrawer ? handleMouseLeave : undefined}
       style={
         isMobileDrawer
           ? {
@@ -83,19 +192,24 @@ export function DashboardSidebar({
             }
           : undefined
       }
-      className={`h-full flex flex-col justify-between bg-white dark:bg-[#211E1B] text-zinc-700 dark:text-zinc-300 border-r border-zinc-200 dark:border-zinc-800/80 select-none transition-colors duration-200 ${
-        isMobileDrawer ? 'w-full p-4' : 'w-64 xl:w-68 p-4'
+      className={`h-full flex flex-col justify-between bg-white dark:bg-[#211E1B] text-zinc-700 dark:text-zinc-300 border-r border-zinc-200 dark:border-zinc-800/80 select-none transition-[width,box-shadow,padding] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        isMobileDrawer
+          ? 'w-full p-4'
+          : isExpanded
+            ? 'fixed top-0 left-0 w-64 p-3 shadow-2xl shadow-black/10 dark:shadow-black/60 z-40'
+            : 'fixed top-0 left-0 w-[68px] px-2.5 py-3 shadow-none z-30'
       }`}
     >
       {/* Top Block: Logo and Close (mobile) */}
       <div className="shrink-0">
-        <div className="flex items-center justify-between px-1 pt-1 pb-2">
+        <div className={`flex items-center justify-between pb-2 ${isExpanded ? 'px-1 pt-1' : 'justify-center pt-0.5'}`}>
           <Link
             href="/"
             onClick={() => onCloseMobileDrawer?.()}
-            className="flex items-center gap-2 group hover:opacity-90 transition-opacity focus:outline-hidden"
+            className="flex items-center gap-2 group hover:opacity-90 transition-opacity focus:outline-hidden overflow-hidden"
+            title={!isExpanded ? 'RentMatch AI' : undefined}
           >
-            <BrandLogo size="sm" />
+            <BrandLogo size="sm" hideText={!isExpanded} />
           </Link>
 
           {isMobileDrawer && (
@@ -112,129 +226,99 @@ export function DashboardSidebar({
       </div>
 
       {/* Middle Block: Dynamic Role Navigation Items with ScrollArea */}
-      <ScrollArea className="flex-1 my-2 -mx-1 px-1">
+      <ScrollArea className="flex-1 my-2 -mx-1 px-1 overflow-x-hidden">
         <nav className="space-y-1 pt-1" aria-label="Dashboard navigation">
           {/* Tenant Navigation */}
           {isTenant && (
             <>
               {/* Dashboard Overview */}
-              <button
-                type="button"
+              <SidebarButton
+                icon={LayoutDashboard}
+                label="Dashboard"
+                active={isItemActive('/dashboard')}
                 onClick={() => handleNavClick('/dashboard/tenant', 'Dashboard')}
-                className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs transition-all duration-150 cursor-pointer text-left active:scale-[0.98] ${
-                  isItemActive('/dashboard')
-                    ? 'bg-zinc-950 text-white font-medium shadow-2xs dark:bg-zinc-100 dark:text-zinc-950'
-                    : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/80 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-900/70 font-medium'
-                }`}
-              >
-                <LayoutDashboard size={16} strokeWidth={1.8} className="shrink-0" />
-                <span className="truncate">Dashboard</span>
-              </button>
+                isExpanded={isExpanded}
+              />
 
               {/* AI Search */}
-              <button
-                type="button"
+              <SidebarButton
+                icon={Sparkles}
+                label="AI Search"
+                active={pathname === '/dashboard/ai-search'}
                 onClick={() => handleNavClick('/dashboard/ai-search', 'AI Search')}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-all duration-150 cursor-pointer text-left active:scale-[0.98] ${
-                  pathname === '/dashboard/ai-search'
-                    ? 'bg-zinc-950 text-white font-medium shadow-2xs dark:bg-zinc-100 dark:text-zinc-950'
-                    : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/80 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-900/70 font-medium'
-                }`}
-              >
-                <div className="flex items-center gap-3 truncate">
-                  <Sparkles size={16} strokeWidth={1.8} className="shrink-0" />
-                  <span className="truncate">AI Search</span>
-                </div>
-                <span
-                  className={`text-[9px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded ${
-                    pathname === '/dashboard/ai-search'
-                      ? 'bg-zinc-800 text-zinc-200 dark:bg-zinc-200 dark:text-zinc-800'
-                      : 'bg-zinc-100 text-zinc-600 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700/60'
-                  }`}
-                >
-                  AI
-                </span>
-              </button>
+                isExpanded={isExpanded}
+                badge={
+                  <span
+                    className={`text-[9px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded ${
+                      pathname === '/dashboard/ai-search'
+                        ? 'bg-zinc-800 text-zinc-200 dark:bg-zinc-200 dark:text-zinc-800'
+                        : 'bg-zinc-100 text-zinc-600 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700/60'
+                    }`}
+                  >
+                    AI
+                  </span>
+                }
+              />
 
               {/* Inbox */}
-              <button
-                type="button"
+              <SidebarButton
+                icon={Inbox}
+                label="Inbox"
+                active={pathname === '/dashboard/inbox'}
                 onClick={() => handleNavClick('/dashboard/inbox', 'Inbox')}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-all duration-150 cursor-pointer text-left active:scale-[0.98] ${
-                  pathname === '/dashboard/inbox'
-                    ? 'bg-zinc-950 text-white font-medium shadow-2xs dark:bg-zinc-100 dark:text-zinc-950'
-                    : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/80 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-900/70 font-medium'
-                }`}
-              >
-                <div className="flex items-center gap-3 truncate">
-                  <Inbox size={16} strokeWidth={1.8} className="shrink-0" />
-                  <span className="truncate">Inbox</span>
-                </div>
-                <span
-                  className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                    pathname === '/dashboard/inbox'
-                      ? 'bg-zinc-800 text-zinc-100 dark:bg-zinc-200 dark:text-zinc-900'
-                      : 'bg-zinc-100 text-zinc-700 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700/60'
-                  }`}
-                >
-                  3
-                </span>
-              </button>
-
-              {/* Find Properties */}
-              <button
-                type="button"
-                onClick={() => handleNavClick('/dashboard/explore', 'Find Properties')}
-                className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs transition-all duration-150 cursor-pointer text-left active:scale-[0.98] ${
-                  pathname === '/dashboard/explore' || pathname === '/explore'
-                    ? 'bg-zinc-950 text-white font-medium shadow-2xs dark:bg-zinc-100 dark:text-zinc-950'
-                    : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/80 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-900/70 font-medium'
-                }`}
-              >
-                <Compass size={16} strokeWidth={1.8} className="shrink-0" />
-                <span className="truncate">Find Properties</span>
-              </button>
-
-              {/* My Shortlist */}
-              <button
-                type="button"
-                onClick={() => handleNavClick('/dashboard/shortlist', 'My Shortlist')}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-all duration-150 cursor-pointer text-left active:scale-[0.98] ${
-                  pathname === '/dashboard/shortlist' || pathname === '/shortlist'
-                    ? 'bg-zinc-950 text-white font-medium shadow-2xs dark:bg-zinc-100 dark:text-zinc-950'
-                    : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/80 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-900/70 font-medium'
-                }`}
-              >
-                <div className="flex items-center gap-3 truncate">
-                  <Heart size={16} strokeWidth={1.8} className="shrink-0" />
-                  <span className="truncate">My Shortlist</span>
-                </div>
-                {shortlistCount > 0 && (
+                isExpanded={isExpanded}
+                badge={
                   <span
                     className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                      pathname === '/dashboard/shortlist' || pathname === '/shortlist'
+                      pathname === '/dashboard/inbox'
                         ? 'bg-zinc-800 text-zinc-100 dark:bg-zinc-200 dark:text-zinc-900'
                         : 'bg-zinc-100 text-zinc-700 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700/60'
                     }`}
                   >
-                    {shortlistCount}
+                    3
                   </span>
-                )}
-              </button>
+                }
+              />
+
+              {/* Find Properties */}
+              <SidebarButton
+                icon={Compass}
+                label="Find Properties"
+                active={pathname === '/dashboard/explore' || pathname === '/explore'}
+                onClick={() => handleNavClick('/dashboard/explore', 'Find Properties')}
+                isExpanded={isExpanded}
+              />
+
+              {/* My Shortlist */}
+              <SidebarButton
+                icon={Heart}
+                label="My Shortlist"
+                active={pathname === '/dashboard/shortlist' || pathname === '/shortlist'}
+                onClick={() => handleNavClick('/dashboard/shortlist', 'My Shortlist')}
+                isExpanded={isExpanded}
+                badge={
+                  shortlistCount > 0 ? (
+                    <span
+                      className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                        pathname === '/dashboard/shortlist' || pathname === '/shortlist'
+                          ? 'bg-zinc-800 text-zinc-100 dark:bg-zinc-200 dark:text-zinc-900'
+                          : 'bg-zinc-100 text-zinc-700 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700/60'
+                      }`}
+                    >
+                      {shortlistCount}
+                    </span>
+                  ) : null
+                }
+              />
 
               {/* Compare Properties */}
-              <button
-                type="button"
+              <SidebarButton
+                icon={ArrowLeftRight}
+                label="Compare Properties"
+                active={pathname === '/dashboard/compare'}
                 onClick={() => handleNavClick('/dashboard/compare', 'Compare Properties')}
-                className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs transition-all duration-150 cursor-pointer text-left active:scale-[0.98] ${
-                  pathname === '/dashboard/compare'
-                    ? 'bg-zinc-950 text-white font-medium shadow-2xs dark:bg-zinc-100 dark:text-zinc-950'
-                    : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/80 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-900/70 font-medium'
-                }`}
-              >
-                <ArrowLeftRight size={16} strokeWidth={1.8} className="shrink-0" />
-                <span className="truncate">Compare Properties</span>
-              </button>
+                isExpanded={isExpanded}
+              />
             </>
           )}
 
@@ -242,130 +326,120 @@ export function DashboardSidebar({
           {isLister && (
             <>
               {/* Dashboard Overview */}
-              <button
-                type="button"
+              <SidebarButton
+                icon={LayoutDashboard}
+                label="Dashboard"
+                active={isItemActive('/dashboard')}
                 onClick={() => handleNavClick('/dashboard/landlord', 'Dashboard')}
-                className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs transition-all duration-150 cursor-pointer text-left active:scale-[0.98] ${
-                  isItemActive('/dashboard')
-                    ? 'bg-zinc-950 text-white font-medium shadow-2xs dark:bg-zinc-100 dark:text-zinc-950'
-                    : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/80 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-900/70 font-medium'
-                }`}
-              >
-                <LayoutDashboard size={16} strokeWidth={1.8} className="shrink-0" />
-                <span className="truncate">Dashboard</span>
-              </button>
+                isExpanded={isExpanded}
+              />
 
               {/* AI Search */}
-              <button
-                type="button"
+              <SidebarButton
+                icon={Sparkles}
+                label="AI Search"
+                active={pathname === '/dashboard/ai-search'}
                 onClick={() => handleNavClick('/dashboard/ai-search', 'AI Search')}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-all duration-150 cursor-pointer text-left active:scale-[0.98] ${
-                  pathname === '/dashboard/ai-search'
-                    ? 'bg-zinc-950 text-white font-medium shadow-2xs dark:bg-zinc-100 dark:text-zinc-950'
-                    : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/80 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-900/70 font-medium'
-                }`}
-              >
-                <div className="flex items-center gap-3 truncate">
-                  <Sparkles size={16} strokeWidth={1.8} className="shrink-0" />
-                  <span className="truncate">AI Search</span>
-                </div>
-                <span
-                  className={`text-[9px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded ${
-                    pathname === '/dashboard/ai-search'
-                      ? 'bg-zinc-800 text-zinc-200 dark:bg-zinc-200 dark:text-zinc-800'
-                      : 'bg-zinc-100 text-zinc-600 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700/60'
-                  }`}
-                >
-                  AI
-                </span>
-              </button>
+                isExpanded={isExpanded}
+                badge={
+                  <span
+                    className={`text-[9px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded ${
+                      pathname === '/dashboard/ai-search'
+                        ? 'bg-zinc-800 text-zinc-200 dark:bg-zinc-200 dark:text-zinc-800'
+                        : 'bg-zinc-100 text-zinc-600 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700/60'
+                    }`}
+                  >
+                    AI
+                  </span>
+                }
+              />
 
               {/* Inbox */}
-              <button
-                type="button"
+              <SidebarButton
+                icon={Inbox}
+                label="Inbox"
+                active={pathname === '/dashboard/inbox'}
                 onClick={() => handleNavClick('/dashboard/inbox', 'Inbox')}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-all duration-150 cursor-pointer text-left active:scale-[0.98] ${
-                  pathname === '/dashboard/inbox'
-                    ? 'bg-zinc-950 text-white font-medium shadow-2xs dark:bg-zinc-100 dark:text-zinc-950'
-                    : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/80 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-900/70 font-medium'
-                }`}
-              >
-                <div className="flex items-center gap-3 truncate">
-                  <Inbox size={16} strokeWidth={1.8} className="shrink-0" />
-                  <span className="truncate">Inbox</span>
-                </div>
-                <span
-                  className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                    pathname === '/dashboard/inbox'
-                      ? 'bg-zinc-800 text-zinc-100 dark:bg-zinc-200 dark:text-zinc-900'
-                      : 'bg-zinc-100 text-zinc-700 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700/60'
-                  }`}
-                >
-                  3
-                </span>
-              </button>
-
-              {/* My Properties */}
-              <button
-                type="button"
-                onClick={() => handleNavClick('/profile?tab=listings', 'My Properties')}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-all duration-150 cursor-pointer text-left active:scale-[0.98] ${
-                  pathname === '/profile' && typeof window !== 'undefined' && window.location.search.includes('listings')
-                    ? 'bg-zinc-950 text-white font-medium shadow-2xs dark:bg-zinc-100 dark:text-zinc-950'
-                    : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/80 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-900/70 font-medium'
-                }`}
-              >
-                <div className="flex items-center gap-3 truncate">
-                  <Building2 size={16} strokeWidth={1.8} className="shrink-0" />
-                  <span className="truncate">My Properties</span>
-                </div>
-                {myPropertiesCount > 0 && (
+                isExpanded={isExpanded}
+                badge={
                   <span
                     className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                      pathname === '/profile' && typeof window !== 'undefined' && window.location.search.includes('listings')
+                      pathname === '/dashboard/inbox'
                         ? 'bg-zinc-800 text-zinc-100 dark:bg-zinc-200 dark:text-zinc-900'
                         : 'bg-zinc-100 text-zinc-700 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700/60'
                     }`}
                   >
-                    {myPropertiesCount}
+                    3
                   </span>
-                )}
-              </button>
+                }
+              />
+
+              {/* My Properties */}
+              <SidebarButton
+                icon={Building2}
+                label="My Properties"
+                active={pathname === '/profile' && typeof window !== 'undefined' && window.location.search.includes('listings')}
+                onClick={() => handleNavClick('/profile?tab=listings', 'My Properties')}
+                isExpanded={isExpanded}
+                badge={
+                  myPropertiesCount > 0 ? (
+                    <span
+                      className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                        pathname === '/profile' && typeof window !== 'undefined' && window.location.search.includes('listings')
+                          ? 'bg-zinc-800 text-zinc-100 dark:bg-zinc-200 dark:text-zinc-900'
+                          : 'bg-zinc-100 text-zinc-700 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700/60'
+                      }`}
+                    >
+                      {myPropertiesCount}
+                    </span>
+                  ) : null
+                }
+              />
 
               {/* Add Property CTA */}
               <div className="pt-2">
-                <button
-                  type="button"
+                <SidebarButton
+                  icon={Plus}
+                  label="Add Property"
+                  variant="cta"
                   onClick={() => {
                     onCloseMobileDrawer?.();
                     openAddProperty();
                   }}
-                  className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold bg-zinc-950 hover:bg-zinc-850 text-white dark:bg-white dark:hover:bg-zinc-150 dark:text-zinc-950 transition-all duration-150 cursor-pointer shadow-xs active:scale-[0.98]"
-                >
-                  <Plus size={15} strokeWidth={2.2} className="shrink-0" />
-                  <span>Add Property</span>
-                </button>
+                  isExpanded={isExpanded}
+                />
               </div>
             </>
           )}
         </nav>
       </ScrollArea>
 
-      {/* Secondary Bottom Block: Settings & Support */}
+      {/* Secondary Bottom Block: Support & Settings */}
       <div className="shrink-0 pt-2 pb-2 border-t border-zinc-200/80 dark:border-zinc-800/80 space-y-1">
         {/* Support Dropdown */}
-        <Dropdown.Root>
+        <Dropdown.Root onOpenChange={(open) => setIsMenuOpen(open)}>
           <AriaButton
-            className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-all duration-150 cursor-pointer text-left text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/80 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-900/70 font-medium active:scale-[0.98] outline-hidden"
+            aria-label={!isExpanded ? 'Support' : undefined}
+            className={`w-full h-10 flex items-center rounded-xl text-xs transition-all duration-150 cursor-pointer text-left text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/80 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-900/70 font-medium active:scale-[0.98] outline-hidden ${
+              isExpanded ? 'px-2' : 'px-2 justify-center'
+            }`}
           >
-            <div className="flex items-center gap-3 truncate">
+            <div className="w-8 h-8 shrink-0 flex items-center justify-center">
               <HelpCircle size={16} strokeWidth={1.8} className="shrink-0" />
-              <span className="truncate">Support</span>
+            </div>
+            <div
+              className={`overflow-hidden transition-all duration-200 flex-1 flex items-center min-w-0 ${
+                isExpanded
+                  ? 'opacity-100 max-w-[170px] ml-2'
+                  : 'opacity-0 max-w-0 ml-0 pointer-events-none'
+              }`}
+            >
+              <span className="truncate whitespace-nowrap">Support</span>
             </div>
           </AriaButton>
           <Dropdown.Popover
-            placement="top start"
-            offset={8}
+            placement={isExpanded ? 'top start' : 'right bottom'}
+            offset={isExpanded ? 8 : 12}
             className="w-48 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl p-1 text-zinc-800 dark:text-zinc-200 z-50 animate-in fade-in zoom-in-95 duration-150"
           >
             <Dropdown.Menu className="py-1">
@@ -390,18 +464,13 @@ export function DashboardSidebar({
         </Dropdown.Root>
 
         {/* Settings */}
-        <button
-          type="button"
+        <SidebarButton
+          icon={Settings}
+          label="Settings"
+          active={pathname === '/profile'}
           onClick={() => handleNavClick('/profile?tab=security', 'Settings')}
-          className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs transition-all duration-150 cursor-pointer text-left active:scale-[0.98] ${
-            pathname === '/profile'
-              ? 'bg-zinc-950 text-white font-medium shadow-2xs dark:bg-zinc-100 dark:text-zinc-950'
-              : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/80 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-900/70 font-medium'
-          }`}
-        >
-          <Settings size={16} strokeWidth={1.8} className="shrink-0" />
-          <span className="truncate">Settings</span>
-        </button>
+          isExpanded={isExpanded}
+        />
       </div>
 
       {/* Bottom Block: Dropdown Account Card */}
@@ -415,6 +484,8 @@ export function DashboardSidebar({
           onToggleDarkMode={() => setTheme(isDark ? 'light' : 'dark')}
           onSignOut={logout}
           onCloseMobileDrawer={onCloseMobileDrawer}
+          isExpanded={isExpanded}
+          onOpenChange={(open) => setIsMenuOpen(open)}
         />
       </div>
     </aside>
