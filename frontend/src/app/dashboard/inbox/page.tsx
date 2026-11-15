@@ -1145,12 +1145,12 @@ export default function DashboardInboxPage() {
   }
 
   return (
-    <div className="h-full w-full flex bg-zinc-50 dark:bg-[#171513] text-zinc-900 dark:text-zinc-100 overflow-hidden select-none transition-colors duration-200">
+    <div className="h-full w-full flex bg-zinc-50 dark:bg-[#171513] text-zinc-900 dark:text-zinc-100 overflow-hidden transition-colors duration-200">
       {/* 1. Left Conversation List Pane */}
       <aside
         className={`${
           mobileThreadOpen ? 'hidden md:flex' : 'flex'
-        } w-full md:w-80 lg:w-96 flex-col border-r border-zinc-200 dark:border-zinc-800/80 bg-white/95 dark:bg-[#211E1B]/95 backdrop-blur-md shrink-0 h-full`}
+        } w-full md:w-80 lg:w-96 flex-col border-r border-zinc-200 dark:border-zinc-800/80 bg-white/95 dark:bg-[#211E1B]/95 backdrop-blur-md shrink-0 h-full min-h-0 overflow-hidden`}
       >
         {/* Pane Header */}
         <div className="p-4 border-b border-zinc-200 dark:border-zinc-800/80 space-y-3 shrink-0">
@@ -1207,7 +1207,7 @@ export default function DashboardInboxPage() {
         </div>
 
         {/* Conversation Items List (Clean full-width divided rows matching Untitled UI) */}
-        <ScrollArea className="flex-1">
+        <ScrollArea className="flex-1 min-h-0">
           <div className="divide-y divide-zinc-200/80 dark:divide-zinc-800/80">
             {filteredConversations.map((conv) => {
               const isSelected = conv.id === activeConversation?.id;
@@ -1283,7 +1283,7 @@ export default function DashboardInboxPage() {
         <section
           className={`${
             mobileThreadOpen ? 'flex' : 'hidden md:flex'
-          } flex-1 flex-col h-full min-w-0 bg-zinc-50 dark:bg-[#171513] relative`}
+          } flex-1 flex-col h-full min-w-0 min-h-0 overflow-hidden bg-zinc-50 dark:bg-[#171513] relative`}
         >
           {/* Active Conversation Top Bar */}
           <header className="h-16 border-b border-zinc-200 dark:border-zinc-800/80 px-4 sm:px-6 flex items-center justify-between bg-white/90 dark:bg-[#211E1B]/90 backdrop-blur-md shrink-0">
@@ -1352,8 +1352,8 @@ export default function DashboardInboxPage() {
           </header>
 
           {/* Active Message Stream */}
-          <ScrollArea className="flex-1 p-4 sm:p-6 lg:p-8">
-            <div className="max-w-3xl mx-auto space-y-6">
+          <ScrollArea className="flex-1 min-h-0">
+            <div className="max-w-3xl mx-auto space-y-6 p-4 sm:p-6 lg:p-8">
               {/* Zero-Brokerage Trust Banner */}
               <div className="p-3.5 rounded-2xl bg-zinc-100/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs flex items-center gap-2.5">
                 <ShieldCheck size={18} className="shrink-0 text-emerald-600 dark:text-emerald-400" />
@@ -1525,9 +1525,9 @@ export default function DashboardInboxPage() {
 
       {/* 3. Right Property & Contact Details Pane (Toggleable) */}
       {isDetailsOpen && activeConversation && (
-        <aside className="hidden xl:flex w-80 h-full border-l border-zinc-200 dark:border-zinc-800/80 bg-white/95 dark:bg-zinc-950/70 backdrop-blur-md flex-col shrink-0 animate-in slide-in-from-right duration-200 transition-colors">
-          <ScrollArea className="flex-1 p-5">
-            <div className="space-y-6">
+        <aside className="hidden xl:flex w-80 h-full min-h-0 overflow-hidden border-l border-zinc-200 dark:border-zinc-800/80 bg-white/95 dark:bg-zinc-950/70 backdrop-blur-md flex-col shrink-0 animate-in slide-in-from-right duration-200 transition-colors">
+          <ScrollArea className="flex-1 min-h-0">
+            <div className="space-y-6 p-5">
               {/* Linked Property Card */}
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-3">

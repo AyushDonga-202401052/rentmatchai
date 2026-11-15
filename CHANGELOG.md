@@ -5,6 +5,12 @@ All notable changes to RentMatch AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.15] - 2026-11-15
+
+### Fixed
+- Fixed unscrollable conversation list and active chat stream by adding `overflow-hidden` to `ScrollAreaPrimitive.Root` in `scroll-area.tsx`, enforcing `min-h-0 overflow-hidden` on parent flex containers, and moving scroll area padding to inner wrappers so `clientHeight < scrollHeight` and scrollbars trigger properly.
+- Removed global `select-none` from inbox layout to allow normal text selection and copying in message threads.
+
 ## [0.1.14] - 2026-11-15
 
 ### Added
