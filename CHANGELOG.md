@@ -5,6 +5,11 @@ All notable changes to RentMatch AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.13] - 2026-11-15
+
+### Added
+- Animated vertical active indicator bar in the Inbox conversation list using `motion/react` shared `layoutId="active-chat-indicator"` with spring physics (`stiffness: 380, damping: 32`), creating a fluid glide between conversations when selected.
+
 ## [0.1.12] - 2026-11-15
 
 ### Changed

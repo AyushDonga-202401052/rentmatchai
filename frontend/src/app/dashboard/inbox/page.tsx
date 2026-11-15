@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { motion } from 'motion/react';
 import {
   Inbox,
   Search,
@@ -564,10 +565,18 @@ export default function DashboardInboxPage() {
                   onClick={() => handleSelectConversation(conv)}
                   className={`flex items-center gap-3.5 px-4 py-3.5 transition-colors cursor-pointer select-none relative ${
                     isSelected
-                      ? 'bg-zinc-100/90 dark:bg-[#25211d] text-zinc-900 dark:text-white before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5 before:bg-[#E8510E] dark:before:bg-[#F06A32]'
+                      ? 'bg-zinc-100/90 dark:bg-[#25211d] text-zinc-900 dark:text-white'
                       : 'hover:bg-zinc-50/80 dark:hover:bg-[#201d1a]/80 text-zinc-700 dark:text-zinc-300'
                   }`}
                 >
+                  {/* Sliding Orange Active Indicator */}
+                  {isSelected && (
+                    <motion.div
+                      layoutId="active-chat-indicator"
+                      className="absolute left-0 top-0 bottom-0 w-0.5 bg-[#E8510E] dark:bg-[#F06A32] z-10"
+                      transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                    />
+                  )}
                   {/* Circular Avatar */}
                   <div className="relative shrink-0">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
