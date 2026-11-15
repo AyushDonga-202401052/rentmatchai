@@ -4,14 +4,11 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import {
   ChevronSelectorVertical,
-  HelpCircle,
   LogOut01,
   Moon01,
-  Settings01,
   User01,
 } from '@untitledui/icons';
-import type { Selection } from 'react-aria-components';
-import { Button as AriaButton, SubmenuTrigger } from 'react-aria-components';
+import { Button as AriaButton } from 'react-aria-components';
 
 import { Dropdown } from '@/src/components/base/dropdown/dropdown';
 import { cx } from '@/src/utils/cx';
@@ -100,13 +97,6 @@ export const DropdownAccountCardMD = ({
             View Profile
           </Dropdown.Item>
 
-          <Dropdown.Item
-            icon={Settings01}
-            onAction={() => handleNavigate('/profile?tab=security', 'Settings')}
-          >
-            Settings
-          </Dropdown.Item>
-
           <Dropdown.Section
             selectionMode="single"
             selectedKeys={new Set(isDarkMode ? ['dark'] : [])}
@@ -122,32 +112,6 @@ export const DropdownAccountCardMD = ({
               Dark Mode
             </Dropdown.Item>
           </Dropdown.Section>
-
-          <SubmenuTrigger>
-            <Dropdown.Item icon={HelpCircle}>
-              Support
-            </Dropdown.Item>
-
-            <Dropdown.Popover
-              placement="right bottom"
-              offset={4}
-              className="w-48 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl p-1 text-zinc-800 dark:text-zinc-200 z-50"
-            >
-              <Dropdown.Menu className="py-1">
-                <Dropdown.Item
-                  onAction={() => window.open('mailto:support@rentmatch.ai', '_blank')}
-                >
-                  Help Center
-                </Dropdown.Item>
-
-                <Dropdown.Item
-                  onAction={() => window.open('mailto:support@rentmatch.ai', '_blank')}
-                >
-                  Contact Support
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown.Popover>
-          </SubmenuTrigger>
 
           <Dropdown.Separator className="my-1 bg-zinc-200/80 dark:bg-zinc-800/80" />
 

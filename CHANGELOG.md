@@ -5,6 +5,12 @@ All notable changes to RentMatch AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.6] - 2026-11-15
+
+### Changed
+- Moved Settings and Support navigation directly into the sidebar above the bottom profile account card in `DashboardSidebar.tsx`.
+- Streamlined `DropdownAccountCard.tsx` menu to focus cleanly on Profile, Dark Mode, and Sign Out.
+
 ## [0.1.5] - 2026-11-15
 
 ### Fixed

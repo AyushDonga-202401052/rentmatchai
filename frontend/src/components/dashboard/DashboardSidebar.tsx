@@ -13,13 +13,17 @@ import {
   Building2,
   Plus,
   X,
+  Settings,
+  HelpCircle,
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import { Button as AriaButton } from 'react-aria-components';
 import { useAuth } from '@/src/context/AuthContext';
 import { useProperty } from '@/src/context/PropertyContext';
 import BrandLogo from '@/src/components/layout/BrandLogo';
 import { usePageCurtains } from '@/src/components/ui/page-curtains';
 import { ScrollArea } from '@/src/components/ui/scroll-area';
+import { Dropdown } from '@/src/components/base/dropdown/dropdown';
 import { DropdownAccountCardMD } from './DropdownAccountCard';
 
 interface DashboardSidebarProps {
@@ -347,8 +351,61 @@ export function DashboardSidebar({
         </nav>
       </ScrollArea>
 
+      {/* Secondary Bottom Block: Settings & Support */}
+      <div className="shrink-0 pt-2 pb-2 border-t border-zinc-200/80 dark:border-zinc-800/80 space-y-1">
+        {/* Support Dropdown */}
+        <Dropdown.Root>
+          <AriaButton
+            className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-all duration-150 cursor-pointer text-left text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/80 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-900/70 font-medium active:scale-[0.98] outline-hidden"
+          >
+            <div className="flex items-center gap-3 truncate">
+              <HelpCircle size={16} strokeWidth={1.8} className="shrink-0" />
+              <span className="truncate">Support</span>
+            </div>
+          </AriaButton>
+          <Dropdown.Popover
+            placement="top start"
+            offset={8}
+            className="w-48 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl p-1 text-zinc-800 dark:text-zinc-200 z-50 animate-in fade-in zoom-in-95 duration-150"
+          >
+            <Dropdown.Menu className="py-1">
+              <Dropdown.Item
+                onAction={() => {
+                  onCloseMobileDrawer?.();
+                  window.open('mailto:support@rentmatch.ai?subject=Help%20Center', '_blank');
+                }}
+              >
+                Help Center
+              </Dropdown.Item>
+              <Dropdown.Item
+                onAction={() => {
+                  onCloseMobileDrawer?.();
+                  window.open('mailto:support@rentmatch.ai?subject=Support%20Request', '_blank');
+                }}
+              >
+                Contact Support
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown.Popover>
+        </Dropdown.Root>
+
+        {/* Settings */}
+        <button
+          type="button"
+          onClick={() => handleNavClick('/profile?tab=security', 'Settings')}
+          className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs transition-all duration-150 cursor-pointer text-left active:scale-[0.98] ${
+            pathname === '/profile'
+              ? 'bg-zinc-950 text-white font-medium shadow-2xs dark:bg-zinc-100 dark:text-zinc-950'
+              : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/80 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-900/70 font-medium'
+          }`}
+        >
+          <Settings size={16} strokeWidth={1.8} className="shrink-0" />
+          <span className="truncate">Settings</span>
+        </button>
+      </div>
+
       {/* Bottom Block: Dropdown Account Card */}
-      <div className="shrink-0 pt-3 border-t border-zinc-200 dark:border-zinc-800/80">
+      <div className="shrink-0 pt-1">
         <DropdownAccountCardMD
           name={displayName}
           email={displayEmail}
