@@ -5,6 +5,12 @@ All notable changes to RentMatch AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.14] - 2026-11-15
+
+### Added
+- Expanded Inbox conversation roster with 10 additional realistic users (total 16 conversations) with Unsplash photo avatars, `@handles`, Gandhinagar property listings, and category tags.
+- Enriched message histories across multiple chats (Olivia, Phoenix, Demi, Natali, Drew, Orlando, Candice, etc.) with multi-turn discussions on amenities, lease clauses, walk-throughs, and utility provisions.
+
 ## [0.1.13] - 2026-11-15
 
 ### Added
