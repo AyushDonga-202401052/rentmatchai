@@ -17,13 +17,11 @@ import {
   HelpCircle,
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { Button as AriaButton } from 'react-aria-components';
 import { useAuth } from '@/src/context/AuthContext';
 import { useProperty } from '@/src/context/PropertyContext';
 import BrandLogo from '@/src/components/layout/BrandLogo';
 import { usePageCurtains } from '@/src/components/ui/page-curtains';
 import { ScrollArea } from '@/src/components/ui/scroll-area';
-import { Dropdown } from '@/src/components/base/dropdown/dropdown';
 import { DropdownAccountCardMD } from './DropdownAccountCard';
 
 interface DashboardSidebarProps {
@@ -35,6 +33,7 @@ interface SidebarButtonProps {
   icon: React.ComponentType<{ size?: number; strokeWidth?: number; className?: string }>;
   label: string;
   badge?: React.ReactNode;
+  collapsedBadge?: React.ReactNode;
   active?: boolean;
   onClick: () => void;
   isExpanded: boolean;
@@ -45,6 +44,7 @@ function SidebarButton({
   icon: Icon,
   label,
   badge,
+  collapsedBadge,
   active = false,
   onClick,
   isExpanded,
@@ -56,9 +56,7 @@ function SidebarButton({
         type="button"
         onClick={onClick}
         title={!isExpanded ? label : undefined}
-        className={`w-full h-10 flex items-center rounded-xl text-xs font-semibold bg-zinc-950 hover:bg-zinc-850 text-white dark:bg-white dark:hover:bg-zinc-150 dark:text-zinc-950 transition-all duration-150 cursor-pointer shadow-xs active:scale-[0.98] ${
-          isExpanded ? 'px-2' : 'px-2 justify-center'
-        }`}
+        className="w-full h-10 flex items-center px-2 rounded-xl text-xs font-semibold bg-zinc-950 hover:bg-zinc-850 text-white dark:bg-white dark:hover:bg-zinc-150 dark:text-zinc-950 transition-colors duration-150 cursor-pointer shadow-xs active:scale-[0.98] overflow-hidden"
       >
         <div className="w-8 h-8 shrink-0 flex items-center justify-center">
           <Plus size={16} strokeWidth={2.2} className="shrink-0" />
@@ -81,16 +79,19 @@ function SidebarButton({
       type="button"
       onClick={onClick}
       title={!isExpanded ? label : undefined}
-      className={`w-full h-10 flex items-center rounded-xl text-xs transition-all duration-150 cursor-pointer active:scale-[0.98] ${
-        isExpanded ? 'px-2' : 'px-2 justify-center'
-      } ${
+      className={`w-full h-10 flex items-center px-2 rounded-xl text-xs transition-colors duration-150 cursor-pointer active:scale-[0.98] overflow-hidden ${
         active
           ? 'bg-zinc-950 text-white font-medium shadow-2xs dark:bg-zinc-100 dark:text-zinc-950'
           : 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/80 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-900/70 font-medium'
       }`}
     >
-      <div className="w-8 h-8 shrink-0 flex items-center justify-center">
+      <div className="w-8 h-8 shrink-0 flex items-center justify-center relative">
         <Icon size={16} strokeWidth={1.8} className="shrink-0" />
+        {!isExpanded && collapsedBadge && (
+          <span className="absolute -top-0.5 -right-0.5 min-w-3.5 h-3.5 px-0.5 rounded-full bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 text-[8px] font-bold flex items-center justify-center shadow-xs pointer-events-none ring-2 ring-white dark:ring-[#211E1B]">
+            {collapsedBadge}
+          </span>
+        )}
       </div>
 
       <div
@@ -117,7 +118,7 @@ export function DashboardSidebar({
   const { navigateWithCurtains } = usePageCurtains();
   const { resolvedTheme, theme, setTheme } = useTheme();
 
-  // Permanent collapsible state: expands on hover or when an action popover is open
+  // Permanent collapsible state: expands smoothly on hover or when profile dropdown is open
   const [isHovered, setIsHovered] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const leaveTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -136,7 +137,7 @@ export function DashboardSidebar({
     }
     leaveTimerRef.current = setTimeout(() => {
       setIsHovered(false);
-    }, 150);
+    }, 120);
   };
 
   useEffect(() => {
@@ -192,17 +193,17 @@ export function DashboardSidebar({
             }
           : undefined
       }
-      className={`h-full flex flex-col justify-between bg-white dark:bg-[#211E1B] text-zinc-700 dark:text-zinc-300 border-r border-zinc-200 dark:border-zinc-800/80 select-none transition-[width,box-shadow,padding] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+      className={`h-full flex flex-col justify-between bg-white dark:bg-[#211E1B] text-zinc-700 dark:text-zinc-300 border-r border-zinc-200 dark:border-zinc-800/80 select-none transition-[width,box-shadow] duration-250 ease-out ${
         isMobileDrawer
           ? 'w-full p-4'
           : isExpanded
-            ? 'fixed top-0 left-0 w-64 p-3 shadow-2xl shadow-black/10 dark:shadow-black/60 z-40'
-            : 'fixed top-0 left-0 w-[68px] px-2.5 py-3 shadow-none z-30'
+            ? 'fixed top-0 left-0 w-64 p-2.5 shadow-2xl shadow-black/10 dark:shadow-black/60 z-40'
+            : 'fixed top-0 left-0 w-[68px] p-2.5 shadow-none z-30'
       }`}
     >
       {/* Top Block: Logo and Close (mobile) */}
       <div className="shrink-0">
-        <div className={`flex items-center justify-between pb-2 ${isExpanded ? 'px-1 pt-1' : 'justify-center pt-0.5'}`}>
+        <div className="flex items-center justify-between px-1 pb-2 pt-0.5">
           <Link
             href="/"
             onClick={() => onCloseMobileDrawer?.()}
@@ -267,6 +268,7 @@ export function DashboardSidebar({
                 active={pathname === '/dashboard/inbox'}
                 onClick={() => handleNavClick('/dashboard/inbox', 'Inbox')}
                 isExpanded={isExpanded}
+                collapsedBadge="3"
                 badge={
                   <span
                     className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
@@ -296,6 +298,7 @@ export function DashboardSidebar({
                 active={pathname === '/dashboard/shortlist' || pathname === '/shortlist'}
                 onClick={() => handleNavClick('/dashboard/shortlist', 'My Shortlist')}
                 isExpanded={isExpanded}
+                collapsedBadge={shortlistCount > 0 ? shortlistCount : undefined}
                 badge={
                   shortlistCount > 0 ? (
                     <span
@@ -361,6 +364,7 @@ export function DashboardSidebar({
                 active={pathname === '/dashboard/inbox'}
                 onClick={() => handleNavClick('/dashboard/inbox', 'Inbox')}
                 isExpanded={isExpanded}
+                collapsedBadge="3"
                 badge={
                   <span
                     className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
@@ -381,6 +385,7 @@ export function DashboardSidebar({
                 active={pathname === '/profile' && typeof window !== 'undefined' && window.location.search.includes('listings')}
                 onClick={() => handleNavClick('/profile?tab=listings', 'My Properties')}
                 isExpanded={isExpanded}
+                collapsedBadge={myPropertiesCount > 0 ? myPropertiesCount : undefined}
                 badge={
                   myPropertiesCount > 0 ? (
                     <span
@@ -416,52 +421,16 @@ export function DashboardSidebar({
 
       {/* Secondary Bottom Block: Support & Settings */}
       <div className="shrink-0 pt-2 pb-2 border-t border-zinc-200/80 dark:border-zinc-800/80 space-y-1">
-        {/* Support Dropdown */}
-        <Dropdown.Root onOpenChange={(open) => setIsMenuOpen(open)}>
-          <AriaButton
-            aria-label={!isExpanded ? 'Support' : undefined}
-            className={`w-full h-10 flex items-center rounded-xl text-xs transition-all duration-150 cursor-pointer text-left text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/80 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-900/70 font-medium active:scale-[0.98] outline-hidden ${
-              isExpanded ? 'px-2' : 'px-2 justify-center'
-            }`}
-          >
-            <div className="w-8 h-8 shrink-0 flex items-center justify-center">
-              <HelpCircle size={16} strokeWidth={1.8} className="shrink-0" />
-            </div>
-            <div
-              className={`overflow-hidden transition-all duration-200 flex-1 flex items-center min-w-0 ${
-                isExpanded
-                  ? 'opacity-100 max-w-[170px] ml-2'
-                  : 'opacity-0 max-w-0 ml-0 pointer-events-none'
-              }`}
-            >
-              <span className="truncate whitespace-nowrap">Support</span>
-            </div>
-          </AriaButton>
-          <Dropdown.Popover
-            placement={isExpanded ? 'top start' : 'right bottom'}
-            offset={isExpanded ? 8 : 12}
-            className="w-48 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl p-1 text-zinc-800 dark:text-zinc-200 z-50 animate-in fade-in zoom-in-95 duration-150"
-          >
-            <Dropdown.Menu className="py-1">
-              <Dropdown.Item
-                onAction={() => {
-                  onCloseMobileDrawer?.();
-                  window.open('mailto:support@rentmatch.ai?subject=Help%20Center', '_blank');
-                }}
-              >
-                Help Center
-              </Dropdown.Item>
-              <Dropdown.Item
-                onAction={() => {
-                  onCloseMobileDrawer?.();
-                  window.open('mailto:support@rentmatch.ai?subject=Support%20Request', '_blank');
-                }}
-              >
-                Contact Support
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown.Popover>
-        </Dropdown.Root>
+        {/* Support: Direct single function mailto me@niranjan.lol */}
+        <SidebarButton
+          icon={HelpCircle}
+          label="Support"
+          onClick={() => {
+            onCloseMobileDrawer?.();
+            window.location.href = 'mailto:me@niranjan.lol';
+          }}
+          isExpanded={isExpanded}
+        />
 
         {/* Settings */}
         <SidebarButton

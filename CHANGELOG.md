@@ -5,6 +5,17 @@ All notable changes to RentMatch AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.8] - 2026-11-15
+
+### Fixed
+- Fixed inbox page UI scrolling up out of view when selecting long chat threads (e.g. Dr. Ramesh Patel) by replacing unconstrained `scrollIntoView()` with container-scoped `viewport.scrollTo()`, and locking `DashboardLayout` with `h-[100dvh] overflow-hidden`.
+- Removed outline and focus rings from text boxes, textareas, and search inputs in both Inbox and AI Search pages.
+- Fixed sidebar transition glitches by unifying button padding, removing flex alignment jumping, and applying fixed `duration-250 ease-out` transition.
+
+### Changed
+- Displayed unread inbox number (and shortlist count) as a neat badge/subscript attached to the icon when sidebar is collapsed.
+- Configured Support button to directly trigger email to `me@niranjan.lol` with a single click.
+
 ## [0.1.7] - 2026-11-15
 
 ### Added

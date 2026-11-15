@@ -302,8 +302,13 @@ export default function DashboardInboxPage() {
   }, []);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [activeConversation?.messages]);
+    if (messagesEndRef.current) {
+      const viewport = messagesEndRef.current.closest('[data-slot="scroll-area-viewport"]') as HTMLElement | null;
+      if (viewport) {
+        viewport.scrollTo({ top: viewport.scrollHeight, behavior: 'smooth' });
+      }
+    }
+  }, [activeConversation?.id, activeConversation?.messages]);
 
   const handleSelectConversation = (conv: ConversationItem) => {
     setActiveConversation(conv);
@@ -404,7 +409,7 @@ export default function DashboardInboxPage() {
               placeholder="Search conversations, listings..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl pl-8 pr-8 py-1.5 text-base sm:text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-hidden focus:border-zinc-400 dark:focus:border-zinc-600 transition-colors"
+              className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl pl-8 pr-8 py-1.5 text-base sm:text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 outline-none focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:outline-none focus:border-zinc-300 dark:focus:border-zinc-700 transition-colors"
             />
             {searchQuery && (
               <button
@@ -689,13 +694,13 @@ export default function DashboardInboxPage() {
               </ScrollArea>
 
               {/* Message Textarea */}
-              <InputGroup className="bg-white dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 focus-within:border-zinc-400 dark:focus-within:border-zinc-600 focus-within:ring-1 focus-within:ring-zinc-400 dark:focus-within:ring-zinc-600 rounded-2xl p-2 transition-all shadow-lg">
+              <InputGroup className="bg-white dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-2 transition-all shadow-lg outline-none focus:outline-none focus:ring-0 focus-within:ring-0 focus-within:border-zinc-300 dark:focus-within:border-zinc-700 focus-visible:ring-0 focus-visible:outline-none has-[[data-slot=input-group-control]:focus-visible]:ring-0 has-[[data-slot=input-group-control]:focus-visible]:border-zinc-300 dark:has-[[data-slot=input-group-control]:focus-visible]:border-zinc-700">
                 <InputGroupTextarea
                   placeholder={`Type a message to ${activeConversation.participantName}...`}
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  className="text-base sm:text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 min-h-12 max-h-36 py-1 px-2 resize-none"
+                  className="text-base sm:text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 min-h-12 max-h-36 py-1 px-2 resize-none outline-none focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:outline-none ring-0"
                 />
 
                 <InputGroupAddon

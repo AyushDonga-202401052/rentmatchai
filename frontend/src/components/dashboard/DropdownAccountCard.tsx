@@ -60,8 +60,7 @@ export const DropdownAccountCardMD = ({
         aria-label={!isExpanded ? name : undefined}
         className={({ isPressed, isFocusVisible }) =>
           cx(
-            'relative w-full cursor-pointer rounded-xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200/90 dark:bg-zinc-900/60 dark:hover:bg-zinc-800/70 dark:border-zinc-800/80 transition-all outline-offset-2 outline-focus-ring flex items-center',
-            isExpanded ? 'p-2' : 'p-1.5 justify-center',
+            'relative w-full h-10 cursor-pointer rounded-xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200/90 dark:bg-zinc-900/60 dark:hover:bg-zinc-800/70 dark:border-zinc-800/80 transition-colors duration-150 outline-offset-2 outline-focus-ring flex items-center px-2 overflow-hidden',
             (isPressed || isFocusVisible) && 'outline-2'
           )
         }
@@ -79,23 +78,21 @@ export const DropdownAccountCardMD = ({
         <div
           className={`overflow-hidden transition-all duration-200 flex-1 flex items-center justify-between min-w-0 ${
             isExpanded
-              ? 'opacity-100 max-w-[160px] ml-2.5 mr-6'
+              ? 'opacity-100 max-w-[150px] ml-2'
               : 'opacity-0 max-w-0 ml-0 pointer-events-none'
           }`}
         >
-          <div className="min-w-0 flex-1 leading-tight">
+          <div className="min-w-0 flex-1 leading-tight whitespace-nowrap">
             <div className="truncate text-xs font-semibold text-zinc-900 dark:text-zinc-100">{name}</div>
             <div className="truncate text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">
               {role === 'tenant' ? 'Tenant' : 'Landlord'}
             </div>
           </div>
-        </div>
 
-        {isExpanded && (
-          <div className="absolute top-2.5 right-2 flex size-7 items-center justify-center rounded-md pointer-events-none">
-            <ChevronSelectorVertical className="size-4 shrink-0 stroke-[2.25px] text-zinc-400 dark:text-zinc-500" />
+          <div className="shrink-0 size-4 flex items-center justify-center text-zinc-400 dark:text-zinc-500 ml-1">
+            <ChevronSelectorVertical className="size-3.5 stroke-[2.25px]" />
           </div>
-        )}
+        </div>
       </AriaButton>
 
       <Dropdown.Popover
@@ -121,6 +118,22 @@ export const DropdownAccountCardMD = ({
           >
             View Profile
           </Dropdown.Item>
+
+          <Dropdown.Section
+            selectionMode="single"
+            selectedKeys={new Set(isDarkMode ? ['dark'] : [])}
+            onSelectionChange={() => {
+              onToggleDarkMode();
+            }}
+          >
+            <Dropdown.Item
+              id="dark"
+              icon={Moon01}
+              selectionIndicator="toggle"
+            >
+              Dark Mode
+            </Dropdown.Item>
+          </Dropdown.Section>
 
           <Dropdown.Separator className="my-1 bg-zinc-200/80 dark:bg-zinc-800/80" />
 
