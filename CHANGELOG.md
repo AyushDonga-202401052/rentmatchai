@@ -5,6 +5,14 @@ All notable changes to RentMatch AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.12] - 2026-11-15
+
+### Changed
+- Redesigned the Inbox conversation list to match the modern Untitled UI contact list aesthetic with edge-to-edge subtle dividers, circular photographic portraits, bold participant names, and `@handles`.
+- Replaced sample conversations with the full roster from the design spec (Olivia Rhye, Phoenix Baker, Demi Wilkinson, Natali Craig, Drew Cano, Orlando Diggs).
+- Updated active chat header, message avatars, and contact information panels to use high-resolution portrait avatars and handles.
+- Centered the profile avatar in `DropdownAccountCard.tsx` along the sidebar's $X = 34\text{px}$ icon axis and removed the status indicator bubble.
+
 ## [0.1.11] - 2026-11-15
 
 ### Fixed

@@ -65,19 +65,15 @@ export function InboxSkeleton() {
         </div>
 
         <div className="p-2 space-y-2 flex-1 overflow-hidden">
-          {Array.from({ length: 4 }).map((_, i) => (
+          {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="p-3 rounded-2xl border border-zinc-100 dark:border-zinc-800/60 bg-zinc-50/60 dark:bg-zinc-900/30 flex items-start gap-3"
+              className="p-3.5 border-b border-zinc-100 dark:border-zinc-800/60 flex items-center gap-3.5"
             >
-              <Skeleton className="size-10 rounded-xl bg-zinc-200/70 dark:bg-zinc-800/70 shrink-0" />
+              <Skeleton className="size-10 rounded-full bg-zinc-200/70 dark:bg-zinc-800/70 shrink-0" />
               <div className="flex-1 space-y-1.5 min-w-0">
-                <div className="flex items-center justify-between">
-                  <Skeleton className="h-3.5 w-24 rounded bg-zinc-200/80 dark:bg-zinc-800/80" />
-                  <Skeleton className="h-3 w-10 rounded bg-zinc-200/60 dark:bg-zinc-800/60" />
-                </div>
-                <Skeleton className="h-3 w-32 rounded bg-zinc-200/60 dark:bg-zinc-800/60" />
-                <Skeleton className="h-3 w-4/5 rounded bg-zinc-200/50 dark:bg-zinc-800/50" />
+                <Skeleton className="h-3.5 w-28 rounded bg-zinc-200/80 dark:bg-zinc-800/80" />
+                <Skeleton className="h-3 w-20 rounded bg-zinc-200/60 dark:bg-zinc-800/60" />
               </div>
             </div>
           ))}
@@ -121,15 +117,17 @@ interface ChatMessageItem {
     propertyTitle: string;
     date: string;
     time: string;
-    status: 'Confirmed' | 'Pending';
+    status: string;
   };
 }
 
 interface ConversationItem {
   id: string;
   participantName: string;
+  participantHandle: string;
   participantRole: string;
   participantAvatar: string;
+  participantAvatarUrl: string;
   isOnline: boolean;
   propertyId: string;
   propertyTitle: string;
@@ -147,9 +145,11 @@ interface ConversationItem {
 const INITIAL_CONVERSATIONS: ConversationItem[] = [
   {
     id: 'conv-1',
-    participantName: 'Dr. Ramesh Patel',
+    participantName: 'Olivia Rhye',
+    participantHandle: '@olivia',
     participantRole: 'Landlord',
-    participantAvatar: 'RP',
+    participantAvatar: 'OR',
+    participantAvatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
     isOnline: true,
     propertyId: 'prop-1',
     propertyTitle: '3 BHK High-Floor Flat, Kudasan',
@@ -174,13 +174,13 @@ const INITIAL_CONVERSATIONS: ConversationItem[] = [
         sender: 'user',
         senderName: 'You',
         timestamp: 'Yesterday, 10:20 AM',
-        content: 'Hello Dr. Patel, I saw your 3 BHK listing in Kudasan. Is covered parking included in the rent?',
+        content: 'Hello Olivia, I saw your 3 BHK listing in Kudasan. Is covered parking included in the rent?',
       },
       {
         id: 'm-3',
         sender: 'participant',
-        senderName: 'Dr. Ramesh Patel',
-        avatarText: 'RP',
+        senderName: 'Olivia Rhye',
+        avatarText: 'OR',
         timestamp: 'Yesterday, 11:05 AM',
         content: 'Hello! Yes, one covered basement slot is designated for this flat. Maintenance is ₹2,000/month.',
       },
@@ -194,8 +194,8 @@ const INITIAL_CONVERSATIONS: ConversationItem[] = [
       {
         id: 'm-5',
         sender: 'participant',
-        senderName: 'Dr. Ramesh Patel',
-        avatarText: 'RP',
+        senderName: 'Olivia Rhye',
+        avatarText: 'OR',
         timestamp: '12m ago',
         content: 'Sure, you are welcome to visit tomorrow between 4 PM and 6 PM.',
         tourCard: {
@@ -209,9 +209,11 @@ const INITIAL_CONVERSATIONS: ConversationItem[] = [
   },
   {
     id: 'conv-2',
-    participantName: 'Sunita Sharma',
+    participantName: 'Phoenix Baker',
+    participantHandle: '@phoenix',
     participantRole: 'Landlord',
-    participantAvatar: 'SS',
+    participantAvatar: 'PB',
+    participantAvatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80',
     isOnline: false,
     propertyId: 'prop-2',
     propertyTitle: '2 BHK Fully Furnished, Infocity',
@@ -229,13 +231,13 @@ const INITIAL_CONVERSATIONS: ConversationItem[] = [
         sender: 'user',
         senderName: 'You',
         timestamp: '2h ago',
-        content: 'Hi Sunita, does the flat have high speed Wi-Fi infrastructure ready?',
+        content: 'Hi Phoenix, does the flat have high speed Wi-Fi infrastructure ready?',
       },
       {
         id: 'm-202',
         sender: 'participant',
-        senderName: 'Sunita Sharma',
-        avatarText: 'SS',
+        senderName: 'Phoenix Baker',
+        avatarText: 'PB',
         timestamp: '2h ago',
         content: 'Maintenance includes covered car parking and water charges.',
       },
@@ -243,9 +245,11 @@ const INITIAL_CONVERSATIONS: ConversationItem[] = [
   },
   {
     id: 'conv-3',
-    participantName: 'Amit Shah',
+    participantName: 'Demi Wilkinson',
+    participantHandle: '@demi',
     participantRole: 'Landlord',
-    participantAvatar: 'AS',
+    participantAvatar: 'DW',
+    participantAvatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80',
     isOnline: true,
     propertyId: 'prop-3',
     propertyTitle: '1 BHK Cozy Studio, Raysan',
@@ -263,15 +267,123 @@ const INITIAL_CONVERSATIONS: ConversationItem[] = [
         sender: 'user',
         senderName: 'You',
         timestamp: 'Yesterday',
-        content: 'Hi Amit, what are the security deposit terms?',
+        content: 'Hi Demi, what are the security deposit terms?',
       },
       {
         id: 'm-302',
         sender: 'participant',
-        senderName: 'Amit Shah',
-        avatarText: 'AS',
+        senderName: 'Demi Wilkinson',
+        avatarText: 'DW',
         timestamp: 'Yesterday',
         content: 'The security deposit is 2 months rent, fully refundable on vacating.',
+      },
+    ],
+  },
+  {
+    id: 'conv-4',
+    participantName: 'Natali Craig',
+    participantHandle: '@natali',
+    participantRole: 'Landlord',
+    participantAvatar: 'NC',
+    participantAvatarUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&q=80',
+    isOnline: true,
+    propertyId: 'prop-4',
+    propertyTitle: '3 BHK Garden Villa, Urjanagar',
+    propertyLocation: 'Near TCS Campus, Urjanagar, Gandhinagar',
+    propertyRent: '₹35,000/mo',
+    propertyImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&q=80',
+    propertyBeds: '3 BHK',
+    lastMessage: 'Yes, the private garden and patio are exclusively for this unit.',
+    lastTimestamp: '3d ago',
+    unreadCount: 0,
+    category: 'Tours',
+    messages: [
+      {
+        id: 'm-401',
+        sender: 'user',
+        senderName: 'You',
+        timestamp: '3d ago',
+        content: 'Hi Natali, is the garden private to this villa or shared with other units?',
+      },
+      {
+        id: 'm-402',
+        sender: 'participant',
+        senderName: 'Natali Craig',
+        avatarText: 'NC',
+        timestamp: '3d ago',
+        content: 'Yes, the private garden and patio are exclusively for this unit.',
+      },
+    ],
+  },
+  {
+    id: 'conv-5',
+    participantName: 'Drew Cano',
+    participantHandle: '@drew',
+    participantRole: 'Landlord',
+    participantAvatar: 'DC',
+    participantAvatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80',
+    isOnline: false,
+    propertyId: 'prop-5',
+    propertyTitle: '2 BHK Modern Apartment, Sargasan',
+    propertyLocation: 'Near CH-Road, Sargasan, Gandhinagar',
+    propertyRent: '₹19,000/mo',
+    propertyImage: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&q=80',
+    propertyBeds: '2 BHK',
+    lastMessage: 'Standard lease is 11 months with a 1-month mutual notice period.',
+    lastTimestamp: '5d ago',
+    unreadCount: 0,
+    category: 'Enquiries',
+    messages: [
+      {
+        id: 'm-501',
+        sender: 'user',
+        senderName: 'You',
+        timestamp: '5d ago',
+        content: 'Hi Drew, what is the minimum lease lock-in period?',
+      },
+      {
+        id: 'm-502',
+        sender: 'participant',
+        senderName: 'Drew Cano',
+        avatarText: 'DC',
+        timestamp: '5d ago',
+        content: 'Standard lease is 11 months with a 1-month mutual notice period.',
+      },
+    ],
+  },
+  {
+    id: 'conv-6',
+    participantName: 'Orlando Diggs',
+    participantHandle: '@orlando',
+    participantRole: 'Landlord',
+    participantAvatar: 'OD',
+    participantAvatarUrl: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&q=80',
+    isOnline: true,
+    propertyId: 'prop-6',
+    propertyTitle: '4 BHK Luxury Penthouse, GIFT City',
+    propertyLocation: 'Tower 2, GIFT City, Gandhinagar',
+    propertyRent: '₹60,000/mo',
+    propertyImage: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&q=80',
+    propertyBeds: '4 BHK',
+    lastMessage: 'The penthouse has private elevator access and 3 dedicated parking bays.',
+    lastTimestamp: '1w ago',
+    unreadCount: 0,
+    category: 'Tours',
+    messages: [
+      {
+        id: 'm-601',
+        sender: 'user',
+        senderName: 'You',
+        timestamp: '1w ago',
+        content: 'Hi Orlando, does the penthouse include private elevator access?',
+      },
+      {
+        id: 'm-602',
+        sender: 'participant',
+        senderName: 'Orlando Diggs',
+        avatarText: 'OD',
+        timestamp: '1w ago',
+        content: 'The penthouse has private elevator access and 3 dedicated parking bays.',
       },
     ],
   },
@@ -294,8 +406,7 @@ export default function DashboardInboxPage() {
   const [isDetailsOpen, setIsDetailsOpen] = useState(true);
   const [mobileThreadOpen, setMobileThreadOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -367,6 +478,7 @@ export default function DashboardInboxPage() {
         const q = searchQuery.toLowerCase();
         return (
           c.participantName.toLowerCase().includes(q) ||
+          c.participantHandle.toLowerCase().includes(q) ||
           c.propertyTitle.toLowerCase().includes(q) ||
           c.lastMessage.toLowerCase().includes(q)
         );
@@ -397,7 +509,7 @@ export default function DashboardInboxPage() {
               </p>
             </div>
             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700/60">
-              3 Active
+              {conversations.length} Active
             </span>
           </div>
 
@@ -441,64 +553,56 @@ export default function DashboardInboxPage() {
           </div>
         </div>
 
-        {/* Conversation Items List */}
-        <ScrollArea className="flex-1 p-2">
-          <div className="space-y-1 pr-1">
+        {/* Conversation Items List (Clean full-width divided rows matching Untitled UI) */}
+        <ScrollArea className="flex-1">
+          <div className="divide-y divide-zinc-200/80 dark:divide-zinc-800/80">
             {filteredConversations.map((conv) => {
               const isSelected = conv.id === activeConversation?.id;
               return (
                 <div
                   key={conv.id}
                   onClick={() => handleSelectConversation(conv)}
-                  className={`p-3 rounded-2xl transition-all cursor-pointer border ${
+                  className={`flex items-center gap-3.5 px-4 py-3.5 transition-colors cursor-pointer select-none relative ${
                     isSelected
-                      ? 'bg-zinc-100/90 dark:bg-zinc-900 text-zinc-900 dark:text-white border-zinc-300 dark:border-zinc-700/80 shadow-xs'
-                      : 'border-transparent hover:bg-zinc-50 dark:hover:bg-zinc-900/60 text-zinc-700 dark:text-zinc-300'
+                      ? 'bg-zinc-100/90 dark:bg-[#25211d] text-zinc-900 dark:text-white before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5 before:bg-[#E8510E] dark:before:bg-[#F06A32]'
+                      : 'hover:bg-zinc-50/80 dark:hover:bg-[#201d1a]/80 text-zinc-700 dark:text-zinc-300'
                   }`}
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="relative shrink-0">
-                        <div className="size-9 rounded-full bg-zinc-200 dark:bg-zinc-800 border border-zinc-300/80 dark:border-zinc-700 flex items-center justify-center font-bold text-xs text-zinc-800 dark:text-zinc-200">
-                          {conv.participantAvatar}
-                        </div>
-                        {conv.isOnline && (
-                          <span className="absolute bottom-0 right-0 size-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-zinc-900" />
-                        )}
-                      </div>
+                  {/* Circular Avatar */}
+                  <div className="relative shrink-0">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={conv.participantAvatarUrl}
+                      alt={conv.participantName}
+                      className="size-11 rounded-full object-cover ring-1 ring-zinc-200/80 dark:ring-zinc-700/80"
+                    />
+                    {conv.isOnline && (
+                      <span className="absolute bottom-0 right-0 size-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#211E1B]" />
+                    )}
+                  </div>
 
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-semibold text-xs truncate text-zinc-900 dark:text-white">
-                            {conv.participantName}
-                          </span>
-                          <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700/60 shrink-0">
-                            {conv.participantRole}
-                          </span>
-                        </div>
-                        <p className="text-[11px] text-zinc-600 dark:text-zinc-400 truncate mt-0.5 font-medium">
-                          {conv.propertyTitle}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="text-right shrink-0">
-                      <span className="text-[10px] text-zinc-400 dark:text-zinc-500">
+                  {/* Name and Handle */}
+                  <div className="min-w-0 flex-1 leading-tight">
+                    <div className="flex items-center justify-between gap-1">
+                      <span className="font-semibold text-sm truncate text-zinc-900 dark:text-white">
+                        {conv.participantName}
+                      </span>
+                      <span className="text-[10px] text-zinc-400 dark:text-zinc-500 shrink-0">
                         {conv.lastTimestamp}
                       </span>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-1 mt-0.5">
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate font-normal">
+                        {conv.participantHandle}
+                      </p>
                       {conv.unreadCount > 0 && (
-                        <div className="mt-1 flex justify-end">
-                          <span className="size-4 rounded-full bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 font-bold text-[9px] flex items-center justify-center">
-                            {conv.unreadCount}
-                          </span>
-                        </div>
+                        <span className="size-4 rounded-full bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 font-bold text-[9px] flex items-center justify-center shrink-0">
+                          {conv.unreadCount}
+                        </span>
                       )}
                     </div>
                   </div>
-
-                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-2 pl-11">
-                    {conv.lastMessage}
-                  </p>
                 </div>
               );
             })}
@@ -533,9 +637,12 @@ export default function DashboardInboxPage() {
               </button>
 
               <div className="relative shrink-0">
-                <div className="size-9 rounded-full bg-zinc-200 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 flex items-center justify-center font-bold text-xs text-zinc-800 dark:text-zinc-200">
-                  {activeConversation.participantAvatar}
-                </div>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={activeConversation.participantAvatarUrl}
+                  alt={activeConversation.participantName}
+                  className="size-9.5 rounded-full object-cover ring-1 ring-zinc-300 dark:ring-zinc-700"
+                />
                 {activeConversation.isOnline && (
                   <span className="absolute bottom-0 right-0 size-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-zinc-900" />
                 )}
@@ -546,6 +653,9 @@ export default function DashboardInboxPage() {
                   <h3 className="font-bold text-sm text-zinc-900 dark:text-white truncate">
                     {activeConversation.participantName}
                   </h3>
+                  <span className="text-xs text-zinc-400 dark:text-zinc-500 font-normal">
+                    {activeConversation.participantHandle}
+                  </span>
                   <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                     <ShieldCheck size={12} /> Verified Owner
                   </span>
@@ -607,13 +717,24 @@ export default function DashboardInboxPage() {
                 return (
                   <Message key={msg.id} align={isMe ? 'end' : 'start'}>
                     <MessageAvatar
-                      className={`size-8 text-xs font-bold ${
+                      className={`size-8 text-xs font-bold overflow-hidden ${
                         isMe
                           ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-900'
                           : 'bg-white text-zinc-800 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-200 dark:border-zinc-700 shadow-2xs'
                       }`}
                     >
-                      {isMe ? user?.firstName?.[0] || 'U' : msg.avatarText || 'P'}
+                      {isMe ? (
+                        user?.firstName?.[0] || 'U'
+                      ) : activeConversation.participantAvatarUrl ? (
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img
+                          src={activeConversation.participantAvatarUrl}
+                          alt={msg.senderName}
+                          className="size-full object-cover"
+                        />
+                      ) : (
+                        msg.avatarText || 'P'
+                      )}
                     </MessageAvatar>
 
                     <MessageContent>
@@ -684,7 +805,7 @@ export default function DashboardInboxPage() {
                       key={idx}
                       type="button"
                       onClick={() => handleSendMessage(reply)}
-                      className="shrink-0 text-[11px] px-2.5 py-1 rounded-full bg-zinc-50 hover:bg-zinc-100 border border-zinc-200/90 dark:bg-zinc-900 dark:border-zinc-800 dark:hover:border-zinc-700 hover:text-zinc-900 dark:hover:text-white text-zinc-700 dark:text-zinc-300 transition-colors cursor-pointer shadow-2xs active:scale-95 touch-manipulation"
+                      className="px-3 py-1 rounded-full text-xs bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800/80 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-colors cursor-pointer active:scale-95 border border-zinc-200/60 dark:border-zinc-700/60 shrink-0"
                     >
                       {reply}
                     </button>
@@ -793,15 +914,20 @@ export default function DashboardInboxPage() {
                 </h4>
                 <div className="p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="size-10 rounded-full bg-zinc-200 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 flex items-center justify-center font-bold text-sm text-zinc-800 dark:text-zinc-200 shrink-0">
-                      {activeConversation.participantAvatar}
+                    <div className="size-11 rounded-full overflow-hidden ring-1 ring-zinc-300 dark:ring-zinc-700 shrink-0">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={activeConversation.participantAvatarUrl}
+                        alt={activeConversation.participantName}
+                        className="size-full object-cover"
+                      />
                     </div>
                     <div>
                       <p className="font-bold text-xs text-zinc-900 dark:text-white">
                         {activeConversation.participantName}
                       </p>
                       <p className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">
-                        Verified {activeConversation.participantRole}
+                        {activeConversation.participantHandle} • Verified {activeConversation.participantRole}
                       </p>
                     </div>
                   </div>
@@ -829,30 +955,29 @@ export default function DashboardInboxPage() {
                 <div className="space-y-2">
                   <Button
                     variant="outline"
-                    className="w-full justify-start text-xs h-9 border-zinc-200 hover:bg-zinc-100 text-zinc-800 dark:border-zinc-800 dark:hover:bg-zinc-800/80 dark:text-zinc-200 cursor-pointer"
-                    onClick={() => alert('Tour scheduling flow initiated.')}
+                    className="w-full justify-start text-xs font-medium border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 cursor-pointer"
+                    onClick={() => alert(`Scheduling tour with ${activeConversation.participantName}`)}
                   >
-                    <Calendar size={14} className="mr-2 text-zinc-600 dark:text-zinc-400" />
+                    <Calendar size={14} className="mr-2 text-zinc-500" />
                     Schedule Walkthrough Tour
                   </Button>
                   <Button
                     variant="outline"
-                    className="w-full justify-start text-xs h-9 border-zinc-200 hover:bg-zinc-100 text-zinc-800 dark:border-zinc-800 dark:hover:bg-zinc-800/80 dark:text-zinc-200 cursor-pointer"
-                    onClick={() => alert('Digital Lease Agreement generation flow.')}
+                    className="w-full justify-start text-xs font-medium border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 cursor-pointer"
+                    onClick={() => alert('Opening standard rental agreement modal...')}
                   >
-                    <Building2 size={14} className="mr-2 text-zinc-600 dark:text-zinc-400" />
+                    <Building2 size={14} className="mr-2 text-zinc-500" />
                     Review Rental Agreement
                   </Button>
                 </div>
               </div>
 
-              {/* Zero-Brokerage Safety Note */}
-              <div className="p-3.5 rounded-2xl bg-zinc-100 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 text-xs space-y-1.5">
-                <p className="font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                  <ShieldCheck size={14} className="text-emerald-600 dark:text-emerald-400" />
-                  RentMatch AI Guarantee
-                </p>
-                <p className="text-[11px] leading-relaxed">
+              {/* Security & Guarantee Note */}
+              <div className="p-3.5 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 text-zinc-700 dark:text-zinc-300 text-xs space-y-1.5">
+                <span className="font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+                  <ShieldCheck size={14} /> RentMatch AI Guarantee
+                </span>
+                <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
                   Never pay deposits or token amounts before an in-person walkthrough. Verified listings protect your funds with zero broker commissions.
                 </p>
               </div>

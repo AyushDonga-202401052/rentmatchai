@@ -53,15 +53,14 @@ export const DropdownAccountCardMD = ({
 
   return (
     <Dropdown.Root onOpenChange={onOpenChange}>
-      <div className="relative flex items-center h-11 w-full">
-        {/* Floating/Prominent Profile Picture (sits on top, larger than the box) */}
-        <div className="absolute left-0 z-20 size-10 rounded-full shrink-0 flex items-center justify-center ring-2 ring-white dark:ring-[#211E1B] shadow-md bg-zinc-100 dark:bg-zinc-800 pointer-events-none transition-transform duration-200">
+      <div className="relative flex items-center h-10 w-full">
+        {/* Floating/Prominent Profile Picture (perfectly aligned with sidebar icon axis) */}
+        <div className="absolute left-1 top-1/2 -translate-y-1/2 z-20 size-10 rounded-full shrink-0 flex items-center justify-center ring-2 ring-white dark:ring-[#211E1B] shadow-md bg-zinc-100 dark:bg-zinc-800 pointer-events-none">
           <Avatar
             size="md"
             src={avatarUrl}
             alt={name}
             initials={name ? name.split(' ').map((n) => n[0]).filter(Boolean).join('').slice(0, 2).toUpperCase() : 'U'}
-            status="online"
           />
         </div>
 
@@ -69,8 +68,8 @@ export const DropdownAccountCardMD = ({
         <AriaButton
           aria-label={name}
           className={cx(
-            'relative h-9.5 cursor-pointer rounded-xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200/90 dark:bg-zinc-900/60 dark:hover:bg-zinc-800/70 dark:border-zinc-800/80 transition-[width,background-color] duration-250 ease-out outline-none focus:outline-none focus-visible:outline-none ring-0 flex items-center overflow-hidden',
-            isExpanded ? 'w-full pl-11 pr-2' : 'w-10 pl-0 pr-0 justify-center'
+            'relative h-10 cursor-pointer rounded-xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200/90 dark:bg-zinc-900/60 dark:hover:bg-zinc-800/70 dark:border-zinc-800/80 transition-[width,background-color] duration-250 ease-out outline-none focus:outline-none focus-visible:outline-none ring-0 flex items-center overflow-hidden w-full',
+            isExpanded ? 'pl-12 pr-2' : 'pl-0 pr-0 justify-center'
           )}
         >
           {/* Inner content that slides out from under PFP */}
