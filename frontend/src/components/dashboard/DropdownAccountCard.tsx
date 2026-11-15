@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import {
   ChevronSelectorVertical,
   LogOut01,
-  Moon01,
   User01,
 } from '@untitledui/icons';
 import { Button as AriaButton } from 'react-aria-components';
@@ -20,8 +19,8 @@ export interface DropdownAccountCardProps {
   email: string;
   avatarUrl?: string;
   role: 'tenant' | 'landlord';
-  isDarkMode: boolean;
-  onToggleDarkMode: () => void;
+  isDarkMode?: boolean;
+  onToggleDarkMode?: () => void;
   onSignOut: () => void;
   onCloseMobileDrawer?: () => void;
   isExpanded?: boolean;
@@ -33,8 +32,6 @@ export const DropdownAccountCardMD = ({
   email,
   avatarUrl,
   role,
-  isDarkMode,
-  onToggleDarkMode,
   onSignOut,
   onCloseMobileDrawer,
   isExpanded = true,
@@ -58,7 +55,7 @@ export const DropdownAccountCardMD = ({
     <Dropdown.Root onOpenChange={onOpenChange}>
       <div className="relative flex items-center h-11 w-full">
         {/* Floating/Prominent Profile Picture (sits on top, larger than the box) */}
-        <div className="absolute left-1 z-20 size-10 rounded-full shrink-0 flex items-center justify-center ring-2 ring-white dark:ring-[#211E1B] shadow-md bg-zinc-100 dark:bg-zinc-800 pointer-events-none transition-transform duration-200">
+        <div className="absolute left-0 z-20 size-10 rounded-full shrink-0 flex items-center justify-center ring-2 ring-white dark:ring-[#211E1B] shadow-md bg-zinc-100 dark:bg-zinc-800 pointer-events-none transition-transform duration-200">
           <Avatar
             size="md"
             src={avatarUrl}
@@ -74,7 +71,7 @@ export const DropdownAccountCardMD = ({
           className={({ isPressed, isFocusVisible }) =>
             cx(
               'relative h-9.5 cursor-pointer rounded-xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200/90 dark:bg-zinc-900/60 dark:hover:bg-zinc-800/70 dark:border-zinc-800/80 transition-all duration-250 ease-out outline-offset-2 outline-focus-ring flex items-center overflow-hidden',
-              isExpanded ? 'w-full pl-12 pr-2' : 'w-10 pl-0 pr-0 justify-center',
+              isExpanded ? 'w-full pl-11 pr-2' : 'w-10 pl-0 pr-0 justify-center',
               (isPressed || isFocusVisible) && 'outline-2'
             )
           }
@@ -104,7 +101,7 @@ export const DropdownAccountCardMD = ({
       <Dropdown.Popover
         placement={isExpanded ? 'top start' : 'right bottom'}
         offset={isExpanded ? 8 : 12}
-        className="w-64 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xl p-1 text-zinc-800 dark:text-zinc-200 z-50 animate-in fade-in zoom-in-95 duration-150"
+        className="w-[236px] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xl p-1 text-zinc-800 dark:text-zinc-200 z-50 animate-in fade-in slide-in-from-bottom-1 duration-150 ease-out"
       >
         <div className="border-b border-zinc-100 dark:border-zinc-800/80 px-4 py-3">
           <p className="truncate text-sm font-semibold text-zinc-900 dark:text-white">
@@ -124,22 +121,6 @@ export const DropdownAccountCardMD = ({
           >
             View Profile
           </Dropdown.Item>
-
-          <Dropdown.Section
-            selectionMode="single"
-            selectedKeys={new Set(isDarkMode ? ['dark'] : [])}
-            onSelectionChange={() => {
-              onToggleDarkMode();
-            }}
-          >
-            <Dropdown.Item
-              id="dark"
-              icon={Moon01}
-              selectionIndicator="toggle"
-            >
-              Dark Mode
-            </Dropdown.Item>
-          </Dropdown.Section>
 
           <Dropdown.Separator className="my-1 bg-zinc-200/80 dark:bg-zinc-800/80" />
 

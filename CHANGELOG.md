@@ -5,6 +5,15 @@ All notable changes to RentMatch AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.10] - 2026-11-15
+
+### Fixed
+- Fixed account dropdown popover width (`w-[236px]`) to match the card and sidebar width pixel-for-pixel, preventing it from overflowing past the sidebar border.
+- Replaced aggressive popover zoom animation with clean `fade-in slide-in-from-bottom-1` ease-out transition.
+
+### Removed
+- Removed redundant Dark Mode toggle from the account dropdown menu (theme toggle is cleanly housed in the dashboard header).
+
 ## [0.1.9] - 2026-11-15
 
 ### Fixed
