@@ -85,8 +85,7 @@ export default function Navbar({
       if (targetPage === 'home') {
         navigateWithCurtains('/', 'Lander');
       } else if (targetPage === 'dashboard') {
-        const dest = isLister ? '/dashboard/landlord' : '/dashboard/tenant';
-        navigateWithCurtains(dest, 'Dashboard');
+        navigateWithCurtains('/dashboard', 'Dashboard');
       } else if (targetPage === 'results') {
         navigateWithCurtains('/dashboard/explore', 'Find Properties');
       } else if (targetPage === 'shortlist') {
