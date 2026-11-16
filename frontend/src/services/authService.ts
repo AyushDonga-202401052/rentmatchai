@@ -40,13 +40,18 @@ function mapRole(role: string | null | undefined): UserRole {
 }
 
 function mapUser(apiUser: ApiUser, existing?: User): User {
+  const role = apiUser.role == null ? existing?.role : mapRole(apiUser.role);
+  if (!role) {
+    throw new Error('The backend did not return a supported account role.');
+  }
+
   return {
     id: apiUser.id,
     firstName: apiUser.first_name,
     lastName: apiUser.last_name,
     email: apiUser.email,
     passwordHash: null,
-    role: mapRole(apiUser.role ?? existing?.role),
+    role,
     phone: apiUser.phone || '',
     googleSub: null,
     avatar: existing?.avatar || '',
