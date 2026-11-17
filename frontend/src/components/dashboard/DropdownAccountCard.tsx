@@ -4,18 +4,14 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import {
   ChevronSelectorVertical,
-  HelpCircle,
   LogOut01,
-  Moon01,
-  Settings01,
   User01,
 } from '@untitledui/icons';
-import type { Selection } from 'react-aria-components';
-import { Button as AriaButton, SubmenuTrigger } from 'react-aria-components';
+import { Button as AriaButton } from 'react-aria-components';
 
 import { Dropdown } from '@/src/components/base/dropdown/dropdown';
 import { cx } from '@/src/utils/cx';
-import { AvatarLabelGroup } from '@/src/components/base/avatar/avatar-label-group';
+import { Avatar } from '@/src/components/base/avatar/avatar';
 import { usePageCurtains } from '@/src/components/ui/page-curtains';
 
 export interface DropdownAccountCardProps {
@@ -23,10 +19,12 @@ export interface DropdownAccountCardProps {
   email: string;
   avatarUrl?: string;
   role: 'tenant' | 'landlord';
-  isDarkMode: boolean;
-  onToggleDarkMode: () => void;
+  isDarkMode?: boolean;
+  onToggleDarkMode?: () => void;
   onSignOut: () => void;
   onCloseMobileDrawer?: () => void;
+  isExpanded?: boolean;
+  onOpenChange?: (isOpen: boolean) => void;
 }
 
 export const DropdownAccountCardMD = ({
@@ -34,10 +32,10 @@ export const DropdownAccountCardMD = ({
   email,
   avatarUrl,
   role,
-  isDarkMode,
-  onToggleDarkMode,
   onSignOut,
   onCloseMobileDrawer,
+  isExpanded = true,
+  onOpenChange,
 }: DropdownAccountCardProps) => {
   const router = useRouter();
   const { navigateWithCurtains } = usePageCurtains();
@@ -54,32 +52,52 @@ export const DropdownAccountCardMD = ({
   };
 
   return (
-    <Dropdown.Root>
-      <AriaButton
-        className={({ isPressed, isFocusVisible }) =>
-          cx(
-            'relative w-full cursor-pointer rounded-xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200/90 dark:bg-zinc-900/60 dark:hover:bg-zinc-800/70 dark:border-zinc-800/80 p-2 text-left transition-all outline-offset-2 outline-focus-ring',
-            (isPressed || isFocusVisible) && 'outline-2'
-          )
-        }
-      >
-        <AvatarLabelGroup
-          size="md"
-          src={avatarUrl}
-          initials={name ? name.split(' ').map((n) => n[0]).filter(Boolean).join('').slice(0, 2).toUpperCase() : 'U'}
-          title={name}
-          subtitle={role === 'tenant' ? 'Tenant' : 'Landlord'}
-        />
-
-        <div className="absolute top-2.5 right-2 flex size-7 items-center justify-center rounded-md pointer-events-none">
-          <ChevronSelectorVertical className="size-4 shrink-0 stroke-[2.25px] text-zinc-400 dark:text-zinc-500" />
+    <Dropdown.Root onOpenChange={onOpenChange}>
+      <div className="relative flex items-center h-10 w-full">
+        {/* Floating/Prominent Profile Picture (perfectly aligned with sidebar icon axis) */}
+        <div className="absolute left-1 top-1/2 -translate-y-1/2 z-20 size-10 rounded-full shrink-0 flex items-center justify-center ring-2 ring-white dark:ring-[#211E1B] shadow-md bg-zinc-100 dark:bg-zinc-800 pointer-events-none">
+          <Avatar
+            size="md"
+            src={avatarUrl}
+            alt={name}
+            initials={name ? name.split(' ').map((n) => n[0]).filter(Boolean).join('').slice(0, 2).toUpperCase() : 'U'}
+          />
         </div>
-      </AriaButton>
+
+        {/* The Card Box (starts underneath the PFP and smoothly extends out to the right) */}
+        <AriaButton
+          aria-label={name}
+          className={cx(
+            'relative h-10 cursor-pointer rounded-xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200/90 dark:bg-zinc-900/60 dark:hover:bg-zinc-800/70 dark:border-zinc-800/80 transition-[width,background-color] duration-250 ease-out outline-none focus:outline-none focus-visible:outline-none ring-0 flex items-center overflow-hidden w-full',
+            isExpanded ? 'pl-12 pr-2' : 'pl-0 pr-0 justify-center'
+          )}
+        >
+          {/* Inner content that slides out from under PFP */}
+          <div
+            className={`overflow-hidden transition-all duration-200 flex-1 flex items-center justify-between min-w-0 ${
+              isExpanded
+                ? 'opacity-100 max-w-[150px]'
+                : 'opacity-0 max-w-0 pointer-events-none'
+            }`}
+          >
+            <div className="min-w-0 flex-1 leading-tight whitespace-nowrap">
+              <div className="truncate text-xs font-semibold text-zinc-900 dark:text-zinc-100">{name}</div>
+              <div className="truncate text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">
+                {role === 'tenant' ? 'Tenant' : 'Landlord'}
+              </div>
+            </div>
+
+            <div className="shrink-0 size-4 flex items-center justify-center text-zinc-400 dark:text-zinc-500 ml-1">
+              <ChevronSelectorVertical className="size-3.5 stroke-[2.25px]" />
+            </div>
+          </div>
+        </AriaButton>
+      </div>
 
       <Dropdown.Popover
-        placement="top start"
-        offset={8}
-        className="w-64 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xl p-1 text-zinc-800 dark:text-zinc-200 z-50 animate-in fade-in zoom-in-95 duration-150"
+        placement={isExpanded ? 'top start' : 'right bottom'}
+        offset={isExpanded ? 8 : 12}
+        className="w-[236px] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xl ring-0 outline-none focus:outline-none focus-visible:outline-none p-1 text-zinc-800 dark:text-zinc-200 z-50"
       >
         <div className="border-b border-zinc-100 dark:border-zinc-800/80 px-4 py-3">
           <p className="truncate text-sm font-semibold text-zinc-900 dark:text-white">
@@ -92,62 +110,13 @@ export const DropdownAccountCardMD = ({
           </p>
         </div>
 
-        <Dropdown.Menu className="py-1">
+        <Dropdown.Menu className="py-1 outline-none focus:outline-none focus-visible:outline-none">
           <Dropdown.Item
             icon={User01}
             onAction={() => handleNavigate('/profile?tab=personal', 'Profile & Account')}
           >
             View Profile
           </Dropdown.Item>
-
-          <Dropdown.Item
-            icon={Settings01}
-            onAction={() => handleNavigate('/profile?tab=security', 'Settings')}
-          >
-            Settings
-          </Dropdown.Item>
-
-          <Dropdown.Section
-            selectionMode="single"
-            selectedKeys={new Set(isDarkMode ? ['dark'] : [])}
-            onSelectionChange={() => {
-              onToggleDarkMode();
-            }}
-          >
-            <Dropdown.Item
-              id="dark"
-              icon={Moon01}
-              selectionIndicator="toggle"
-            >
-              Dark Mode
-            </Dropdown.Item>
-          </Dropdown.Section>
-
-          <SubmenuTrigger>
-            <Dropdown.Item icon={HelpCircle}>
-              Support
-            </Dropdown.Item>
-
-            <Dropdown.Popover
-              placement="right bottom"
-              offset={4}
-              className="w-48 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl p-1 text-zinc-800 dark:text-zinc-200 z-50"
-            >
-              <Dropdown.Menu className="py-1">
-                <Dropdown.Item
-                  onAction={() => window.open('mailto:support@rentmatch.ai', '_blank')}
-                >
-                  Help Center
-                </Dropdown.Item>
-
-                <Dropdown.Item
-                  onAction={() => window.open('mailto:support@rentmatch.ai', '_blank')}
-                >
-                  Contact Support
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown.Popover>
-          </SubmenuTrigger>
 
           <Dropdown.Separator className="my-1 bg-zinc-200/80 dark:bg-zinc-800/80" />
 

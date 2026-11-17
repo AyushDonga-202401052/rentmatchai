@@ -71,7 +71,7 @@ function mapProperty(apiProperty: ApiProperty, user?: User | null): Property {
     id: apiProperty.id,
     listerId: apiProperty.owner_id,
     listerName: user?.id === apiProperty.owner_id
-      ? `${user.firstName} ${user.lastName}`.trim()
+      ? [user.firstName, user.lastName && user.lastName !== 'User' ? user.lastName : ''].filter(Boolean).join(' ')
       : 'Property Owner',
     listerEmail: user?.id === apiProperty.owner_id ? user.email : '',
     listerPhone: user?.id === apiProperty.owner_id ? user.phone : '',

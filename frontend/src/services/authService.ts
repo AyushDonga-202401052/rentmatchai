@@ -40,13 +40,18 @@ function mapRole(role: string | null | undefined): UserRole {
 }
 
 function mapUser(apiUser: ApiUser, existing?: User): User {
+  const role = apiUser.role == null ? existing?.role : mapRole(apiUser.role);
+  if (!role) {
+    throw new Error('The backend did not return a supported account role.');
+  }
+
   return {
     id: apiUser.id,
     firstName: apiUser.first_name,
     lastName: apiUser.last_name,
     email: apiUser.email,
     passwordHash: null,
-    role: mapRole(apiUser.role ?? existing?.role),
+    role,
     phone: apiUser.phone || '',
     googleSub: null,
     avatar: existing?.avatar || '',
@@ -125,8 +130,28 @@ export const AuthService = {
     return session;
   },
 
-  async loginWithGoogle(_preferredRole?: UserRole): Promise<AuthSession> {
-    throw new Error('Google sign-in is not connected to the backend yet.');
+  async loginWithGoogle(
+    idToken: string,
+    preferredRole?: UserRole,
+  ): Promise<AuthSession> {
+    if (!idToken || typeof idToken !== 'string') {
+      throw new Error('Google authentication failed: no credentials were provided.');
+    }
+
+    const backendRole = preferredRole === USER_ROLES.PROPERTY_LISTER ? 'landlord' : 'tenant';
+
+    const result = await apiRequest<ApiToken>('/google', {
+      method: 'POST',
+      ...jsonBody({
+        token: idToken,
+        role: backendRole,
+      }),
+    });
+
+    const user = await fetchCurrentUser(result.access_token);
+    const session: AuthSession = { token: result.access_token, user };
+    this.setSession(session);
+    return session;
   },
 
   async restoreSession(): Promise<AuthSession | null> {
@@ -135,10 +160,15 @@ export const AuthService = {
       this.clearSession();
       return null;
     }
-    const user = await fetchCurrentUser(stored.token, stored.user);
-    const session = { token: stored.token, user };
-    this.setSession(session);
-    return session;
+    try {
+      const user = await fetchCurrentUser(stored.token, stored.user);
+      const session = { token: stored.token, user };
+      this.setSession(session);
+      return session;
+    } catch {
+      this.clearSession();
+      return null;
+    }
   },
 
   setSession(session: AuthSession): void {

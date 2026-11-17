@@ -85,8 +85,7 @@ export default function Navbar({
       if (targetPage === 'home') {
         navigateWithCurtains('/', 'Lander');
       } else if (targetPage === 'dashboard') {
-        const dest = isLister ? '/dashboard/landlord' : '/dashboard/tenant';
-        navigateWithCurtains(dest, 'Dashboard');
+        navigateWithCurtains('/dashboard', 'Dashboard');
       } else if (targetPage === 'results') {
         navigateWithCurtains('/dashboard/explore', 'Find Properties');
       } else if (targetPage === 'shortlist') {
@@ -117,8 +116,10 @@ export default function Navbar({
     handleNav('home');
   };
 
+  const safeLastName = user?.lastName && user.lastName !== 'User' ? user.lastName : '';
+  const userFullName = user ? [user.firstName, safeLastName].filter(Boolean).join(' ') : 'User';
   const userInitials = user
-    ? `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase()
+    ? `${user.firstName?.[0] || ''}${safeLastName?.[0] || ''}`.toUpperCase() || user.firstName?.[0]?.toUpperCase() || 'U'
     : 'U';
 
   const scrollToSection = (id: string) => {
@@ -228,7 +229,7 @@ export default function Navbar({
                   >
                     <div className="px-3 py-2.5 border-b border-zinc-100 dark:border-zinc-800/80 mb-1">
                       <div className="font-bold text-xs text-zinc-950 dark:text-zinc-100">
-                        {user!.firstName} {user!.lastName}
+                        {userFullName}
                       </div>
                       <div className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5">
                         {user!.email}

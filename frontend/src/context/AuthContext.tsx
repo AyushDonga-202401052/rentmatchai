@@ -2,7 +2,7 @@
 
 // React Context for Authentication & Profile State (Sprint 1)
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { AuthService, ProfileService, type RegisterData } from '../services/authService';
+import { AuthService, ProfileService, type RegisterData, type AuthSession } from '../services/authService';
 import { USER_ROLES, type User, type UserRole } from '../constants/initialData';
 
 interface AuthContextValue {
@@ -15,7 +15,7 @@ interface AuthContextValue {
   loading: boolean;
   login: (email: string, password: string) => Promise<{ user: User; token: string }>;
   register: (data: RegisterData) => Promise<{ user: User; token: string }>;
-  loginWithGoogle: (preferredRole?: UserRole) => Promise<{ user: User; token: string }>;
+  loginWithGoogle: (idToken: string, preferredRole?: UserRole) => Promise<AuthSession>;
   logout: () => void;
   updateProfile: (profileData: Partial<Pick<User, 'firstName' | 'lastName' | 'phone' | 'company' | 'preferences'>>) => Promise<User>;
   changePassword: (oldPass: string, newPass: string) => Promise<boolean>;
@@ -87,8 +87,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return res;
   }, [closeAuthModal]);
 
-  const loginWithGoogle = useCallback(async (preferredRole?: UserRole) => {
-    const res = await AuthService.loginWithGoogle(preferredRole);
+  const loginWithGoogle = useCallback(async (idToken: string, preferredRole?: UserRole) => {
+    const res = await AuthService.loginWithGoogle(idToken, preferredRole);
     setUser(res.user);
     setToken(res.token);
     closeAuthModal();
