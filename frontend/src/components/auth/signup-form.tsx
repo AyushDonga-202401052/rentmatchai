@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
-import { Lock, Mail, User, Phone, CheckCircle2, Eye, EyeOff } from 'lucide-react';
+import { Lock, Mail, User, Phone, CheckCircle2, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/src/components/ui/card';
 import { FieldDescription, FieldLabel } from '@/src/components/ui/field';
@@ -35,6 +35,7 @@ export function SignupForm({
   const [showPassword, setShowPassword] = useState(false);
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const [isInvalid, setIsInvalid] = useState(false);
 
   // Validate redirect parameter to ensure safe relative internal path
@@ -113,15 +114,19 @@ export function SignupForm({
         password,
         phone: phone.trim() || undefined,
       });
-      notify.success(`Welcome to RentMatch AI, ${res.user.firstName}!`, 'Account Created');
+      setIsRedirecting(true);
+      notify.success(`Welcome to RentMatch AI, ${res.user.firstName}! Preparing your dashboard...`, 'Account Created');
       const target = getSafeDestination(res.user.role);
       navigateWithCurtains(target, 'Dashboard');
+      setTimeout(() => {
+        router.push(target);
+      }, 450);
     } catch (err: unknown) {
+      setIsRedirecting(false);
+      setLoading(false);
       const msg = err instanceof Error ? err.message : 'Registration failed. Please try again.';
       setIsInvalid(true);
       notify.error(msg, 'Registration Error');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -150,8 +155,9 @@ export function SignupForm({
           <div className="relative grid grid-cols-2 gap-2 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-2xl mb-5">
             <button
               type="button"
+              disabled={loading || isRedirecting}
               onClick={() => setRole(USER_ROLES.TENANT)}
-              className={`relative z-10 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-colors cursor-pointer ${role === USER_ROLES.TENANT
+              className={`relative z-10 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-colors cursor-pointer disabled:opacity-60 disabled:pointer-events-none ${role === USER_ROLES.TENANT
                   ? 'text-zinc-950 dark:text-white'
                   : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
                 }`}
@@ -180,8 +186,9 @@ export function SignupForm({
             </button>
             <button
               type="button"
+              disabled={loading || isRedirecting}
               onClick={() => setRole(USER_ROLES.PROPERTY_LISTER)}
-              className={`relative z-10 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-colors cursor-pointer ${role === USER_ROLES.PROPERTY_LISTER
+              className={`relative z-10 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-colors cursor-pointer disabled:opacity-60 disabled:pointer-events-none ${role === USER_ROLES.PROPERTY_LISTER
                   ? 'text-zinc-950 dark:text-white'
                   : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
                 }`}
@@ -214,11 +221,15 @@ export function SignupForm({
           <GoogleAuthButton
             mode="signup"
             preferredRole={role}
-            disabled={loading}
+            disabled={loading || isRedirecting}
             className="mb-4"
-            onLoadingChange={setLoading}
+            onLoadingChange={(isLoading) => {
+              if (!isRedirecting) setLoading(isLoading);
+            }}
             onSuccess={(session) => {
-              notify.success(`Welcome to RentMatch AI, ${session.user.firstName}!`, 'Account Created');
+              setIsRedirecting(true);
+              setLoading(true);
+              notify.success(`Welcome to RentMatch AI, ${session.user.firstName}! Preparing your dashboard...`, 'Account Created');
               const target = getSafeDestination(session.user.role);
               navigateWithCurtains(target, 'Dashboard');
               setTimeout(() => {
@@ -226,6 +237,8 @@ export function SignupForm({
               }, 450);
             }}
             onError={(err) => {
+              setIsRedirecting(false);
+              setLoading(false);
               setIsInvalid(true);
               notify.error(err.message, 'Google Sign-Up Error');
             }}
@@ -243,6 +256,21 @@ export function SignupForm({
             </div>
           </div>
 
+          {/* Success Redirecting Confirmation Banner */}
+          {isRedirecting && (
+            <div
+              role="status"
+              aria-live="polite"
+              className="flex items-center gap-3 p-3.5 mb-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 text-emerald-900 dark:text-emerald-200 text-xs font-medium animate-in fade-in slide-in-from-top-2 duration-300 shadow-xs"
+            >
+              <Loader2 className="size-4 animate-spin shrink-0 text-emerald-600 dark:text-emerald-400" />
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-emerald-950 dark:text-emerald-100">Account created successfully!</p>
+                <p className="text-[11px] text-emerald-700 dark:text-emerald-300">Setting up your profile. Please wait, redirecting to dashboard...</p>
+              </div>
+            </div>
+          )}
+
           <form noValidate onSubmit={handleSubmit} className="space-y-3.5">
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -253,6 +281,7 @@ export function SignupForm({
                   <User className="h-4 w-4 text-zinc-400 absolute left-3 top-3 pointer-events-none" />
                   <Input
                     id="firstName"
+                    disabled={loading || isRedirecting}
                     value={firstName}
                     onChange={(e) => {
                       setFirstName(e.target.value);
@@ -269,6 +298,7 @@ export function SignupForm({
                 </FieldLabel>
                 <Input
                   id="lastName"
+                  disabled={loading || isRedirecting}
                   value={lastName}
                   onChange={(e) => {
                     setLastName(e.target.value);
@@ -289,6 +319,7 @@ export function SignupForm({
                 <Input
                   id="signup-email"
                   type="text"
+                  disabled={loading || isRedirecting}
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
@@ -309,6 +340,7 @@ export function SignupForm({
                 <Input
                   id="signup-phone"
                   type="tel"
+                  disabled={loading || isRedirecting}
                   value={phone}
                   onChange={(e) => {
                     setPhone(e.target.value);
@@ -329,6 +361,7 @@ export function SignupForm({
                 <Input
                   id="signup-password"
                   type={showPassword ? 'text' : 'password'}
+                  disabled={loading || isRedirecting}
                   value={password}
                   onChange={(e) => {
                     setPassword(e.target.value);
@@ -339,8 +372,9 @@ export function SignupForm({
                 />
                 <button
                   type="button"
+                  disabled={loading || isRedirecting}
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors cursor-pointer p-0.5"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors cursor-pointer p-0.5 disabled:opacity-50 disabled:pointer-events-none"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                   tabIndex={-1}
                 >
@@ -351,11 +385,23 @@ export function SignupForm({
 
             <InteractiveHoverButton
               type="submit"
-              disabled={loading}
+              disabled={loading || isRedirecting}
               isInvalid={isInvalid}
               className="mt-3"
             >
-              {loading ? 'Creating account...' : 'Create Free Account'}
+              {isRedirecting ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader2 className="size-3.5 animate-spin" />
+                  <span>Please wait, redirecting...</span>
+                </span>
+              ) : loading ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader2 className="size-3.5 animate-spin" />
+                  <span>Creating account...</span>
+                </span>
+              ) : (
+                'Create Free Account'
+              )}
             </InteractiveHoverButton>
           </form>
 
@@ -364,8 +410,9 @@ export function SignupForm({
             Already have an account?{' '}
             <button
               type="button"
+              disabled={loading || isRedirecting}
               onClick={() => navigateWithCurtains('/login', 'Login')}
-              className="font-bold text-[#E8510E] dark:text-[#F06A32] hover:underline cursor-pointer"
+              className="font-bold text-[#E8510E] dark:text-[#F06A32] hover:underline cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
             >
               Login
             </button>
