@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Lock, Mail, Eye, EyeOff } from 'lucide-react';
+import { Lock, Mail, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/src/components/ui/card';
 import {
@@ -35,6 +35,7 @@ export function LoginForm({
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const [isInvalid, setIsInvalid] = useState(false);
 
   // Validate redirect parameter to ensure safe relative internal path
@@ -85,15 +86,19 @@ export function LoginForm({
     setLoading(true);
     try {
       const res = await login(trimmedEmail, password);
-      notify.success(`Welcome back, ${res.user.firstName}!`, 'Signed In');
+      setIsRedirecting(true);
+      notify.success(`Welcome back, ${res.user.firstName}! Preparing your dashboard...`, 'Signed In');
       const target = getSafeDestination(res.user.role);
       navigateWithCurtains(target, 'Dashboard');
+      setTimeout(() => {
+        router.push(target);
+      }, 450);
     } catch (err: unknown) {
+      setIsRedirecting(false);
+      setLoading(false);
       const msg = err instanceof Error ? err.message : 'Invalid credentials. Please check your email and password.';
       setIsInvalid(true);
       notify.error(msg, 'Sign-In Failed');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -121,11 +126,15 @@ export function LoginForm({
           {/* Social Google Login Button */}
           <GoogleAuthButton
             mode="signin"
-            disabled={loading}
+            disabled={loading || isRedirecting}
             className="mb-5"
-            onLoadingChange={setLoading}
+            onLoadingChange={(isLoading) => {
+              if (!isRedirecting) setLoading(isLoading);
+            }}
             onSuccess={(session) => {
-              notify.success(`Welcome back, ${session.user.firstName}!`, 'Signed In');
+              setIsRedirecting(true);
+              setLoading(true);
+              notify.success(`Welcome back, ${session.user.firstName}! Preparing your dashboard...`, 'Signed In');
               const target = getSafeDestination(session.user.role);
               navigateWithCurtains(target, 'Dashboard');
               setTimeout(() => {
@@ -133,6 +142,8 @@ export function LoginForm({
               }, 450);
             }}
             onError={(err) => {
+              setIsRedirecting(false);
+              setLoading(false);
               setIsInvalid(true);
               notify.error(err.message, 'Google Sign-In Error');
             }}
@@ -150,6 +161,21 @@ export function LoginForm({
             </div>
           </div>
 
+          {/* Success Redirecting Confirmation Banner */}
+          {isRedirecting && (
+            <div
+              role="status"
+              aria-live="polite"
+              className="flex items-center gap-3 p-3.5 mb-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 text-emerald-900 dark:text-emerald-200 text-xs font-medium animate-in fade-in slide-in-from-top-2 duration-300 shadow-xs"
+            >
+              <Loader2 className="size-4 animate-spin shrink-0 text-emerald-600 dark:text-emerald-400" />
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-emerald-950 dark:text-emerald-100">Signed in successfully!</p>
+                <p className="text-[11px] text-emerald-700 dark:text-emerald-300">Please wait while we redirect you to your dashboard...</p>
+              </div>
+            </div>
+          )}
+
           <form noValidate onSubmit={handleSubmit} className="space-y-4">
             <FieldGroup>
               <Field>
@@ -161,6 +187,7 @@ export function LoginForm({
                   <Input
                     id="email"
                     type="text"
+                    disabled={loading || isRedirecting}
                     value={email}
                     onChange={(e) => {
                       setEmail(e.target.value);
@@ -179,8 +206,9 @@ export function LoginForm({
                   </FieldLabel>
                   <button
                     type="button"
+                    disabled={loading || isRedirecting}
                     onClick={() => notify.info('Password reset is not available yet.', 'Password Reset')}
-                    className="text-xs text-violet-600 hover:text-violet-700 dark:text-violet-400 font-semibold cursor-pointer"
+                    className="text-xs text-violet-600 hover:text-violet-700 dark:text-violet-400 font-semibold cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
                   >
                     Forgot password?
                   </button>
@@ -190,6 +218,7 @@ export function LoginForm({
                   <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
+                    disabled={loading || isRedirecting}
                     value={password}
                     onChange={(e) => {
                       setPassword(e.target.value);
@@ -200,8 +229,9 @@ export function LoginForm({
                   />
                   <button
                     type="button"
+                    disabled={loading || isRedirecting}
                     onClick={() => setShowPassword((prev) => !prev)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors cursor-pointer p-0.5"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors cursor-pointer p-0.5 disabled:opacity-50 disabled:pointer-events-none"
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                     tabIndex={-1}
                   >
@@ -212,11 +242,23 @@ export function LoginForm({
 
               <InteractiveHoverButton
                 type="submit"
-                disabled={loading}
+                disabled={loading || isRedirecting}
                 isInvalid={isInvalid}
                 className="mt-3"
               >
-                {loading ? 'Signing in...' : 'Sign In to Account'}
+                {isRedirecting ? (
+                  <span className="inline-flex items-center gap-2">
+                    <Loader2 className="size-3.5 animate-spin" />
+                    <span>Please wait, redirecting...</span>
+                  </span>
+                ) : loading ? (
+                  <span className="inline-flex items-center gap-2">
+                    <Loader2 className="size-3.5 animate-spin" />
+                    <span>Signing in...</span>
+                  </span>
+                ) : (
+                  'Sign In to Account'
+                )}
               </InteractiveHoverButton>
             </FieldGroup>
           </form>
@@ -226,8 +268,9 @@ export function LoginForm({
             Don&apos;t have an account?{' '}
             <button
               type="button"
+              disabled={loading || isRedirecting}
               onClick={() => navigateWithCurtains('/signup', 'Create Account')}
-              className="font-bold text-[#E8510E] dark:text-[#F06A32] hover:underline cursor-pointer"
+              className="font-bold text-[#E8510E] dark:text-[#F06A32] hover:underline cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
             >
               Create Account
             </button>

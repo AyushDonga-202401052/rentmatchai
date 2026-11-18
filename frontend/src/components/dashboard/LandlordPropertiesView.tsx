@@ -112,10 +112,6 @@ export default function LandlordPropertiesView() {
       <div className="relative overflow-hidden rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/80 dark:bg-zinc-900/60 backdrop-blur-md p-6 sm:p-8 shadow-xs">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20">
-              <Building2 size={13} />
-              <span>Property Management</span>
-            </div>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-zinc-950 dark:text-white">
               My Listed Properties
             </h1>
@@ -456,15 +452,8 @@ export default function LandlordPropertiesView() {
             No properties listed yet
           </h3>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-md mx-auto mt-1 mb-6 leading-relaxed">
-            You have not added any properties to your portfolio. Publish your first Gandhinagar listing to start connecting with verified tenants.
+            You have not added any properties to your portfolio. Use the button at the top to add one.
           </p>
-          <Button
-            onClick={openAddProperty}
-            className="gap-2 h-10 px-5 rounded-full bg-zinc-950 hover:bg-zinc-850 text-white dark:bg-white dark:hover:bg-zinc-150 dark:text-zinc-950 font-bold text-xs shadow-md transition-all active:scale-95 cursor-pointer"
-          >
-            <Plus size={14} strokeWidth={2.5} />
-            <span>Add Your First Property</span>
-          </Button>
         </div>
       ) : (
         <div className="rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 p-8 sm:p-12 text-center bg-white dark:bg-zinc-900/40">

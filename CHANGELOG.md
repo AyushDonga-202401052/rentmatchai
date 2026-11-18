@@ -5,6 +5,16 @@ All notable changes to RentMatch AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.21] - 2026-11-19
+
+### Added
+- Added explicit "Please wait, redirecting..." loading feedback and animated status confirmation banner on both login (`login-form.tsx`) and signup (`signup-form.tsx`) flows to reassure users while the dashboard route resolves and page curtains animate.
+- Disabled inputs, submit triggers, and role selectors once authentication succeeds to prevent duplicate submissions during navigation.
+
+### Changed
+- Streamlined `LandlordDashboardView.tsx` by removing header status badge, quick enquiries action button, and view switcher toggles.
+- Simplified empty state messaging in `LandlordPropertiesView.tsx` instructing landlords to use the top button to add properties.
+
 ## [0.1.20] - 2026-11-19
 
 ### Added

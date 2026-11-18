@@ -71,27 +71,12 @@ export default function LandlordDashboardView() {
       <div className="relative overflow-hidden rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/80 dark:bg-zinc-900/60 backdrop-blur-md p-6 sm:p-8 shadow-xs">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200/80 dark:border-zinc-700/60 shadow-2xs">
-              <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Verified Property Lister · Gandhinagar Portfolio</span>
-            </div>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-zinc-950 dark:text-white">
               Welcome, {displayName}
             </h1>
             <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed text-pretty">
               Manage your Gandhinagar rental inventory, track prospective tenant enquiries, and publish verified direct listings.
             </p>
-          </div>
-
-          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 shrink-0">
-            <Button
-              variant="outline"
-              onClick={() => navigateWithCurtains('/dashboard/inbox', 'Inbox')}
-              className="h-10 text-xs px-5 rounded-full border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 font-semibold gap-2 cursor-pointer shadow-2xs active:scale-95 transition-all"
-            >
-              <Inbox size={14} />
-              <span>View Enquiries (3)</span>
-            </Button>
           </div>
         </div>
       </div>
@@ -200,36 +185,6 @@ export default function LandlordDashboardView() {
               <span>Manage All ({myProperties.length})</span>
               <ArrowUpRight size={13} />
             </Button>
-
-            {/* View Switcher */}
-            <div className="inline-flex items-center bg-zinc-100 dark:bg-zinc-800 p-1 rounded-xl border border-zinc-200 dark:border-zinc-700/50">
-              <button
-                type="button"
-                onClick={() => setViewMode('grid')}
-                className={`p-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                  viewMode === 'grid'
-                    ? 'bg-white dark:bg-zinc-900 text-zinc-950 dark:text-white shadow-2xs'
-                    : 'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white'
-                }`}
-                title="Grid view"
-                aria-label="Grid view"
-              >
-                <LayoutGrid size={14} />
-              </button>
-              <button
-                type="button"
-                onClick={() => setViewMode('table')}
-                className={`p-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                  viewMode === 'table'
-                    ? 'bg-white dark:bg-zinc-900 text-zinc-950 dark:text-white shadow-2xs'
-                    : 'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white'
-                }`}
-                title="Table view"
-                aria-label="Table view"
-              >
-                <List size={14} />
-              </button>
-            </div>
           </div>
         </div>
 
