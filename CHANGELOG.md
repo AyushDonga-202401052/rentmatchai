@@ -5,6 +5,11 @@ All notable changes to RentMatch AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.17] - 2026-11-18
+
+### Security
+- Upgraded `next` and `eslint-config-next` from 16.4.3 to 16.4.6 to address published security advisories.
+
 ## [0.1.16] - 2026-11-15
 
 ### Changed
