@@ -22,7 +22,6 @@ import {
   Sparkles,
   Check,
 } from 'lucide-react';
-import { ScrollArea } from '@/src/components/ui/scroll-area';
 
 interface PropertyFormModalProps {
   isOpen: boolean;
@@ -170,7 +169,7 @@ export default function PropertyFormModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-md overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-md overflow-hidden"
       onClick={onClose}
     >
       <motion.div
@@ -178,11 +177,11 @@ export default function PropertyFormModal({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 10 }}
         transition={{ type: 'spring', damping: 26, stiffness: 300 }}
-        className="relative w-full max-w-2xl rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-[#211E1B] p-6 sm:p-8 shadow-2xl shadow-zinc-950/20 dark:shadow-black/70 my-auto flex flex-col max-h-[92svh]"
+        className="relative w-full max-w-2xl rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-[#211E1B] shadow-2xl shadow-zinc-950/20 dark:shadow-black/70 flex flex-col max-h-[90svh] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="flex items-start justify-between gap-4 pb-4 border-b border-zinc-100 dark:border-zinc-850">
+        {/* Header (Pinned) */}
+        <div className="flex items-start justify-between gap-4 p-6 sm:p-8 pb-4 border-b border-zinc-100 dark:border-zinc-850 shrink-0">
           <div>
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-white border border-zinc-200/60 dark:border-zinc-800 mb-2">
               <Building2 size={12} /> {isEditing ? 'Editing Mode (Owner)' : 'New Listing Draft'}
@@ -210,8 +209,8 @@ export default function PropertyFormModal({
         </div>
 
         {/* Scrollable Form Body */}
-        <ScrollArea className="flex-1 py-4 pr-3 -mr-3">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+          <div className="flex-1 min-h-0 overflow-y-auto px-6 sm:px-8 py-5 space-y-6 overscroll-contain">
             {/* Section 1: Basic Information */}
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-xs font-bold text-zinc-950 dark:text-white uppercase tracking-wider">
@@ -533,33 +532,33 @@ export default function PropertyFormModal({
                 />
               </div>
             </div>
+          </div>
 
-            {/* Actions Footer */}
-            <div className="pt-4 border-t border-zinc-100 dark:border-zinc-850 flex items-center justify-end gap-3">
-              <button
-                type="button"
-                className="py-2.5 px-5 rounded-full border border-zinc-200 dark:border-zinc-800 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors cursor-pointer active:scale-95"
-                onClick={onClose}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="inline-flex items-center gap-2 py-2.5 px-6 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-950 text-xs font-bold tracking-tight shadow-md transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
-                disabled={formState === 'validating'}
-              >
-                <Sparkles size={14} />
-                <span>
-                  {formState === 'validating'
-                    ? 'Validating property fields...'
-                    : isEditing
-                    ? 'Save Changes'
-                    : 'Publish Listing (Insert Active)'}
-                </span>
-              </button>
-            </div>
-          </form>
-        </ScrollArea>
+          {/* Actions Footer (Pinned) */}
+          <div className="px-6 sm:px-8 py-4 border-t border-zinc-100 dark:border-zinc-850 flex items-center justify-end gap-3 bg-white/95 dark:bg-[#211E1B]/95 backdrop-blur-xs shrink-0">
+            <button
+              type="button"
+              className="py-2.5 px-5 rounded-full border border-zinc-200 dark:border-zinc-800 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors cursor-pointer active:scale-95"
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="inline-flex items-center gap-2 py-2.5 px-6 rounded-full bg-zinc-950 hover:bg-zinc-850 text-white dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-950 text-xs font-bold tracking-tight shadow-md transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+              disabled={formState === 'validating'}
+            >
+              <Sparkles size={14} />
+              <span>
+                {formState === 'validating'
+                  ? 'Validating property fields...'
+                  : isEditing
+                  ? 'Save Changes'
+                  : 'Publish Listing (Insert Active)'}
+              </span>
+            </button>
+          </div>
+        </form>
       </motion.div>
     </div>
   );

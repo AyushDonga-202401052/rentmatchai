@@ -5,6 +5,42 @@ All notable changes to RentMatch AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.20] - 2026-11-19
+
+### Added
+- Added eye toggle button to password fields in both login and signup forms (`login-form.tsx` and `signup-form.tsx`) allowing users to show or hide their password.
+- Installed `@reui/c-dropdown-menu-10` via shadcn CLI and adopted its `DropdownMenu` architecture across all dropdowns on the website (`DropdownAccountCardMD`, `TableRowActionsDropdown`, and `Navbar`).
+
+### Fixed
+- Fixed non-scrollable "Add New Property" modal (`PropertyFormModal.tsx`) by pinning the header and action buttons, constraining modal height to `max-h-[90svh] overflow-hidden`, and making the inner form fields container `flex-1 min-h-0 overflow-y-auto` with `overscroll-contain`.
+
+### Removed
+- Removed all three "Add Property" buttons from the landlord `/dashboard` view (`LandlordDashboardView.tsx`), centralizing property creation under the dedicated "My Properties" page (`/dashboard/properties`).
+
+## [0.1.19] - 2026-11-19
+
+### Added
+- Integrated Untitled UI `Table` component via `npx untitledui@latest add table` for rich landlord property listings management with sorting, status badges, action dropdowns, and responsive density.
+- Created dedicated `/dashboard/properties` page (`DashboardPropertiesPage` & `LandlordPropertiesView`) featuring portfolio KPI cards, live search, status filtering, sort options, and Table vs Grid view modes.
+
+### Changed
+- Updated Landlord dashboard sidebar navigation to route "My Properties" directly to `/dashboard/properties` with live portfolio counter badge and active route indicator.
+- Updated `LandlordDashboardView` to use the Untitled UI `Table` component for its table view mode and added a "Manage All" link to `/dashboard/properties`.
+
+### Removed
+- Completely removed the `/profile?tab=listings` tab from `profile/page.tsx`, eliminating redundant property management UI and routing from the personal profile page.
+- Added automatic redirect from `/profile?tab=listings` to `/dashboard/properties`.
+
+## [0.1.18] - 2026-11-19
+
+### Removed
+- Removed the "Add Property" button from the Landlord dashboard sidebar in `DashboardSidebar.tsx`, streamlining the navigation roster.
+
+## [0.1.17] - 2026-11-18
+
+### Security
+- Upgraded `next` and `eslint-config-next` from 16.4.3 to 16.4.6 to address published security advisories.
+
 ## [0.1.16] - 2026-11-15
 
 ### Changed

@@ -3,7 +3,6 @@
 import React, { useMemo, useState } from 'react';
 import {
   Building2,
-  Plus,
   TrendingUp,
   Inbox,
   Eye,
@@ -23,6 +22,11 @@ import { usePageCurtains } from '@/src/components/ui/page-curtains';
 import { PropertyCard } from '@/src/components/property';
 import { Button } from '@/src/components/ui/button';
 import { PROPERTY_STATUS, type Property } from '@/src/constants/initialData';
+import {
+  Table,
+  TableCard,
+  TableRowActionsDropdown,
+} from '@/src/components/application/table/table';
 
 const money = (n: number) => '₹' + Number(n).toLocaleString('en-IN');
 
@@ -30,7 +34,6 @@ export default function LandlordDashboardView() {
   const { user } = useAuth();
   const {
     properties,
-    openAddProperty,
     openEditProperty,
     openDeleteProperty,
     togglePropertyStatus,
@@ -81,13 +84,6 @@ export default function LandlordDashboardView() {
           </div>
 
           <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 shrink-0">
-            <Button
-              onClick={openAddProperty}
-              className="h-10 text-xs px-5 rounded-full bg-zinc-950 hover:bg-zinc-850 text-white dark:bg-white dark:hover:bg-zinc-150 dark:text-zinc-950 font-bold gap-2 shadow-sm cursor-pointer active:scale-95 transition-all"
-            >
-              <Plus size={15} strokeWidth={2.2} />
-              <span>Add New Property</span>
-            </Button>
             <Button
               variant="outline"
               onClick={() => navigateWithCurtains('/dashboard/inbox', 'Inbox')}
@@ -195,6 +191,16 @@ export default function LandlordDashboardView() {
           </div>
 
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigateWithCurtains('/dashboard/properties', 'My Properties')}
+              className="text-xs h-9 rounded-full border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white cursor-pointer"
+            >
+              <span>Manage All ({myProperties.length})</span>
+              <ArrowUpRight size={13} />
+            </Button>
+
             {/* View Switcher */}
             <div className="inline-flex items-center bg-zinc-100 dark:bg-zinc-800 p-1 rounded-xl border border-zinc-200 dark:border-zinc-700/50">
               <button
@@ -224,15 +230,6 @@ export default function LandlordDashboardView() {
                 <List size={14} />
               </button>
             </div>
-
-            <Button
-              size="sm"
-              onClick={openAddProperty}
-              className="text-xs h-9 gap-1.5 rounded-full bg-zinc-950 hover:bg-zinc-850 text-white dark:bg-white dark:hover:bg-zinc-150 dark:text-zinc-950 font-bold px-4 cursor-pointer active:scale-95 shadow-xs"
-            >
-              <Plus size={14} />
-              <span>Add Property</span>
-            </Button>
           </div>
         </div>
 
@@ -254,23 +251,24 @@ export default function LandlordDashboardView() {
               ))}
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/60 shadow-2xs">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="border-b border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/70 dark:bg-zinc-900/40 text-zinc-500 dark:text-zinc-400 font-semibold">
-                    <th className="py-3.5 px-5">Property</th>
-                    <th className="py-3.5 px-4">Location</th>
-                    <th className="py-3.5 px-4">Monthly Rent</th>
-                    <th className="py-3.5 px-4">Status</th>
-                    <th className="py-3.5 px-5 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/80">
+            <TableCard.Root>
+              <Table aria-label="Landlord portfolio table" size="sm">
+                <Table.Header>
+                  <Table.Head label="Property" />
+                  <Table.Head label="Location" />
+                  <Table.Head label="Monthly Rent" />
+                  <Table.Head label="Status" />
+                  <Table.Head label="Actions" className="text-right" />
+                </Table.Header>
+                <Table.Body>
                   {myProperties.map((p) => (
-                    <tr key={p.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors">
-                      <td className="py-3.5 px-5 font-semibold text-zinc-900 dark:text-white">
+                    <Table.Row key={p.id} id={p.id}>
+                      <Table.Cell>
                         <div className="flex items-center gap-3">
-                          <div className="size-10 rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 shrink-0">
+                          <div
+                            className="size-10 rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 shrink-0 cursor-pointer"
+                            onClick={() => handleOpenDetails(p.id)}
+                          >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                               src={p.image || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=200&q=80'}
@@ -279,18 +277,33 @@ export default function LandlordDashboardView() {
                             />
                           </div>
                           <div className="min-w-0">
-                            <p className="truncate text-xs font-semibold">{p.title}</p>
-                            <p className="text-[11px] text-zinc-500 font-normal">
+                            <button
+                              type="button"
+                              onClick={() => handleOpenDetails(p.id)}
+                              className="text-left font-semibold text-zinc-900 dark:text-white hover:text-[#E8510E] transition-colors truncate block max-w-xs cursor-pointer"
+                            >
+                              {p.title}
+                            </button>
+                            <p className="text-[11px] text-zinc-500 font-normal mt-0.5">
                               {p.bedrooms} BHK · {p.sqft} sqft · {p.furnishing}
                             </p>
                           </div>
                         </div>
-                      </td>
-                      <td className="py-3.5 px-4 text-zinc-600 dark:text-zinc-400">{p.location}</td>
-                      <td className="py-3.5 px-4 font-bold text-zinc-900 dark:text-white tabular-nums">
-                        {money(p.rent)}/mo
-                      </td>
-                      <td className="py-3.5 px-4">
+                      </Table.Cell>
+
+                      <Table.Cell>
+                        <span className="text-zinc-600 dark:text-zinc-400 truncate block max-w-[160px]">
+                          {p.location}
+                        </span>
+                      </Table.Cell>
+
+                      <Table.Cell>
+                        <span className="font-bold text-zinc-900 dark:text-white tabular-nums">
+                          {money(p.rent)}/mo
+                        </span>
+                      </Table.Cell>
+
+                      <Table.Cell>
                         <button
                           type="button"
                           onClick={() => togglePropertyStatus(p.id)}
@@ -307,8 +320,9 @@ export default function LandlordDashboardView() {
                           />
                           {p.status === PROPERTY_STATUS.ACTIVE ? 'Active' : 'Paused'}
                         </button>
-                      </td>
-                      <td className="py-3.5 px-5 text-right">
+                      </Table.Cell>
+
+                      <Table.Cell className="text-right">
                         <div className="inline-flex items-center gap-1.5">
                           <button
                             type="button"
@@ -325,20 +339,20 @@ export default function LandlordDashboardView() {
                           >
                             Edit
                           </button>
-                          <button
-                            type="button"
-                            onClick={() => openDeleteProperty(p)}
-                            className="px-2.5 py-1 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer active:scale-95"
-                          >
-                            Delete
-                          </button>
+                          <TableRowActionsDropdown
+                            onView={() => handleOpenDetails(p.id)}
+                            onEdit={() => openEditProperty(p)}
+                            onToggleStatus={() => togglePropertyStatus(p.id)}
+                            onDelete={() => openDeleteProperty(p)}
+                            isPaused={p.status === PROPERTY_STATUS.INACTIVE}
+                          />
                         </div>
-                      </td>
-                    </tr>
+                      </Table.Cell>
+                    </Table.Row>
                   ))}
-                </tbody>
-              </table>
-            </div>
+                </Table.Body>
+              </Table>
+            </TableCard.Root>
           )
         ) : (
           <div className="rounded-3xl border border-dashed border-zinc-300 dark:border-zinc-800 p-8 sm:p-10 text-center bg-white/50 dark:bg-zinc-900/30">
@@ -351,13 +365,6 @@ export default function LandlordDashboardView() {
             <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto mt-1 mb-4 leading-relaxed">
               Publish your first Gandhinagar rental property to start receiving verified tenant enquiries.
             </p>
-            <Button
-              size="sm"
-              onClick={openAddProperty}
-              className="text-xs rounded-full bg-zinc-950 hover:bg-zinc-850 text-white dark:bg-white dark:hover:bg-zinc-150 dark:text-zinc-950 cursor-pointer font-bold px-5 active:scale-95 shadow-xs"
-            >
-              Add Property Now
-            </Button>
           </div>
         )}
       </section>

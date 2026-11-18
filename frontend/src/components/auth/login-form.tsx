@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Lock, Mail } from 'lucide-react';
+import { Lock, Mail, Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/src/components/ui/card';
 import {
@@ -33,6 +33,7 @@ export function LoginForm({
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isInvalid, setIsInvalid] = useState(false);
 
@@ -188,15 +189,24 @@ export function LoginForm({
                   <Lock className="h-4 w-4 text-zinc-400 absolute left-3 top-3 pointer-events-none" />
                   <Input
                     id="password"
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => {
                       setPassword(e.target.value);
                       if (isInvalid) setIsInvalid(false);
                     }}
                     placeholder="••••••••"
-                    className="rounded-xl border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 text-xs sm:text-sm h-10 pl-9.5 focus:border-[#E8510E] focus:ring-[#E8510E]/20 dark:focus:border-[#F06A32] dark:focus:ring-[#F06A32]/20"
+                    className="rounded-xl border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 text-xs sm:text-sm h-10 pl-9.5 pr-10 focus:border-[#E8510E] focus:ring-[#E8510E]/20 dark:focus:border-[#F06A32] dark:focus:ring-[#F06A32]/20"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors cursor-pointer p-0.5"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  </button>
                 </div>
               </Field>
 

@@ -2,7 +2,7 @@
 
 import type { ComponentPropsWithRef, HTMLAttributes, ReactNode, Ref, TdHTMLAttributes, ThHTMLAttributes } from "react";
 import { createContext, isValidElement, useContext } from "react";
-import { ArrowDown, ChevronSelectorVertical, Copy01, Edit01, HelpCircle, Trash01 } from "@untitledui/icons";
+import { ArrowDown, ChevronSelectorVertical, DotsVertical, Edit01, Eye, HelpCircle, PauseCircle, PlayCircle, Trash01 } from "@untitledui/icons";
 import type {
     CellProps as AriaCellProps,
     ColumnProps as AriaColumnProps,
@@ -23,28 +23,87 @@ import {
 } from "react-aria-components";
 import { Badge } from "@/components/base/badges/badges";
 import { Checkbox } from "@/components/base/checkbox/checkbox";
-import { Dropdown } from "@/components/base/dropdown/dropdown";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/src/components/ui/dropdown-menu";
 import { Tooltip, TooltipTrigger } from "@/components/base/tooltip/tooltip";
 import { cx } from "@/utils/cx";
 
-export const TableRowActionsDropdown = () => (
-    <Dropdown.Root>
-        <Dropdown.DotsButton />
+export interface TableRowActionsDropdownProps {
+    onView?: () => void;
+    onEdit?: () => void;
+    onToggleStatus?: () => void;
+    onDelete?: () => void;
+    isPaused?: boolean;
+}
 
-        <Dropdown.Popover className="w-min">
-            <Dropdown.Menu>
-                <Dropdown.Item icon={Edit01}>
-                    <span className="pr-4">Edit</span>
-                </Dropdown.Item>
-                <Dropdown.Item icon={Copy01}>
-                    <span className="pr-4">Copy link</span>
-                </Dropdown.Item>
-                <Dropdown.Item icon={Trash01}>
-                    <span className="pr-4">Delete</span>
-                </Dropdown.Item>
-            </Dropdown.Menu>
-        </Dropdown.Popover>
-    </Dropdown.Root>
+export const TableRowActionsDropdown = ({
+    onView,
+    onEdit,
+    onToggleStatus,
+    onDelete,
+    isPaused,
+}: TableRowActionsDropdownProps) => (
+    <DropdownMenu>
+        <DropdownMenuTrigger
+            render={
+                <button
+                    type="button"
+                    aria-label="Actions"
+                    className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 dark:hover:text-white transition-colors cursor-pointer active:scale-90"
+                />
+            }
+        >
+            <DotsVertical className="size-4" />
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent className="w-48 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-lg p-1 text-zinc-800 dark:text-zinc-200 z-50" align="end" side="bottom" sideOffset={4}>
+            <DropdownMenuGroup>
+                {onView && (
+                    <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800" onClick={onView}>
+                        <Eye className="size-4 text-zinc-500 dark:text-zinc-400" />
+                        <span>View details</span>
+                    </DropdownMenuItem>
+                )}
+                {onEdit && (
+                    <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800" onClick={onEdit}>
+                        <Edit01 className="size-4 text-zinc-500 dark:text-zinc-400" />
+                        <span>Edit property</span>
+                    </DropdownMenuItem>
+                )}
+                {onToggleStatus && (
+                    <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800" onClick={onToggleStatus}>
+                        {isPaused ? (
+                            <PlayCircle className="size-4 text-emerald-500" />
+                        ) : (
+                            <PauseCircle className="size-4 text-amber-500" />
+                        )}
+                        <span>{isPaused ? "Activate listing" : "Pause listing"}</span>
+                    </DropdownMenuItem>
+                )}
+            </DropdownMenuGroup>
+            {onDelete && (
+                <>
+                    <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-zinc-800" />
+                    <DropdownMenuGroup>
+                        <DropdownMenuItem
+                            variant="destructive"
+                            className="flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-lg cursor-pointer text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 focus:bg-red-50 dark:focus:bg-red-950/40"
+                            onClick={onDelete}
+                        >
+                            <Trash01 className="size-4 text-red-500" />
+                            <span>Delete property</span>
+                        </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                </>
+            )}
+        </DropdownMenuContent>
+    </DropdownMenu>
 );
 
 const TableContext = createContext<{ size: "sm" | "md" }>({ size: "md" });
@@ -60,7 +119,13 @@ const TableCardRoot = ({
 }) => {
     return (
         <TableContext.Provider value={{ size }}>
-            <div {...props} className={cx("overflow-hidden rounded-xl bg-primary shadow-xs ring-1 ring-secondary", className)}>
+            <div
+                {...props}
+                className={cx(
+                    "overflow-hidden rounded-2xl sm:rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-[#211E1B] shadow-2xs",
+                    className
+                )}
+            >
                 {children}
             </div>
         </TableContext.Provider>
@@ -86,14 +151,14 @@ const TableCardHeader = ({ title, badge, description, contentTrailing, className
     return (
         <div
             className={cx(
-                "relative flex flex-col items-start gap-4 border-b border-secondary bg-primary px-4 md:flex-row",
-                size === "sm" ? "py-4 md:px-5" : "py-5 md:px-6",
+                "relative flex flex-col items-start gap-4 border-b border-zinc-100 dark:border-zinc-800/80 bg-white dark:bg-[#211E1B] px-4 md:flex-row md:items-center",
+                size === "sm" ? "py-3.5 md:px-5" : "py-5 md:px-6",
                 className,
             )}
         >
-            <div className="flex flex-1 flex-col gap-0.5">
+            <div className="flex flex-1 flex-col gap-0.5 min-w-0">
                 <div className="flex items-center gap-2">
-                    <h2 className="text-md font-semibold text-primary">{title}</h2>
+                    <h2 className="text-base font-bold text-zinc-950 dark:text-white tracking-tight">{title}</h2>
                     {badge ? (
                         isValidElement(badge) ? (
                             badge
@@ -104,9 +169,9 @@ const TableCardHeader = ({ title, badge, description, contentTrailing, className
                         )
                     ) : null}
                 </div>
-                {description && <p className="text-sm text-tertiary">{description}</p>}
+                {description && <p className="text-xs text-zinc-500 dark:text-zinc-400">{description}</p>}
             </div>
-            {contentTrailing}
+            {contentTrailing && <div className="shrink-0">{contentTrailing}</div>}
         </div>
     );
 };
@@ -122,7 +187,12 @@ const TableRoot = ({ className, size = "md", ...props }: TableRootProps) => {
     return (
         <TableContext.Provider value={{ size: context?.size ?? size }}>
             <div className="overflow-x-auto">
-                <AriaTable className={(state) => cx("w-full overflow-x-hidden", typeof className === "function" ? className(state) : className)} {...props} />
+                <AriaTable
+                    className={(state) =>
+                        cx("w-full border-collapse text-left text-xs", typeof className === "function" ? className(state) : className)
+                    }
+                    {...props}
+                />
             </div>
         </TableContext.Provider>
     );
@@ -148,12 +218,12 @@ const TableHeader = <T extends object>({ columns, children, bordered = true, cla
             {...props}
             className={(state) =>
                 cx(
-                    "relative bg-secondary",
+                    "relative bg-zinc-50/70 dark:bg-zinc-900/40 text-zinc-500 dark:text-zinc-400 font-semibold",
                     size === "sm" ? "h-9" : "h-11",
 
-                    // Row border—using an "after" pseudo-element to avoid the border taking up space.
+                    // Row border
                     bordered &&
-                        "[&>tr>th]:after:pointer-events-none [&>tr>th]:after:absolute [&>tr>th]:after:inset-x-0 [&>tr>th]:after:bottom-0 [&>tr>th]:after:h-px [&>tr>th]:after:bg-border-secondary [&>tr>th]:focus-visible:after:bg-transparent",
+                        "[&>tr>th]:after:pointer-events-none [&>tr>th]:after:absolute [&>tr>th]:after:inset-x-0 [&>tr>th]:after:bottom-0 [&>tr>th]:after:h-px [&>tr>th]:after:bg-zinc-200/80 dark:[&>tr>th]:after:bg-zinc-800/80 [&>tr>th]:focus-visible:after:bg-transparent",
 
                     typeof className === "function" ? className(state) : className,
                 )
@@ -183,6 +253,7 @@ interface TableHeadProps extends AriaColumnProps, Omit<ThHTMLAttributes<HTMLTabl
 }
 
 const TableHead = ({ className, tooltip, label, children, ...props }: TableHeadProps) => {
+    const { size } = useContext(TableContext);
     const { selectionBehavior } = useTableOptions();
 
     return (
@@ -190,7 +261,8 @@ const TableHead = ({ className, tooltip, label, children, ...props }: TableHeadP
             {...props}
             className={(state) =>
                 cx(
-                    "relative p-0 px-6 py-2 outline-hidden focus-visible:z-1 focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-bg-primary focus-visible:ring-inset",
+                    "relative p-0 py-2.5 outline-hidden focus-visible:z-1 focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-bg-primary focus-visible:ring-inset",
+                    size === "sm" ? "px-4 md:px-5" : "px-5 md:px-6",
                     selectionBehavior === "toggle" && "nth-2:pl-3",
                     state.allowsSorting && "cursor-pointer",
                     typeof className === "function" ? className(state) : className,
@@ -198,25 +270,25 @@ const TableHead = ({ className, tooltip, label, children, ...props }: TableHeadP
             }
         >
             {(state) => (
-                <AriaGroup className="flex items-center gap-1">
+                <AriaGroup className="flex items-center gap-1.5">
                     <div className="flex items-center gap-1">
-                        {label && <span className="text-xs font-semibold whitespace-nowrap text-quaternary">{label}</span>}
+                        {label && <span className="text-xs font-semibold whitespace-nowrap text-zinc-500 dark:text-zinc-400">{label}</span>}
                         {typeof children === "function" ? children(state) : children}
                     </div>
 
                     {tooltip && (
                         <Tooltip title={tooltip} placement="top">
-                            <TooltipTrigger className="cursor-pointer text-fg-quaternary transition duration-100 ease-linear hover:text-fg-quaternary_hover focus:text-fg-quaternary_hover">
-                                <HelpCircle className="size-4" />
+                            <TooltipTrigger className="cursor-pointer text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
+                                <HelpCircle className="size-3.5" />
                             </TooltipTrigger>
                         </Tooltip>
                     )}
 
                     {state.allowsSorting &&
                         (state.sortDirection ? (
-                            <ArrowDown className={cx("size-3 stroke-[3px] text-fg-quaternary", state.sortDirection === "ascending" && "rotate-180")} />
+                            <ArrowDown className={cx("size-3 stroke-[3px] text-zinc-400", state.sortDirection === "ascending" && "rotate-180")} />
                         ) : (
-                            <ChevronSelectorVertical size={12} strokeWidth={3} className="text-fg-quaternary" />
+                            <ChevronSelectorVertical size={12} strokeWidth={3} className="text-zinc-400" />
                         ))}
                 </AriaGroup>
             )}
@@ -244,12 +316,12 @@ const TableRow = <T extends object>({ columns, children, className, highlightSel
             {...props}
             className={(state) =>
                 cx(
-                    "relative outline-focus-ring transition-colors after:pointer-events-none hover:bg-secondary focus-visible:outline-2 focus-visible:-outline-offset-2",
-                    size === "sm" ? "h-14" : "h-18",
-                    highlightSelectedRow && "selected:bg-secondary",
+                    "relative outline-focus-ring transition-colors after:pointer-events-none hover:bg-zinc-50/60 dark:hover:bg-zinc-800/30 focus-visible:outline-2 focus-visible:-outline-offset-2",
+                    size === "sm" ? "h-12" : "h-16",
+                    highlightSelectedRow && "selected:bg-zinc-50 dark:selected:bg-zinc-800/50",
 
-                    // Row border—using an "after" pseudo-element to avoid the border taking up space.
-                    "[&>td]:after:absolute [&>td]:after:inset-x-0 [&>td]:after:bottom-0 [&>td]:after:h-px [&>td]:after:w-full [&>td]:after:bg-border-secondary last:[&>td]:after:hidden [&>td]:focus-visible:after:opacity-0 focus-visible:[&>td]:after:opacity-0",
+                    // Row border
+                    "[&>td]:after:absolute [&>td]:after:inset-x-0 [&>td]:after:bottom-0 [&>td]:after:h-px [&>td]:after:w-full [&>td]:after:bg-zinc-100 dark:[&>td]:after:bg-zinc-800/80 last:[&>td]:after:hidden [&>td]:focus-visible:after:opacity-0 focus-visible:[&>td]:after:opacity-0",
 
                     typeof className === "function" ? className(state) : className,
                 )
@@ -287,9 +359,9 @@ const TableCell = ({ className, children, size: sizeProp, ...props }: TableCellP
             {...props}
             className={(state) =>
                 cx(
-                    "relative text-sm text-tertiary outline-focus-ring focus-visible:z-1 focus-visible:outline-2 focus-visible:-outline-offset-2",
-                    size === "sm" && "px-5 py-3",
-                    size === "md" && "px-6 py-4",
+                    "relative text-xs text-zinc-700 dark:text-zinc-300 outline-focus-ring focus-visible:z-1 focus-visible:outline-2 focus-visible:-outline-offset-2",
+                    size === "sm" && "px-4 py-2.5 md:px-5",
+                    size === "md" && "px-5 py-3.5 md:px-6",
 
                     selectionBehavior === "toggle" && "nth-2:pl-3",
 

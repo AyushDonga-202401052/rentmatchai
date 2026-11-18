@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -25,6 +25,15 @@ import { usePageCurtains } from '../ui/page-curtains';
 import { useToast } from '../ui/notifications';
 import { RainbowButton } from '../ui/rainbow-button';
 import BrandLogo from './BrandLogo';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/src/components/ui/dropdown-menu';
 
 interface NavbarProps {
   page?: string;
@@ -52,10 +61,8 @@ export default function Navbar({
   const onOpenAddProperty = propOpenAddProperty || propertyContext.openAddProperty;
   const onOpenAuth = propOpenAuth || ((tab, role) => openAuthModal(tab, role as UserRole));
 
-  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Scroll detection to adapt navbar backdrop over hero vs page content
   useEffect(() => {
@@ -67,17 +74,6 @@ export default function Navbar({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close dropdown on outside click
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setUserDropdownOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   const handleNav = (targetPage: string, extraTab: string | null = null) => {
     if (onNavigate) {
       onNavigate(targetPage, extraTab);
@@ -86,6 +82,8 @@ export default function Navbar({
         navigateWithCurtains('/', 'Lander');
       } else if (targetPage === 'dashboard') {
         navigateWithCurtains('/dashboard', 'Dashboard');
+      } else if (targetPage === 'properties' || targetPage === 'dashboard/properties') {
+        navigateWithCurtains('/dashboard/properties', 'My Properties');
       } else if (targetPage === 'results') {
         navigateWithCurtains('/dashboard/explore', 'Find Properties');
       } else if (targetPage === 'shortlist') {
@@ -98,14 +96,12 @@ export default function Navbar({
         navigateWithCurtains('/signup', 'Create Account');
       }
     }
-    setUserDropdownOpen(false);
     setMobileMenuOpen(false);
   };
 
   const handleLogout = () => {
     const firstName = user?.firstName;
     logout();
-    setUserDropdownOpen(false);
     setMobileMenuOpen(false);
     notify.info(
       firstName
@@ -192,12 +188,14 @@ export default function Navbar({
 
           {/* Authenticated Dashboard / User Profile vs Capsuled RainbowButton Login */}
           {isAuthenticated ? (
-            <div className="relative" ref={dropdownRef}>
-              <button
-                type="button"
-                className="flex items-center gap-2 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#211E1B] pl-1.5 pr-2.5 py-1.5 text-xs font-semibold text-zinc-800 dark:text-zinc-200 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all cursor-pointer shadow-xs active:scale-95"
-                onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                aria-expanded={userDropdownOpen}
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#211E1B] pl-1.5 pr-2.5 py-1.5 text-xs font-semibold text-zinc-800 dark:text-zinc-200 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all cursor-pointer shadow-xs active:scale-95"
+                  />
+                }
               >
                 <div className="w-7 h-7 rounded-full bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 font-bold text-[10px] flex items-center justify-center overflow-hidden shrink-0">
                   {user!.avatar && !user!.avatar.includes('dicebear') ? (
@@ -209,102 +207,82 @@ export default function Navbar({
                 <span className="hidden sm:inline-block max-w-[100px] truncate text-xs font-semibold">
                   {user!.firstName}
                 </span>
-                <ChevronDown
-                  className={`h-3 w-3 text-zinc-400 transition-transform duration-200 ${
-                    userDropdownOpen ? 'rotate-180' : ''
-                  }`}
-                />
-              </button>
+                <ChevronDown className="h-3 w-3 text-zinc-400" />
+              </DropdownMenuTrigger>
 
-              {/* User Dropdown Card (Apple spring entrance) */}
-              <AnimatePresence>
-                {userDropdownOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: 6 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: 6 }}
-                    transition={{ type: 'spring', damping: 24, stiffness: 280 }}
-                    style={{ transformOrigin: 'top right' }}
-                    className="absolute right-0 mt-2 w-64 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-[#211E1B]/95 backdrop-blur-xl p-2 shadow-xl shadow-zinc-950/10 dark:shadow-black/50 z-50"
-                  >
-                    <div className="px-3 py-2.5 border-b border-zinc-100 dark:border-zinc-800/80 mb-1">
-                      <div className="font-bold text-xs text-zinc-950 dark:text-zinc-100">
-                        {userFullName}
-                      </div>
-                      <div className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5">
-                        {user!.email}
-                      </div>
-                      <div className="mt-1.5 flex items-center gap-1.5 text-[10px] font-semibold text-zinc-700 dark:text-zinc-300">
-                        <ShieldCheck className="h-3 w-3" />
-                        <span>{isLister ? 'Verified Landlord' : 'Verified Renter'}</span>
-                      </div>
+              <DropdownMenuContent
+                align="end"
+                side="bottom"
+                sideOffset={8}
+                className="w-64 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#211E1B] p-1.5 shadow-xl text-zinc-800 dark:text-zinc-200 z-50"
+              >
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="px-3 py-2.5">
+                    <div className="font-bold text-xs text-zinc-950 dark:text-zinc-100">
+                      {userFullName}
                     </div>
+                    <div className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5">
+                      {user!.email}
+                    </div>
+                    <div className="mt-1.5 flex items-center gap-1.5 text-[10px] font-semibold text-zinc-700 dark:text-zinc-300">
+                      <ShieldCheck className="h-3 w-3" />
+                      <span>{isLister ? 'Verified Landlord' : 'Verified Renter'}</span>
+                    </div>
+                  </DropdownMenuLabel>
+                </DropdownMenuGroup>
 
-                    <button
-                      type="button"
-                      className="flex items-center gap-2.5 w-full px-3 py-2 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl text-left transition-colors cursor-pointer active:scale-[0.98]"
-                      onClick={() => handleNav('profile', 'personal')}
+                <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-zinc-800" />
+
+                <DropdownMenuGroup>
+                  <DropdownMenuItem
+                    className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-xl cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    onClick={() => handleNav('profile', 'personal')}
+                  >
+                    <User className="h-3.5 w-3.5 text-zinc-500" />
+                    <span>Profile &amp; Account</span>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-xl cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    onClick={() => handleNav('dashboard')}
+                  >
+                    <LayoutDashboard className="h-3.5 w-3.5 text-zinc-500" />
+                    <span>Dashboard</span>
+                  </DropdownMenuItem>
+
+                  {isLister ? (
+                    <DropdownMenuItem
+                      className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-xl cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                      onClick={() => handleNav('properties')}
                     >
-                      <User className="h-3.5 w-3.5 text-zinc-500" />
-                      <span>Profile &amp; Account</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      className="flex items-center gap-2.5 w-full px-3 py-2 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl text-left transition-colors cursor-pointer active:scale-[0.98]"
-                      onClick={() => handleNav('dashboard')}
+                      <Building2 className="h-3.5 w-3.5 text-zinc-500" />
+                      <span>My Properties</span>
+                    </DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem
+                      className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-xl cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                      onClick={() => handleNav('shortlist')}
                     >
-                      <LayoutDashboard className="h-3.5 w-3.5 text-zinc-500" />
-                      <span>Dashboard</span>
-                    </button>
+                      <Heart className="h-3.5 w-3.5 text-zinc-500" />
+                      <span>Saved Shortlist ({savedCount})</span>
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuGroup>
 
-                    {isLister ? (
-                      <>
-                        <button
-                          type="button"
-                          className="flex items-center gap-2.5 w-full px-3 py-2 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl text-left transition-colors cursor-pointer active:scale-[0.98]"
-                          onClick={() => handleNav('profile', 'listings')}
-                        >
-                          <Building2 className="h-3.5 w-3.5 text-zinc-500" />
-                          <span>My Listings &amp; Enquiries</span>
-                        </button>
-                        <button
-                          type="button"
-                          className="flex items-center gap-2.5 w-full px-3 py-2 text-xs font-semibold text-zinc-950 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl text-left transition-colors cursor-pointer active:scale-[0.98]"
-                          onClick={() => {
-                            setUserDropdownOpen(false);
-                            onOpenAddProperty();
-                          }}
-                        >
-                          <Plus className="h-3.5 w-3.5" />
-                          <span>+ Add New Listing</span>
-                        </button>
-                      </>
-                    ) : (
-                      <button
-                        type="button"
-                        className="flex items-center gap-2.5 w-full px-3 py-2 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl text-left transition-colors cursor-pointer active:scale-[0.98]"
-                        onClick={() => handleNav('shortlist')}
-                      >
-                        <Heart className="h-3.5 w-3.5 text-zinc-500" />
-                        <span>Saved Shortlist ({savedCount})</span>
-                      </button>
-                    )}
+                <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-zinc-800" />
 
-                    <div className="h-px bg-zinc-100 dark:bg-zinc-800/80 my-1" />
-
-                    <button
-                      type="button"
-                      className="flex items-center gap-2.5 w-full px-3 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl text-left transition-colors cursor-pointer active:scale-[0.98]"
-                      onClick={handleLogout}
-                    >
-                      <LogOut className="h-3.5 w-3.5" />
-                      <span>Sign Out</span>
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+                <DropdownMenuGroup>
+                  <DropdownMenuItem
+                    variant="destructive"
+                    className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl cursor-pointer"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="h-3.5 w-3.5" />
+                    <span>Sign Out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <RainbowButton
               type="button"
