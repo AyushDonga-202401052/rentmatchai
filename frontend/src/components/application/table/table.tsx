@@ -2,7 +2,7 @@
 
 import type { ComponentPropsWithRef, HTMLAttributes, ReactNode, Ref, TdHTMLAttributes, ThHTMLAttributes } from "react";
 import { createContext, isValidElement, useContext } from "react";
-import { ArrowDown, ChevronSelectorVertical, Edit01, Eye, HelpCircle, PauseCircle, PlayCircle, Trash01 } from "@untitledui/icons";
+import { ArrowDown, ChevronSelectorVertical, DotsVertical, Edit01, Eye, HelpCircle, PauseCircle, PlayCircle, Trash01 } from "@untitledui/icons";
 import type {
     CellProps as AriaCellProps,
     ColumnProps as AriaColumnProps,
@@ -23,7 +23,14 @@ import {
 } from "react-aria-components";
 import { Badge } from "@/components/base/badges/badges";
 import { Checkbox } from "@/components/base/checkbox/checkbox";
-import { Dropdown } from "@/components/base/dropdown/dropdown";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/src/components/ui/dropdown-menu";
 import { Tooltip, TooltipTrigger } from "@/components/base/tooltip/tooltip";
 import { cx } from "@/utils/cx";
 
@@ -42,41 +49,61 @@ export const TableRowActionsDropdown = ({
     onDelete,
     isPaused,
 }: TableRowActionsDropdownProps) => (
-    <Dropdown.Root>
-        <Dropdown.DotsButton />
+    <DropdownMenu>
+        <DropdownMenuTrigger
+            render={
+                <button
+                    type="button"
+                    aria-label="Actions"
+                    className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 dark:hover:text-white transition-colors cursor-pointer active:scale-90"
+                />
+            }
+        >
+            <DotsVertical className="size-4" />
+        </DropdownMenuTrigger>
 
-        <Dropdown.Popover className="w-48">
-            <Dropdown.Menu>
+        <DropdownMenuContent className="w-48 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-lg p-1 text-zinc-800 dark:text-zinc-200 z-50" align="end" side="bottom" sideOffset={4}>
+            <DropdownMenuGroup>
                 {onView && (
-                    <Dropdown.Item icon={Eye} onAction={onView}>
-                        <span className="pr-4">View details</span>
-                    </Dropdown.Item>
+                    <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800" onClick={onView}>
+                        <Eye className="size-4 text-zinc-500 dark:text-zinc-400" />
+                        <span>View details</span>
+                    </DropdownMenuItem>
                 )}
                 {onEdit && (
-                    <Dropdown.Item icon={Edit01} onAction={onEdit}>
-                        <span className="pr-4">Edit property</span>
-                    </Dropdown.Item>
+                    <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800" onClick={onEdit}>
+                        <Edit01 className="size-4 text-zinc-500 dark:text-zinc-400" />
+                        <span>Edit property</span>
+                    </DropdownMenuItem>
                 )}
                 {onToggleStatus && (
-                    <Dropdown.Item
-                        icon={isPaused ? PlayCircle : PauseCircle}
-                        onAction={onToggleStatus}
-                    >
-                        <span className="pr-4">{isPaused ? "Activate listing" : "Pause listing"}</span>
-                    </Dropdown.Item>
+                    <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800" onClick={onToggleStatus}>
+                        {isPaused ? (
+                            <PlayCircle className="size-4 text-emerald-500" />
+                        ) : (
+                            <PauseCircle className="size-4 text-amber-500" />
+                        )}
+                        <span>{isPaused ? "Activate listing" : "Pause listing"}</span>
+                    </DropdownMenuItem>
                 )}
-                {onDelete && (
-                    <Dropdown.Item
-                        icon={Trash01}
-                        destructive
-                        onAction={onDelete}
-                    >
-                        <span className="pr-4">Delete property</span>
-                    </Dropdown.Item>
-                )}
-            </Dropdown.Menu>
-        </Dropdown.Popover>
-    </Dropdown.Root>
+            </DropdownMenuGroup>
+            {onDelete && (
+                <>
+                    <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-zinc-800" />
+                    <DropdownMenuGroup>
+                        <DropdownMenuItem
+                            variant="destructive"
+                            className="flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-lg cursor-pointer text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 focus:bg-red-50 dark:focus:bg-red-950/40"
+                            onClick={onDelete}
+                        >
+                            <Trash01 className="size-4 text-red-500" />
+                            <span>Delete property</span>
+                        </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                </>
+            )}
+        </DropdownMenuContent>
+    </DropdownMenu>
 );
 
 const TableContext = createContext<{ size: "sm" | "md" }>({ size: "md" });

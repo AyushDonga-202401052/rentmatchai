@@ -3,7 +3,6 @@
 import React, { useMemo, useState } from 'react';
 import {
   Building2,
-  Plus,
   TrendingUp,
   Inbox,
   Eye,
@@ -35,7 +34,6 @@ export default function LandlordDashboardView() {
   const { user } = useAuth();
   const {
     properties,
-    openAddProperty,
     openEditProperty,
     openDeleteProperty,
     togglePropertyStatus,
@@ -86,13 +84,6 @@ export default function LandlordDashboardView() {
           </div>
 
           <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 shrink-0">
-            <Button
-              onClick={openAddProperty}
-              className="h-10 text-xs px-5 rounded-full bg-zinc-950 hover:bg-zinc-850 text-white dark:bg-white dark:hover:bg-zinc-150 dark:text-zinc-950 font-bold gap-2 shadow-sm cursor-pointer active:scale-95 transition-all"
-            >
-              <Plus size={15} strokeWidth={2.2} />
-              <span>Add New Property</span>
-            </Button>
             <Button
               variant="outline"
               onClick={() => navigateWithCurtains('/dashboard/inbox', 'Inbox')}
@@ -239,15 +230,6 @@ export default function LandlordDashboardView() {
                 <List size={14} />
               </button>
             </div>
-
-            <Button
-              size="sm"
-              onClick={openAddProperty}
-              className="text-xs h-9 gap-1.5 rounded-full bg-zinc-950 hover:bg-zinc-850 text-white dark:bg-white dark:hover:bg-zinc-150 dark:text-zinc-950 font-bold px-4 cursor-pointer active:scale-95 shadow-xs"
-            >
-              <Plus size={14} />
-              <span>Add Property</span>
-            </Button>
           </div>
         </div>
 
@@ -383,13 +365,6 @@ export default function LandlordDashboardView() {
             <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto mt-1 mb-4 leading-relaxed">
               Publish your first Gandhinagar rental property to start receiving verified tenant enquiries.
             </p>
-            <Button
-              size="sm"
-              onClick={openAddProperty}
-              className="text-xs rounded-full bg-zinc-950 hover:bg-zinc-850 text-white dark:bg-white dark:hover:bg-zinc-150 dark:text-zinc-950 cursor-pointer font-bold px-5 active:scale-95 shadow-xs"
-            >
-              Add Property Now
-            </Button>
           </div>
         )}
       </section>

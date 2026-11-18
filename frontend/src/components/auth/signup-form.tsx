@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
-import { Lock, Mail, User, Phone, CheckCircle2 } from 'lucide-react';
+import { Lock, Mail, User, Phone, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/src/components/ui/card';
 import { FieldDescription, FieldLabel } from '@/src/components/ui/field';
@@ -32,6 +32,7 @@ export function SignupForm({
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [isInvalid, setIsInvalid] = useState(false);
@@ -327,15 +328,24 @@ export function SignupForm({
                 <Lock className="h-4 w-4 text-zinc-400 absolute left-3 top-3 pointer-events-none" />
                 <Input
                   id="signup-password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => {
                     setPassword(e.target.value);
                     if (isInvalid) setIsInvalid(false);
                   }}
                   placeholder="At least 8 characters"
-                  className="rounded-xl border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 text-xs sm:text-sm h-10 pl-9.5"
+                  className="rounded-xl border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 text-xs sm:text-sm h-10 pl-9.5 pr-10"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors cursor-pointer p-0.5"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                </button>
               </div>
             </div>
 

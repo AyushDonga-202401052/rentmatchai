@@ -5,6 +5,18 @@ All notable changes to RentMatch AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.20] - 2026-11-19
+
+### Added
+- Added eye toggle button to password fields in both login and signup forms (`login-form.tsx` and `signup-form.tsx`) allowing users to show or hide their password.
+- Installed `@reui/c-dropdown-menu-10` via shadcn CLI and adopted its `DropdownMenu` architecture across all dropdowns on the website (`DropdownAccountCardMD`, `TableRowActionsDropdown`, and `Navbar`).
+
+### Fixed
+- Fixed non-scrollable "Add New Property" modal (`PropertyFormModal.tsx`) by pinning the header and action buttons, constraining modal height to `max-h-[90svh] overflow-hidden`, and making the inner form fields container `flex-1 min-h-0 overflow-y-auto` with `overscroll-contain`.
+
+### Removed
+- Removed all three "Add Property" buttons from the landlord `/dashboard` view (`LandlordDashboardView.tsx`), centralizing property creation under the dedicated "My Properties" page (`/dashboard/properties`).
+
 ## [0.1.19] - 2026-11-19
 
 ### Added
