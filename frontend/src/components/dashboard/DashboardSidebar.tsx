@@ -361,11 +361,11 @@ export function DashboardSidebar({
               <SidebarButton
                 icon={Building2}
                 label="My Properties"
-                active={pathname === '/profile' && typeof window !== 'undefined' && window.location.search.includes('listings')}
-                onClick={() => handleNavClick('/profile?tab=listings', 'My Properties')}
+                active={pathname === '/dashboard/properties'}
+                onClick={() => handleNavClick('/dashboard/properties', 'My Properties')}
                 isExpanded={isExpanded}
                 collapsedBadge={
-                  pathname === '/profile' && typeof window !== 'undefined' && window.location.search.includes('listings')
+                  pathname === '/dashboard/properties'
                     ? undefined
                     : myPropertiesCount > 0
                       ? myPropertiesCount
@@ -375,7 +375,7 @@ export function DashboardSidebar({
                   myPropertiesCount > 0 ? (
                     <span
                       className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                        pathname === '/profile' && typeof window !== 'undefined' && window.location.search.includes('listings')
+                        pathname === '/dashboard/properties'
                           ? 'bg-zinc-800 text-zinc-100 dark:bg-zinc-200 dark:text-zinc-900'
                           : 'bg-zinc-100 text-zinc-700 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700/60'
                       }`}

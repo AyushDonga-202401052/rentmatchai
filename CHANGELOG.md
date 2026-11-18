@@ -5,6 +5,20 @@ All notable changes to RentMatch AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.19] - 2026-11-19
+
+### Added
+- Integrated Untitled UI `Table` component via `npx untitledui@latest add table` for rich landlord property listings management with sorting, status badges, action dropdowns, and responsive density.
+- Created dedicated `/dashboard/properties` page (`DashboardPropertiesPage` & `LandlordPropertiesView`) featuring portfolio KPI cards, live search, status filtering, sort options, and Table vs Grid view modes.
+
+### Changed
+- Updated Landlord dashboard sidebar navigation to route "My Properties" directly to `/dashboard/properties` with live portfolio counter badge and active route indicator.
+- Updated `LandlordDashboardView` to use the Untitled UI `Table` component for its table view mode and added a "Manage All" link to `/dashboard/properties`.
+
+### Removed
+- Completely removed the `/profile?tab=listings` tab from `profile/page.tsx`, eliminating redundant property management UI and routing from the personal profile page.
+- Added automatic redirect from `/profile?tab=listings` to `/dashboard/properties`.
+
 ## [0.1.18] - 2026-11-19
 
 ### Removed

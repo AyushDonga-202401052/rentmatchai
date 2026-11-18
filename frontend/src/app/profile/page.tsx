@@ -1,18 +1,15 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import { useProperty } from '../../context/PropertyContext';
-import { PROPERTY_STATUS, type Property } from '../../constants/initialData';
-import { PropertyCard } from '@/src/components/property';
 import {
   User,
   Mail,
   Phone,
   Building2,
   ShieldCheck,
-  Plus,
   Lock,
   Sparkles,
   KeyRound,
@@ -26,21 +23,14 @@ function ProfileContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { navigateWithCurtains } = usePageCurtains();
-  const initialTab = searchParams.get('tab') || 'personal';
+  const initialTab = searchParams.get('tab');
 
   const { user, updateProfile, changePassword, isLister, isTenant } = useAuth();
-  const {
-    saved,
-    toggleSave,
-    openAddProperty,
-    openEditProperty,
-    openDeleteProperty,
-    togglePropertyStatus,
-    showToast,
-    properties,
-  } = useProperty();
+  const { showToast } = useProperty();
 
-  const [activeTab, setActiveTab] = useState(initialTab); // 'personal' | 'listings' | 'security'
+  const [activeTab, setActiveTab] = useState<'personal' | 'security'>(
+    initialTab === 'security' ? 'security' : 'personal'
+  );
 
   // Profile Form State
   const [firstName, setFirstName] = useState('');
@@ -63,20 +53,16 @@ function ProfileContent() {
   const [passwordSuccess, setPasswordSuccess] = useState(false);
   const [passwordError, setPasswordError] = useState('');
 
-  // Lister Properties State
-  const [listerProperties, setListerProperties] = useState<Property[]>([]);
-  const [propertyFilter, setPropertyFilter] = useState('ALL'); // 'ALL' | 'ACTIVE' | 'INACTIVE'
-
-  const loadListerProperties = useCallback(() => {
-    if (user?.id) {
-      setListerProperties(properties.filter((property) => property.listerId === user.id));
-    }
-  }, [user, properties]);
-
   useEffect(() => {
     const tabParam = searchParams.get('tab');
-    if (tabParam) setActiveTab(tabParam);
-  }, [searchParams]);
+    if (tabParam === 'listings') {
+      router.replace('/dashboard/properties');
+    } else if (tabParam === 'security') {
+      setActiveTab('security');
+    } else if (tabParam === 'personal') {
+      setActiveTab('personal');
+    }
+  }, [searchParams, router]);
 
   useEffect(() => {
     if (user) {
@@ -89,9 +75,8 @@ function ProfileContent() {
         setPreferredBhk(String(user.preferences.preferredBhk || '2'));
         setTargetLocation(user.preferences.targetLocation || 'Gandhinagar');
       }
-      loadListerProperties();
     }
-  }, [user, loadListerProperties, properties]);
+  }, [user]);
 
   if (!user) {
     return (
@@ -188,16 +173,6 @@ function ProfileContent() {
     }
   };
 
-  // Stats for Lister Dashboard
-  const activeCount = listerProperties.filter((p) => p.status === PROPERTY_STATUS.ACTIVE).length;
-  const inactiveCount = listerProperties.filter((p) => p.status === PROPERTY_STATUS.INACTIVE).length;
-
-  const filteredProperties = listerProperties.filter((p) => {
-    if (propertyFilter === 'ACTIVE') return p.status === PROPERTY_STATUS.ACTIVE;
-    if (propertyFilter === 'INACTIVE') return p.status === PROPERTY_STATUS.INACTIVE;
-    return true;
-  });
-
   const safeLastName = user?.lastName && user.lastName !== 'User' ? user.lastName : '';
   const fullName = user ? [user.firstName, safeLastName].filter(Boolean).join(' ') : 'User';
   const userInitials = `${user?.firstName?.[0] || ''}${safeLastName?.[0] || ''}`.toUpperCase() || user?.firstName?.[0]?.toUpperCase() || 'U';
@@ -262,9 +237,9 @@ function ProfileContent() {
             <button
               type="button"
               className="inline-flex items-center gap-2 py-3 px-6 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-950 text-xs font-bold tracking-tight shadow-md transition-all active:scale-95 cursor-pointer self-stretch sm:self-auto justify-center"
-              onClick={openAddProperty}
+              onClick={() => router.push('/dashboard/properties')}
             >
-              <Plus size={15} /> List New Property
+              <Building2 size={15} /> My Properties in Dashboard
             </button>
           )}
         </div>
@@ -282,23 +257,6 @@ function ProfileContent() {
           >
             <User size={14} /> Profile Details &amp; Preferences
           </button>
-
-          {isLister && (
-            <button
-              type="button"
-              className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap active:scale-95 ${
-                activeTab === 'listings'
-                  ? 'bg-white dark:bg-zinc-950 text-zinc-950 dark:text-white shadow-xs'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white'
-              }`}
-              onClick={() => {
-                setActiveTab('listings');
-                loadListerProperties();
-              }}
-            >
-              <Building2 size={14} /> My Listed Properties ({listerProperties.length})
-            </button>
-          )}
 
           <button
             type="button"
@@ -475,132 +433,7 @@ function ProfileContent() {
           </div>
         )}
 
-        {/* TAB 2: Lister Property Management */}
-        {isLister && activeTab === 'listings' && (
-          <div className="space-y-8">
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="p-5 sm:p-6 rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-[#211E1B] shadow-xs">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
-                  Total Properties
-                </span>
-                <span className="text-3xl font-black text-zinc-950 dark:text-white block tabular-nums">
-                  {listerProperties.length}
-                </span>
-                <small className="text-xs text-zinc-500 mt-1 block">All owned listings</small>
-              </div>
-
-              <div className="p-5 sm:p-6 rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-[#211E1B] shadow-xs">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block mb-1">
-                  Active (Live)
-                </span>
-                <span className="text-3xl font-black text-zinc-950 dark:text-white block tabular-nums">
-                  {activeCount}
-                </span>
-                <small className="text-xs text-zinc-500 mt-1 block">Visible on search to tenants</small>
-              </div>
-
-              <div className="p-5 sm:p-6 rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-[#211E1B] shadow-xs">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
-                  Inactive (Drafts/Hidden)
-                </span>
-                <span className="text-3xl font-black text-zinc-950 dark:text-white block tabular-nums">
-                  {inactiveCount}
-                </span>
-                <small className="text-xs text-zinc-500 mt-1 block">Hidden from public explore</small>
-              </div>
-            </div>
-
-            {/* Filter Buttons & Add Action */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="inline-flex p-1 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 self-start">
-                <button
-                  type="button"
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                    propertyFilter === 'ALL'
-                      ? 'bg-white dark:bg-zinc-950 text-zinc-950 dark:text-white shadow-xs'
-                      : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white'
-                  }`}
-                  onClick={() => setPropertyFilter('ALL')}
-                >
-                  All ({listerProperties.length})
-                </button>
-                <button
-                  type="button"
-                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                    propertyFilter === 'ACTIVE'
-                      ? 'bg-white dark:bg-zinc-950 text-zinc-950 dark:text-white shadow-xs'
-                      : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white'
-                  }`}
-                  onClick={() => setPropertyFilter('ACTIVE')}
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  <span>Active ({activeCount})</span>
-                </button>
-                <button
-                  type="button"
-                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                    propertyFilter === 'INACTIVE'
-                      ? 'bg-white dark:bg-zinc-950 text-zinc-950 dark:text-white shadow-xs'
-                      : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white'
-                  }`}
-                  onClick={() => setPropertyFilter('INACTIVE')}
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
-                  <span>Inactive ({inactiveCount})</span>
-                </button>
-              </div>
-
-              <button
-                type="button"
-                className="inline-flex items-center gap-1.5 py-2.5 px-5 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-950 text-xs font-bold tracking-tight shadow-xs transition-all active:scale-95 cursor-pointer self-start sm:self-auto"
-                onClick={openAddProperty}
-              >
-                <Plus size={14} /> + Add New Property Listing
-              </button>
-            </div>
-
-            {/* Properties Grid */}
-            {filteredProperties.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProperties.map((prop) => (
-                  <PropertyCard
-                    key={prop.id}
-                    property={prop}
-                    isSaved={saved.includes(prop.id)}
-                    onToggleSave={toggleSave}
-                    onOpenDetails={(id) => router.push(`/properties/${id}`)}
-                    isOwner={true}
-                    onEdit={openEditProperty}
-                    onToggleStatus={togglePropertyStatus}
-                    onDelete={openDeleteProperty}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="p-12 rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-950/50 text-center max-w-lg mx-auto">
-                <Building2 size={36} className="text-zinc-400 mx-auto mb-3" />
-                <h3 className="text-base font-bold text-zinc-950 dark:text-white mb-1">
-                  No properties in this category
-                </h3>
-                <p className="text-xs text-zinc-600 dark:text-zinc-400 mb-6">
-                  {propertyFilter === 'INACTIVE'
-                    ? 'You currently have no inactive listings.'
-                    : 'Start by publishing your first property listing on RentMatch AI.'}
-                </p>
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1.5 py-2.5 px-5 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-950 text-xs font-bold tracking-tight shadow-xs transition-all active:scale-95 cursor-pointer"
-                  onClick={openAddProperty}
-                >
-                  <Plus size={14} /> Add Your First Property
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* TAB 3: Security & Password */}
+        {/* TAB 2: Security & Password */}
         {activeTab === 'security' && (
           <div className="max-w-xl">
             <div className="p-6 sm:p-9 rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-zinc-950 shadow-sm">
