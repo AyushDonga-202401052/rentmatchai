@@ -11,7 +11,6 @@ import {
   Heart,
   ArrowLeftRight,
   Building2,
-  Plus,
   X,
   Settings,
   HelpCircle,
@@ -37,7 +36,6 @@ interface SidebarButtonProps {
   active?: boolean;
   onClick: () => void;
   isExpanded: boolean;
-  variant?: 'nav' | 'cta';
 }
 
 function SidebarButton({
@@ -48,32 +46,7 @@ function SidebarButton({
   active = false,
   onClick,
   isExpanded,
-  variant = 'nav',
 }: SidebarButtonProps) {
-  if (variant === 'cta') {
-    return (
-      <button
-        type="button"
-        onClick={onClick}
-        title={!isExpanded ? label : undefined}
-        className="w-full h-10 flex items-center px-2 rounded-xl text-xs font-semibold bg-zinc-950 hover:bg-zinc-850 text-white dark:bg-white dark:hover:bg-zinc-150 dark:text-zinc-950 transition-colors duration-150 cursor-pointer shadow-xs active:scale-[0.98] overflow-hidden"
-      >
-        <div className="w-8 h-8 shrink-0 flex items-center justify-center">
-          <Plus size={16} strokeWidth={2.2} className="shrink-0" />
-        </div>
-        <div
-          className={`overflow-hidden transition-all duration-200 flex-1 flex items-center min-w-0 ${
-            isExpanded
-              ? 'opacity-100 max-w-[170px] ml-2'
-              : 'opacity-0 max-w-0 ml-0 pointer-events-none'
-          }`}
-        >
-          <span className="truncate whitespace-nowrap">{label}</span>
-        </div>
-      </button>
-    );
-  }
-
   return (
     <button
       type="button"
@@ -114,7 +87,7 @@ export function DashboardSidebar({
 }: DashboardSidebarProps) {
   const pathname = usePathname();
   const { user, isTenant, isLister, logout } = useAuth();
-  const { saved, properties, openAddProperty } = useProperty();
+  const { saved, properties } = useProperty();
   const { navigateWithCurtains } = usePageCurtains();
   const { resolvedTheme, theme, setTheme } = useTheme();
 
@@ -412,20 +385,6 @@ export function DashboardSidebar({
                   ) : null
                 }
               />
-
-              {/* Add Property CTA */}
-              <div className="pt-2">
-                <SidebarButton
-                  icon={Plus}
-                  label="Add Property"
-                  variant="cta"
-                  onClick={() => {
-                    onCloseMobileDrawer?.();
-                    openAddProperty();
-                  }}
-                  isExpanded={isExpanded}
-                />
-              </div>
             </>
           )}
         </nav>
