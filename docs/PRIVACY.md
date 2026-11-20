@@ -73,12 +73,9 @@ We reserve the right to amend this Privacy Policy as our platform evolves. Any c
 
 If you have questions, feedback, or wish to exercise your data privacy rights, please contact our support team:
 
-* **Support Email:** `support@rentmatchai.com`
-* **Operational Base:** Gandhinagar, Gujarat, India
-* **Support Window:** Monday – Saturday, 10:00 AM – 6:00 PM IST
+* **Support Email:** `support@rentmatchai.niranjan.lol`
 
 ### Grievance Officer (DPDP / IT Act Compliance)
 In accordance with the Information Technology Act, 2000 and Digital Personal Data Protection principles, any data privacy concerns or complaints may be directed to our designated officer:
 * **Role:** Grievance & Data Privacy Lead
-* **Email:** `privacy@rentmatchai.com`
 * **Resolution Timeline:** We acknowledge all privacy grievances within 48 hours and aim to resolve them within 15 working days.
