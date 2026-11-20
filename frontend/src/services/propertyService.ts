@@ -13,6 +13,7 @@ interface ApiProperty {
   bathrooms: number | string;
   area_sqft?: number | string | null;
   furnishing_status?: string | null;
+  address_line?: string | null;
   locality?: string | null;
   city: string;
   state: string;
@@ -28,6 +29,7 @@ export interface PropertyFormData {
   rent?: string | number;
   deposit?: string | number;
   location?: string;
+  addressLine?: string;
   bedrooms?: string | number;
   bathrooms?: string | number;
   sqft?: string | number;
@@ -85,6 +87,7 @@ function mapProperty(apiProperty: ApiProperty, user?: User | null): Property {
     sqft: Number(apiProperty.area_sqft || 0),
     furnishing: apiProperty.furnishing_status || 'Unfurnished',
     location: [apiProperty.locality, apiProperty.city].filter(Boolean).join(', '),
+    addressLine: apiProperty.address_line || '',
     amenities: [],
     status: apiProperty.status === 'published' ? PROPERTY_STATUS.ACTIVE : PROPERTY_STATUS.INACTIVE,
     availableFrom: apiProperty.available_from || 'Available now',
@@ -100,7 +103,8 @@ function mapProperty(apiProperty: ApiProperty, user?: User | null): Property {
 
 function getLocationFields(location = ''): { city: string; locality: string | null } {
   const parts = location.split(',').map((part) => part.trim()).filter(Boolean);
-  if (parts.length < 2) return { city: parts[0] || '', locality: null };
+  if (parts.length === 0) return { city: 'Gandhinagar', locality: null };
+  if (parts.length === 1) return { city: 'Gandhinagar', locality: parts[0] };
   return { city: parts[parts.length - 1], locality: parts.slice(0, -1).join(', ') };
 }
 
@@ -123,6 +127,7 @@ function mapPropertyInput(data: PropertyFormData, partial = false): Record<strin
   add('bathrooms', 'bathrooms', Number(data.bathrooms || 1));
   add('sqft', 'area_sqft', data.sqft ? Number(data.sqft) : null);
   add('furnishing', 'furnishing_status', data.furnishing?.toLowerCase().replace('fully ', ''));
+  add('addressLine', 'address_line', data.addressLine?.trim() || null);
   add('location', 'city', location.city);
   add('location', 'locality', location.locality);
   if (!partial) result.state = 'Gujarat';
@@ -138,6 +143,9 @@ export const PropertyValidator = {
   validate(data: Partial<PropertyFormData>): { isValid: boolean; errors: Record<string, string> } {
     const errors: Record<string, string> = {};
     if (!data.title?.trim() || data.title.trim().length < 5) errors.title = 'Title must be at least 5 characters long.';
+    if (!data.description?.trim() || data.description.trim().length < 10) {
+      errors.description = 'Description must be at least 10 characters long.';
+    }
     if (!(Number(data.rent) > 0)) errors.rent = 'Please enter a valid monthly rent greater than 0.';
     if (!data.location?.trim() || data.location.trim().length < 3) errors.location = 'Please enter a location or locality.';
     if (!(Number(data.bedrooms) >= 1)) errors.bedrooms = 'Bedrooms count must be at least 1.';

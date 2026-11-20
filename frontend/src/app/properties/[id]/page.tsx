@@ -224,7 +224,7 @@ function PropertyDetailsContent() {
         <div className="mb-8">
           <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2">
             <MapPin size={13} className="text-zinc-400" />
-            <span>{property.location}</span>
+            <span>{[property.addressLine, property.location].filter(Boolean).join(', ')}</span>
           </div>
           <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-zinc-950 dark:text-white tracking-[-0.025em] mb-3 leading-tight break-words">
             {property.title}

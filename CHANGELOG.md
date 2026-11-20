@@ -5,6 +5,18 @@ All notable changes to RentMatch AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.23] - 2026-11-20
+
+### Added
+- Added Building / Society / Street Address (`address_line`) field to Property creation and editing modal (`PropertyFormModal.tsx`) and mapped end-to-end to backend model.
+- Added explicit date picker and availability handling (`available_from`) to Section 2 of `PropertyFormModal.tsx`.
+- Added address display under location in `LandlordPropertiesView.tsx` table and detailed property view (`/properties/[id]`).
+- Added availability date subtext to furnishing column in `LandlordPropertiesView.tsx` table.
+
+### Changed
+- Improved `getLocationFields` in `propertyService.ts` to default safely to `Gandhinagar` when a single locality token is provided, satisfying the database `NOT NULL` constraint for `city`.
+- Marked `description` with required `*` and validation (minimum 10 characters) matching the PostgreSQL `properties_description_not_empty` constraint.
+
 ## [0.1.22] - 2026-11-20
 
 ### Removed

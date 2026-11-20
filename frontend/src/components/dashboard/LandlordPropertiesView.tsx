@@ -86,6 +86,7 @@ export default function LandlordPropertiesView() {
         (p) =>
           p.title.toLowerCase().includes(q) ||
           p.location.toLowerCase().includes(q) ||
+          (p.addressLine && p.addressLine.toLowerCase().includes(q)) ||
           p.furnishing.toLowerCase().includes(q) ||
           `${p.bedrooms} bhk`.includes(q)
       );
@@ -345,9 +346,16 @@ export default function LandlordPropertiesView() {
 
                     {/* Location */}
                     <Table.Cell>
-                      <div className="flex items-center gap-1.5 text-zinc-600 dark:text-zinc-400">
-                        <MapPin size={13} className="text-zinc-400 shrink-0" />
-                        <span className="truncate max-w-[180px]">{p.location}</span>
+                      <div>
+                        <div className="flex items-center gap-1.5 text-zinc-600 dark:text-zinc-400">
+                          <MapPin size={13} className="text-zinc-400 shrink-0" />
+                          <span className="truncate max-w-[180px] font-medium">{p.location}</span>
+                        </div>
+                        {p.addressLine && (
+                          <p className="text-[11px] text-zinc-400 truncate max-w-[180px] pl-4.5 mt-0.5">
+                            {p.addressLine}
+                          </p>
+                        )}
                       </div>
                     </Table.Cell>
 
@@ -389,9 +397,16 @@ export default function LandlordPropertiesView() {
 
                     {/* Furnishing & Config */}
                     <Table.Cell>
-                      <span className="inline-block px-2 py-0.5 rounded-md text-[10px] font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200/60 dark:border-zinc-700/60">
-                        {p.furnishing}
-                      </span>
+                      <div className="space-y-1">
+                        <span className="inline-block px-2 py-0.5 rounded-md text-[10px] font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200/60 dark:border-zinc-700/60">
+                          {p.furnishing}
+                        </span>
+                        {p.availableFrom && (
+                          <p className="text-[10px] text-zinc-500 font-normal">
+                            Avail: {p.availableFrom}
+                          </p>
+                        )}
+                      </div>
                     </Table.Cell>
 
                     {/* Actions */}

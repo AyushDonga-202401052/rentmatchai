@@ -52,6 +52,7 @@ export interface Property {
   sqft: number;
   furnishing: string;
   location: string;
+  addressLine?: string;
   amenities: string[];
   status: PropertyStatus;
   availableFrom: string;

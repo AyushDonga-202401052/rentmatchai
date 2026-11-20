@@ -46,11 +46,12 @@ export default function PropertyFormModal({
   const [rent, setRent] = useState('');
   const [deposit, setDeposit] = useState('');
   const [location, setLocation] = useState('');
+  const [addressLine, setAddressLine] = useState('');
   const [bedrooms, setBedrooms] = useState('2');
   const [bathrooms, setBathrooms] = useState('2');
   const [sqft, setSqft] = useState('1050');
   const [furnishing, setFurnishing] = useState('Semi-furnished');
-  const [availableFrom, setAvailableFrom] = useState('Available now');
+  const [availableFrom, setAvailableFrom] = useState('');
   const [amenities, setAmenities] = useState<string[]>(['Balcony', 'Parking', 'Security']);
   const [description, setDescription] = useState('');
   const [image, setImage] = useState(CURATED_PHOTO_PRESETS[0].url);
@@ -69,11 +70,12 @@ export default function PropertyFormModal({
       setRent(String(initialProperty.rent || ''));
       setDeposit(String(initialProperty.deposit || ''));
       setLocation(initialProperty.location || '');
+      setAddressLine(initialProperty.addressLine || '');
       setBedrooms(String(initialProperty.bedrooms || '2'));
       setBathrooms(String(initialProperty.bathrooms || '2'));
       setSqft(String(initialProperty.sqft || ''));
       setFurnishing(initialProperty.furnishing || 'Semi-furnished');
-      setAvailableFrom(initialProperty.availableFrom || 'Available now');
+      setAvailableFrom(initialProperty.availableFrom && /^\d{4}-\d{2}-\d{2}$/.test(initialProperty.availableFrom) ? initialProperty.availableFrom : '');
       setAmenities(initialProperty.amenities || []);
       setDescription(initialProperty.description || '');
       setImage(initialProperty.image || CURATED_PHOTO_PRESETS[0].url);
@@ -84,11 +86,12 @@ export default function PropertyFormModal({
       setRent('');
       setDeposit('');
       setLocation('Kudasan, Gandhinagar');
+      setAddressLine('');
       setBedrooms('2');
       setBathrooms('2');
       setSqft('1000');
       setFurnishing('Semi-furnished');
-      setAvailableFrom('Available now');
+      setAvailableFrom('');
       setAmenities(['Balcony', 'Parking', 'Security']);
       setDescription('');
       setImage(CURATED_PHOTO_PRESETS[0].url);
@@ -127,6 +130,7 @@ export default function PropertyFormModal({
       rent: Number(rent),
       deposit: deposit ? Number(deposit) : Number(rent) * 2,
       location,
+      addressLine,
       bedrooms: Number(bedrooms),
       bathrooms: Number(bathrooms),
       sqft: sqft ? Number(sqft) : undefined,
@@ -335,6 +339,20 @@ export default function PropertyFormModal({
                   </div>
                 </div>
               </div>
+
+              <div className="space-y-1.5">
+                <label htmlFor="prop-address" className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
+                  Building / Society / Street Address <span className="text-zinc-400 font-normal">(Optional)</span>
+                </label>
+                <input
+                  id="prop-address"
+                  type="text"
+                  placeholder="e.g. Flat 402, Block B, Pramukh Elegance"
+                  value={addressLine}
+                  onChange={(e) => setAddressLine(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-xs sm:text-sm text-zinc-950 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-all"
+                />
+              </div>
             </div>
 
             {/* Section 2: Pricing & Furnishing */}
@@ -346,7 +364,7 @@ export default function PropertyFormModal({
                 <span>Pricing &amp; Furnishing</span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <div className="space-y-1.5">
                   <label htmlFor="prop-rent" className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
                     Monthly Rent (₹) <span className="text-red-500">*</span>
@@ -401,6 +419,19 @@ export default function PropertyFormModal({
                     <option value="Semi-furnished">Semi-furnished</option>
                     <option value="Unfurnished">Unfurnished</option>
                   </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label htmlFor="prop-available" className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
+                    Available From
+                  </label>
+                  <input
+                    id="prop-available"
+                    type="date"
+                    value={availableFrom && /^\d{4}-\d{2}-\d{2}$/.test(availableFrom) ? availableFrom : ''}
+                    onChange={(e) => setAvailableFrom(e.target.value)}
+                    className="w-full px-3 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-xs sm:text-sm text-zinc-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white"
+                  />
                 </div>
               </div>
 
@@ -520,16 +551,22 @@ export default function PropertyFormModal({
 
               <div className="space-y-1.5">
                 <label htmlFor="prop-desc" className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
-                  Property Description
+                  Property Description <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   id="prop-desc"
                   rows={3}
-                  placeholder="Highlight special features, nearby landmarks, or neighborhood benefits..."
+                  placeholder="Highlight special features, nearby landmarks, or neighborhood benefits (min 10 characters)..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-xs sm:text-sm text-zinc-950 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-all resize-none leading-relaxed"
+                  className={`w-full p-3 rounded-xl border bg-zinc-50 dark:bg-zinc-900 text-xs sm:text-sm text-zinc-950 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white transition-all resize-none leading-relaxed ${
+                    validationErrors.description ? 'border-red-500' : 'border-zinc-200 dark:border-zinc-800'
+                  }`}
+                  required
                 />
+                {validationErrors.description && (
+                  <span className="text-[11px] text-red-500 block">{validationErrors.description}</span>
+                )}
               </div>
             </div>
           </div>
