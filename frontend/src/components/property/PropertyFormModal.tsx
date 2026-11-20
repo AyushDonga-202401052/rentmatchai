@@ -21,7 +21,145 @@ import {
   Image as ImageIcon,
   Sparkles,
   Check,
+  ChevronDown,
+  BedDouble,
+  Bath,
+  Armchair,
+  Sofa,
+  Home,
+  Layers,
+  Crown,
 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+} from '@/src/components/ui/dropdown-menu';
+
+interface ModernSelectOption {
+  value: string;
+  label: string;
+  description?: string;
+  icon?: React.ComponentType<{ className?: string; size?: number }>;
+}
+
+interface ModernSelectProps {
+  label: string;
+  required?: boolean;
+  value: string;
+  onChange: (value: string) => void;
+  options: ModernSelectOption[];
+  icon?: React.ComponentType<{ className?: string; size?: number }>;
+}
+
+function ModernSelect({
+  label,
+  required,
+  value,
+  onChange,
+  options,
+  icon: DefaultIcon,
+}: ModernSelectProps) {
+  const currentOption = options.find((o) => o.value === value) || options[0];
+  const DisplayIcon = currentOption?.icon || DefaultIcon;
+
+  return (
+    <div className="space-y-1.5">
+      <label className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 block">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={
+            <button
+              type="button"
+              className="group w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-xs sm:text-sm text-zinc-950 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-850 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all focus:outline-hidden focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white cursor-pointer shadow-2xs text-left"
+            />
+          }
+        >
+          <div className="flex items-center gap-2.5 truncate">
+            {DisplayIcon && (
+              <DisplayIcon className="size-4 text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-200 transition-colors shrink-0" />
+            )}
+            <span className="font-medium truncate">{currentOption?.label || value}</span>
+          </div>
+          <ChevronDown className="size-4 text-zinc-400 group-data-[popup-open]:rotate-180 transition-transform duration-200 shrink-0 ml-1.5" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="start"
+          side="bottom"
+          sideOffset={6}
+          className="w-(--anchor-width) min-w-[210px] p-1.5 rounded-2xl bg-white/95 dark:bg-[#1E1B18]/95 backdrop-blur-xl border border-zinc-200/90 dark:border-zinc-800/90 shadow-xl shadow-zinc-950/10 dark:shadow-black/60 z-50 animate-in fade-in-0 zoom-in-95 duration-150"
+        >
+          <DropdownMenuGroup className="space-y-0.5">
+            {options.map((opt) => {
+              const isSelected = opt.value === value;
+              const OptIcon = opt.icon;
+              return (
+                <DropdownMenuItem
+                  key={opt.value}
+                  onClick={() => onChange(opt.value)}
+                  className={`flex items-center justify-between gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm cursor-pointer transition-all ${
+                    isSelected
+                      ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-950 dark:text-white font-semibold'
+                      : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800/60 hover:text-zinc-950 dark:hover:text-white'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    {OptIcon && (
+                      <OptIcon className={`size-4 shrink-0 ${isSelected ? 'text-zinc-950 dark:text-white' : 'text-zinc-400'}`} />
+                    )}
+                    <div className="min-w-0 text-left">
+                      <span className="block truncate">{opt.label}</span>
+                      {opt.description && (
+                        <span className="block text-[11px] font-normal text-zinc-400 dark:text-zinc-500 truncate">
+                          {opt.description}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  {isSelected && (
+                    <Check size={14} className="text-zinc-950 dark:text-white shrink-0 ml-auto" />
+                  )}
+                </DropdownMenuItem>
+              );
+            })}
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+}
+
+const PROPERTY_TYPE_OPTIONS: ModernSelectOption[] = [
+  { value: 'Apartment', label: 'Apartment', description: 'Multi-unit residential flat', icon: Building2 },
+  { value: 'Studio', label: 'Studio', description: 'Open-concept single living space', icon: Layers },
+  { value: 'Villa', label: 'Villa / Row House', description: 'Standalone independent residence', icon: Home },
+  { value: 'Independent Floor', label: 'Independent Floor', description: 'Dedicated private floor unit', icon: Building2 },
+  { value: 'Penthouse', label: 'Penthouse', description: 'Top-floor luxury residence', icon: Crown },
+];
+
+const BEDROOM_OPTIONS: ModernSelectOption[] = [
+  { value: '1', label: '1 BHK', description: '1 Bedroom & Living Hall', icon: BedDouble },
+  { value: '2', label: '2 BHK', description: '2 Bedrooms & Living Hall', icon: BedDouble },
+  { value: '3', label: '3 BHK', description: '3 Bedrooms & Living Hall', icon: BedDouble },
+  { value: '4', label: '4+ BHK', description: '4+ Bedrooms Luxury Layout', icon: BedDouble },
+];
+
+const BATHROOM_OPTIONS: ModernSelectOption[] = [
+  { value: '1', label: '1 Bath', description: 'Single private/common bathroom', icon: Bath },
+  { value: '2', label: '2 Baths', description: 'Master attached & common bath', icon: Bath },
+  { value: '3', label: '3 Baths', description: 'Multiple attached bathrooms', icon: Bath },
+  { value: '4', label: '4+ Baths', description: 'Ensuite bathrooms for all rooms', icon: Bath },
+];
+
+const FURNISHING_OPTIONS: ModernSelectOption[] = [
+  { value: 'Fully furnished', label: 'Fully furnished', description: 'Move-in ready with appliances & sofa', icon: Armchair },
+  { value: 'Semi-furnished', label: 'Semi-furnished', description: 'Fitted wardrobes, fans & modular kitchen', icon: Sofa },
+  { value: 'Unfurnished', label: 'Unfurnished', description: 'Blank canvas for your own furniture', icon: Maximize2 },
+];
 
 interface PropertyFormModalProps {
   isOpen: boolean;
@@ -181,7 +319,7 @@ export default function PropertyFormModal({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 10 }}
         transition={{ type: 'spring', damping: 26, stiffness: 300 }}
-        className="relative w-full max-w-4xl rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-[#211E1B] shadow-2xl shadow-zinc-950/20 dark:shadow-black/70 flex flex-col max-h-[90svh] overflow-hidden"
+        className="relative w-full max-w-5xl rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-[#211E1B] shadow-2xl shadow-zinc-950/20 dark:shadow-black/70 flex flex-col max-h-[90svh] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header (Pinned) */}
@@ -265,57 +403,31 @@ export default function PropertyFormModal({
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="space-y-1.5">
-                  <label htmlFor="prop-type" className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
-                    Property Type <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    id="prop-type"
-                    value={propertyType}
-                    onChange={(e) => setPropertyType(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-xs sm:text-sm text-zinc-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white"
-                  >
-                    <option value="Apartment">Apartment</option>
-                    <option value="Studio">Studio</option>
-                    <option value="Villa">Villa / Row House</option>
-                    <option value="Independent Floor">Independent Floor</option>
-                    <option value="Penthouse">Penthouse</option>
-                  </select>
-                </div>
+                <ModernSelect
+                  label="Property Type"
+                  required
+                  value={propertyType}
+                  onChange={setPropertyType}
+                  options={PROPERTY_TYPE_OPTIONS}
+                  icon={Building2}
+                />
 
-                <div className="space-y-1.5">
-                  <label htmlFor="prop-bhk" className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
-                    Bedrooms (BHK) <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    id="prop-bhk"
-                    value={bedrooms}
-                    onChange={(e) => setBedrooms(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-xs sm:text-sm text-zinc-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white"
-                  >
-                    <option value="1">1 BHK</option>
-                    <option value="2">2 BHK</option>
-                    <option value="3">3 BHK</option>
-                    <option value="4">4+ BHK</option>
-                  </select>
-                </div>
+                <ModernSelect
+                  label="Bedrooms (BHK)"
+                  required
+                  value={bedrooms}
+                  onChange={setBedrooms}
+                  options={BEDROOM_OPTIONS}
+                  icon={BedDouble}
+                />
 
-                <div className="space-y-1.5">
-                  <label htmlFor="prop-baths" className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
-                    Bathrooms
-                  </label>
-                  <select
-                    id="prop-baths"
-                    value={bathrooms}
-                    onChange={(e) => setBathrooms(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-xs sm:text-sm text-zinc-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white"
-                  >
-                    <option value="1">1 Bath</option>
-                    <option value="2">2 Baths</option>
-                    <option value="3">3 Baths</option>
-                    <option value="4">4+ Baths</option>
-                  </select>
-                </div>
+                <ModernSelect
+                  label="Bathrooms"
+                  value={bathrooms}
+                  onChange={setBathrooms}
+                  options={BATHROOM_OPTIONS}
+                  icon={Bath}
+                />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -425,21 +537,13 @@ export default function PropertyFormModal({
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label htmlFor="prop-furnishing" className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
-                    Furnishing Status
-                  </label>
-                  <select
-                    id="prop-furnishing"
-                    value={furnishing}
-                    onChange={(e) => setFurnishing(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-xs sm:text-sm text-zinc-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-zinc-950 dark:focus:ring-white"
-                  >
-                    <option value="Fully furnished">Fully furnished</option>
-                    <option value="Semi-furnished">Semi-furnished</option>
-                    <option value="Unfurnished">Unfurnished</option>
-                  </select>
-                </div>
+                <ModernSelect
+                  label="Furnishing Status"
+                  value={furnishing}
+                  onChange={setFurnishing}
+                  options={FURNISHING_OPTIONS}
+                  icon={Armchair}
+                />
 
                 <div className="space-y-1.5">
                   <label htmlFor="prop-available" className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">

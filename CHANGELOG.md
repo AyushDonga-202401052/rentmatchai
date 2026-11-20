@@ -5,6 +5,12 @@ All notable changes to RentMatch AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.25] - 2026-11-20
+
+### Added
+- Modernized property dropdowns in `PropertyFormModal.tsx` (`Property Type`, `Bedrooms (BHK)`, `Bathrooms`, `Furnishing Status`) with custom `ModernSelect` component featuring portaled popovers, animated chevron indicator, icon pairing, active checkmark states, and option descriptions.
+- Expanded property form modal width to `max-w-5xl` (1024px) for a wider, more spacious desktop layout.
+
 ## [0.1.24] - 2026-11-20
 
 ### Changed
