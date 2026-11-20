@@ -84,5 +84,5 @@ We are committed to maintaining a safe, transparent, and broker-free rental comm
 ### 9.2 Reporting Suspicious Listings
 If you encounter a listing that involves false claims, brokerage fee demands, or suspicious ownership documents:
 1. Note the Listing ID and property location.
-2. Email `report@rentmatchai.com` with screenshots and relevant chat logs.
+2. Email `support@rentmatchai.niranjan.lol` with screenshots and relevant chat logs.
 3. Our verification team will review and take down offending listings within 24 hours.
