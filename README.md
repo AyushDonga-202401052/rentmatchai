@@ -111,7 +111,7 @@ The FastAPI backend exposes versioned REST endpoints under `/api/v1`:
 | `POST` | `/api/v1/auth/logout` | Bearer Token | Invalidate current client session |
 | `GET` | `/api/v1/auth/me` | Bearer Token | Retrieve currently authenticated user profile |
 | `PATCH` | `/api/v1/auth/me` | Bearer Token | Update user profile attributes (full name, phone) |
-| `POST` | `/api/v1/auth/me/change-password` | Bearer Token | Securely update password with previous password verification |
+| `POST` | `/api/v1/profile/change-password` | Bearer Token | Change password; body `{current_password, new_password}` (min 8 characters) |
 | `GET` | `/api/v1/auth/me/preferences` | Bearer Token | Retrieve tenant search preferences |
 | `PUT` | `/api/v1/auth/me/preferences` | Bearer Token | Replace or create tenant search preferences |
 | `GET` | `/api/v1/auth/users` | Bearer (Admin) | List all registered users with optional role filtering |

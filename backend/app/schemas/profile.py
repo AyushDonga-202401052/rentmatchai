@@ -17,3 +17,11 @@ class PreferenceBase(BaseModel):
 class PreferenceResponse(PreferenceBase):
     class Config:
         from_attributes = True
+
+class PasswordChange(BaseModel):
+    # length/strength rules are checked in the route so the frontend gets one readable message
+    current_password: str
+    new_password: str
+
+class MessageResponse(BaseModel):
+    message: str
