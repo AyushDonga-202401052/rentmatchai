@@ -6,7 +6,6 @@ import {
   Sparkles,
   Compass,
   Heart,
-  Inbox,
   ArrowRight,
   ShieldCheck,
   MapPin,
@@ -137,25 +136,25 @@ export default function TenantDashboardView() {
           </p>
         </div>
 
-        {/* Metric 2: Active Inquiries */}
+        {/* Metric 2: Available Rentals */}
         <div
-          onClick={() => navigateWithCurtains('/dashboard/inbox', 'Inbox')}
+          onClick={() => navigateWithCurtains('/dashboard/explore', 'Find Properties')}
           className="group p-6 rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/60 hover:border-zinc-400 dark:hover:border-zinc-700 transition-all duration-200 cursor-pointer shadow-2xs hover:-translate-y-0.5 active:scale-[0.98]"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Direct Inquiries</span>
+            <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Available Homes</span>
             <div className="size-9 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 flex items-center justify-center shadow-2xs">
-              <Inbox size={15} />
+              <Compass size={15} />
             </div>
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className="text-3xl font-black tracking-tight text-zinc-950 dark:text-white tabular-nums">
-              3
+              {activeProperties.length}
             </span>
-            <span className="text-xs text-emerald-600 dark:text-emerald-400 font-bold">Active chats</span>
+            <span className="text-xs text-emerald-600 dark:text-emerald-400 font-bold">Verified direct</span>
           </div>
           <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
-            Replies from verified listers
+            Browse Gandhinagar listings
           </p>
         </div>
 
@@ -293,91 +292,6 @@ export default function TenantDashboardView() {
               onToggleSave={toggleSave}
               onOpenDetails={handleOpenDetails}
             />
-          ))}
-        </div>
-      </section>
-
-      {/* 5. Direct Landlord Conversations Snapshot */}
-      <section className="rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/60 p-6 sm:p-7 shadow-xs">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-base font-bold tracking-tight text-zinc-950 dark:text-white">
-              Active Conversations
-            </h2>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">
-              Direct discussions with verified property owners
-            </p>
-          </div>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigateWithCurtains('/dashboard/inbox', 'Inbox')}
-            className="text-xs gap-1.5 rounded-full border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 cursor-pointer active:scale-95"
-          >
-            <Inbox size={13} />
-            <span>Open Inbox</span>
-          </Button>
-        </div>
-
-        <div className="divide-y divide-zinc-100 dark:divide-zinc-800/80">
-          {[
-            {
-              id: '1',
-              name: 'Dr. Ramesh Patel',
-              property: '3 BHK High-Floor Flat, Kudasan',
-              lastMessage: 'Sure, you are welcome to visit tomorrow between 4 PM and 6 PM.',
-              time: '12m ago',
-              unread: 1,
-            },
-            {
-              id: '2',
-              name: 'Sunita Sharma',
-              property: '2 BHK Fully Furnished, Infocity',
-              lastMessage: 'Maintenance includes covered car parking and water charges.',
-              time: '2h ago',
-              unread: 2,
-            },
-            {
-              id: '3',
-              name: 'Amit Shah',
-              property: '1 BHK Cozy Studio, Raysan',
-              lastMessage: 'The security deposit is 2 months rent, fully refundable on vacating.',
-              time: 'Yesterday',
-              unread: 0,
-            },
-          ].map((item) => (
-            <div
-              key={item.id}
-              onClick={() => navigateWithCurtains('/dashboard/inbox', 'Inbox')}
-              className="py-3.5 flex items-center justify-between gap-4 hover:bg-zinc-50/70 dark:hover:bg-zinc-800/40 -mx-3 px-3 rounded-2xl transition-colors cursor-pointer active:scale-[0.99]"
-            >
-              <div className="flex items-center gap-3.5 min-w-0">
-                <div className="size-9 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-bold text-xs flex items-center justify-center shrink-0 border border-zinc-200 dark:border-zinc-700/60 shadow-2xs">
-                  {item.name.slice(0, 2).toUpperCase()}
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="text-xs font-bold text-zinc-950 dark:text-white truncate">
-                      {item.name}
-                    </p>
-                    <span className="text-[10px] text-zinc-400 dark:text-zinc-500 truncate">· {item.property}</span>
-                  </div>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate mt-0.5">
-                    {item.lastMessage}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 shrink-0">
-                <span className="text-[11px] font-mono text-zinc-400 dark:text-zinc-500">{item.time}</span>
-                {item.unread > 0 && (
-                  <span className="size-5 rounded-full bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 text-[10px] font-bold flex items-center justify-center">
-                    {item.unread}
-                  </span>
-                )}
-              </div>
-            </div>
           ))}
         </div>
       </section>

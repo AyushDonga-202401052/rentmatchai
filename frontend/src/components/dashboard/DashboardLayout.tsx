@@ -45,7 +45,6 @@ export function DashboardLayout({
   // Compute dynamic title based on sub-route if not explicitly specified
   const displayTitle = React.useMemo(() => {
     if (pathname === '/dashboard/ai-search') return 'AI Search';
-    if (pathname === '/dashboard/inbox') return 'Inbox';
     if (pathname === '/dashboard/explore') return 'Find Properties';
     if (pathname === '/dashboard/shortlist') return 'My Shortlist';
     if (pathname === '/dashboard/compare') return 'Compare Properties';
@@ -136,7 +135,7 @@ export function DashboardLayout({
           </header>
 
           {/* Main Content Area: Responsive 100dvh handling */}
-          {pathname === '/dashboard/ai-search' || pathname === '/dashboard/inbox' ? (
+          {pathname === '/dashboard/ai-search' ? (
             <main className="flex-1 p-0 overflow-hidden flex flex-col h-[calc(100dvh-4rem)]">
               {children}
             </main>

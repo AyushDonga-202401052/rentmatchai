@@ -49,7 +49,7 @@ Main lint errors:
 | FE-07 | Tenant dashboard home | Open `/dashboard/tenant` | Dashboard content | Blank area (marked "intentionally left blank" in code); Next.js console error about dropped segment | ⚠️ Not implemented |
 | FE-08 | Find Properties | Open `/dashboard/explore` | Listings + filters | 4 listings, locality/BHK/budget filters shown | ✅ Pass |
 | FE-09 | AI Search | Open `/dashboard/ai-search` | Chat UI with relevant results | UI works but results are hard-coded US listings in $ (e.g. "Barton Springs Lofts $1,950/mo"); reply is a fake `setTimeout` | ❌ Fail (BUG-FE-04) |
-| FE-10 | Inbox | Open `/dashboard/inbox` | Conversation list + messages | Renders correctly (mock data) | ✅ Pass |
+| FE-10 | Inbox | Open `/dashboard/inbox` | Conversation list + messages | Feature removed from project | ➖ Removed |
 | FE-11 | My Shortlist | Open `/dashboard/shortlist` | Saved properties list | **Page crashes** – React "change in the order of Hooks" error | ❌ Fail (BUG-FE-02) |
 | FE-12 | Compare Properties | Open `/dashboard/compare` | Comparison UI | Blank (marked "intentionally left blank" in code) | ⚠️ Not implemented |
 | FE-13 | Profile | Open `/profile` | User details + preferences form | Shows Ananya Patel's details, editable form | ✅ Pass |

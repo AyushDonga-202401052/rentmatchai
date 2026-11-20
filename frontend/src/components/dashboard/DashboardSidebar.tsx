@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   Sparkles,
-  Inbox,
   Compass,
   Heart,
   ArrowLeftRight,
@@ -234,27 +233,6 @@ export function DashboardSidebar({
                 }
               />
 
-              {/* Inbox */}
-              <SidebarButton
-                icon={Inbox}
-                label="Inbox"
-                active={pathname === '/dashboard/inbox'}
-                onClick={() => handleNavClick('/dashboard/inbox', 'Inbox')}
-                isExpanded={isExpanded}
-                collapsedBadge={pathname === '/dashboard/inbox' ? undefined : '3'}
-                badge={
-                  <span
-                    className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                      pathname === '/dashboard/inbox'
-                        ? 'bg-zinc-800 text-zinc-100 dark:bg-zinc-200 dark:text-zinc-900'
-                        : 'bg-zinc-100 text-zinc-700 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700/60'
-                    }`}
-                  >
-                    3
-                  </span>
-                }
-              />
-
               {/* Find Properties */}
               <SidebarButton
                 icon={Compass}
@@ -332,27 +310,6 @@ export function DashboardSidebar({
                     }`}
                   >
                     AI
-                  </span>
-                }
-              />
-
-              {/* Inbox */}
-              <SidebarButton
-                icon={Inbox}
-                label="Inbox"
-                active={pathname === '/dashboard/inbox'}
-                onClick={() => handleNavClick('/dashboard/inbox', 'Inbox')}
-                isExpanded={isExpanded}
-                collapsedBadge={pathname === '/dashboard/inbox' ? undefined : '3'}
-                badge={
-                  <span
-                    className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                      pathname === '/dashboard/inbox'
-                        ? 'bg-zinc-800 text-zinc-100 dark:bg-zinc-200 dark:text-zinc-900'
-                        : 'bg-zinc-100 text-zinc-700 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700/60'
-                    }`}
-                  >
-                    3
                   </span>
                 }
               />

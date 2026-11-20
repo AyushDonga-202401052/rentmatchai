@@ -5,6 +5,15 @@ All notable changes to RentMatch AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.22] - 2026-11-20
+
+### Removed
+- Completely removed the Inbox feature (`/dashboard/inbox`) and its route directory across the project.
+- Removed Inbox navigation links and unread message badges from `DashboardSidebar.tsx` for both tenants and landlords.
+- Removed the mock "Active Conversations" chat stream and "Direct Inquiries" metric card from `TenantDashboardView.tsx`, replacing it with an active available homes count.
+- Removed the mock "Recent Tenant Enquiries" stream and enquiry metric card from `LandlordDashboardView.tsx`, replacing it with a portfolio drafts/inactive count.
+- Removed inbox route title handling and 100dvh layout overrides from `DashboardLayout.tsx`.
+
 ## [0.1.21] - 2026-11-19
 
 ### Added
