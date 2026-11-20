@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTheme } from 'next-themes';
@@ -615,6 +616,21 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Platform Legal & Info Footer */}
+      <footer className="border-t border-zinc-200/80 dark:border-zinc-800/80 py-8 px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
+          <p>© 2026 RentMatchAI. Direct &amp; Zero-Brokerage Rentals in Gandhinagar.</p>
+          <div className="flex items-center gap-4">
+            <Link href="/terms" className="hover:text-zinc-950 dark:hover:text-white underline">
+              Terms of Service
+            </Link>
+            <Link href="/privacy" className="hover:text-zinc-950 dark:hover:text-white underline">
+              Privacy Policy
+            </Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

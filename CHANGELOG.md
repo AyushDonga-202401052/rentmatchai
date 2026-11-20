@@ -5,6 +5,13 @@ All notable changes to RentMatch AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-11-20
+
+### Added
+- Added dedicated Privacy Policy route (`/privacy`) formatted with structured legal cards, DPDP / IT Act compliance guidelines, and grievance redressal officer contact channels.
+- Added dedicated Terms of Service route (`/terms`) detailing platform zero-brokerage rules, verification standards, tenant diligence recommendations, and listing abuse reporting protocols.
+- Linked Privacy Policy and Terms of Service across the global landing page footer (`page.tsx`) and the user registration flow (`signup-form.tsx`).
+
 ## [0.1.25] - 2026-11-20
 
 ### Added

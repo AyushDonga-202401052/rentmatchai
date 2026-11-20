@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import { Lock, Mail, User, Phone, CheckCircle2, Eye, EyeOff, Loader2 } from 'lucide-react';
@@ -421,7 +422,14 @@ export function SignupForm({
       </Card>
 
       <FieldDescription className="text-center text-[11px] text-zinc-500 dark:text-zinc-400">
-        By signing up, you agree to RentMatch AI&apos;s Terms of Service and Privacy Policy.
+        By signing up, you agree to RentMatch AI&apos;s{' '}
+        <Link href="/terms" className="underline hover:text-zinc-800 dark:hover:text-zinc-200">
+          Terms of Service
+        </Link>{' '}
+        and{' '}
+        <Link href="/privacy" className="underline hover:text-zinc-800 dark:hover:text-zinc-200">
+          Privacy Policy
+        </Link>.
       </FieldDescription>
     </div>
   );
