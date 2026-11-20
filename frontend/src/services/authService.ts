@@ -220,7 +220,15 @@ export const ProfileService = {
     return updatedUser;
   },
 
-  async changePassword(_token: string, _oldPassword: string, _newPassword: string): Promise<boolean> {
-    throw new Error('Password changes are not supported by the backend yet.');
+  async changePassword(token: string, oldPassword: string, newPassword: string): Promise<boolean> {
+    await apiRequest<{ message: string }>('/profile/change-password', {
+      method: 'POST',
+      token,
+      ...jsonBody({
+        current_password: oldPassword,
+        new_password: newPassword,
+      }),
+    });
+    return true;
   },
 };
