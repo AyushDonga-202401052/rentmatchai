@@ -144,7 +144,7 @@ export default function PrivacyPolicyPage() {
                 <span>5. User Rights &amp; Control</span>
               </div>
               <p className="text-zinc-600 dark:text-zinc-400">
-                You maintain full ownership of your data. You may review and edit preferences anytime under <Link href="/profile" className="underline font-medium text-zinc-900 dark:text-white">/profile</Link>, or request account and listing purge via support email.
+                You maintain full ownership of your data. You may review and edit preferences anytime under <Link href="/dashboard/profile" className="underline font-medium text-zinc-900 dark:text-white">/dashboard/profile</Link>, or request account and listing purge via support email.
               </p>
             </section>
           </div>

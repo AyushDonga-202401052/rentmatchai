@@ -12,7 +12,7 @@ export function getRouteTitle(url: string): string {
     if (path === '/shortlist' || path === '/dashboard/shortlist') return 'My Shortlist';
     if (path === '/login') return 'Login';
     if (path === '/signup' || path === '/register') return 'Create Account';
-    if (path === '/profile') return 'Dashboard & Profile';
+    if (path === '/profile' || path === '/dashboard/profile') return 'Profile & Settings';
     if (path.startsWith('/properties')) return 'Property Details';
     if (path === '/results') return 'Search Results';
 

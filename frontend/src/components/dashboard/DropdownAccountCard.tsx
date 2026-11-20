@@ -129,7 +129,7 @@ export const DropdownAccountCardMD = ({
         <DropdownMenuGroup>
           <DropdownMenuItem
             className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-xl cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800"
-            onClick={() => handleNavigate('/profile?tab=personal', 'Profile & Account')}
+            onClick={() => handleNavigate('/dashboard/profile?tab=personal', 'Profile & Account')}
           >
             <User01 className="size-4 text-zinc-500 dark:text-zinc-400" />
             <span>View Profile</span>

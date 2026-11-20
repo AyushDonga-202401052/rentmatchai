@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useAuth } from '../../context/AuthContext';
-import { useProperty } from '../../context/PropertyContext';
+import { useAuth } from '@/src/context/AuthContext';
+import { useProperty } from '@/src/context/PropertyContext';
 import {
   User,
   Mail,
@@ -12,11 +12,10 @@ import {
   ShieldCheck,
   Lock,
   Sparkles,
-  KeyRound,
   CheckCircle2,
-  SlidersHorizontal,
+  KeyRound,
 } from 'lucide-react';
-import { usePageCurtains } from '../../components/ui/page-curtains';
+import { usePageCurtains } from '@/src/components/ui/page-curtains';
 import { BlurFade } from '@/src/components/ui/blur-fade';
 
 function ProfileContent() {
@@ -56,13 +55,13 @@ function ProfileContent() {
   useEffect(() => {
     const tabParam = searchParams.get('tab');
     if (tabParam === 'listings') {
-      router.replace('/dashboard/properties');
+      navigateWithCurtains('/dashboard/properties', 'My Properties');
     } else if (tabParam === 'security') {
       setActiveTab('security');
-    } else if (tabParam === 'personal') {
+    } else if (tabParam === 'personal' || tabParam === 'preferences') {
       setActiveTab('personal');
     }
-  }, [searchParams, router]);
+  }, [searchParams, navigateWithCurtains]);
 
   useEffect(() => {
     if (user) {
@@ -80,15 +79,15 @@ function ProfileContent() {
 
   if (!user) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-24 sm:py-32 text-center">
+      <div className="w-full max-w-xl mx-auto py-20 text-center">
         <div className="w-14 h-14 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center mx-auto mb-4 text-zinc-400">
           <User size={24} />
         </div>
-        <h2 className="text-2xl font-black text-zinc-950 dark:text-white tracking-tight mb-2">
+        <h2 className="text-xl font-black text-zinc-950 dark:text-white tracking-tight mb-2">
           Sign In Required
         </h2>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400 max-w-md mx-auto mb-6">
-          Please log in or register to access your personal profile and manage listings.
+        <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 mb-6">
+          Please log in to manage your personal profile and account credentials.
         </p>
         <button
           type="button"
@@ -175,16 +174,20 @@ function ProfileContent() {
 
   const safeLastName = user?.lastName && user.lastName !== 'User' ? user.lastName : '';
   const fullName = user ? [user.firstName, safeLastName].filter(Boolean).join(' ') : 'User';
-  const userInitials = `${user?.firstName?.[0] || ''}${safeLastName?.[0] || ''}`.toUpperCase() || user?.firstName?.[0]?.toUpperCase() || 'U';
+  const userInitials =
+    `${user?.firstName?.[0] || ''}${safeLastName?.[0] || ''}`.toUpperCase() ||
+    user?.firstName?.[0]?.toUpperCase() ||
+    'U';
 
   return (
-    <div className="min-h-screen bg-[#F9F5EF] dark:bg-[#171513] text-zinc-950 dark:text-zinc-50 pb-24 sm:pb-32">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-10">
-        {/* Profile Header Banner */}
-        <div className="p-6 sm:p-8 rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-[#211E1B] backdrop-blur-md flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-sm mb-8">
+    <div className="w-full max-w-5xl mx-auto space-y-8 select-none">
+      {/* 1. Profile Header Banner */}
+      <div className="relative overflow-hidden rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/80 dark:bg-zinc-900/60 backdrop-blur-md p-6 sm:p-8 shadow-xs">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-start sm:items-center gap-4 sm:gap-6">
             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 flex items-center justify-center font-black text-xl sm:text-2xl shadow-md shrink-0">
               {user.avatar && !user.avatar.includes('dicebear') ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img src={user.avatar} alt={user.firstName} className="w-full h-full object-cover rounded-3xl" />
               ) : (
                 <span>{userInitials}</span>
@@ -200,17 +203,17 @@ function ProfileContent() {
                   {isLister ? (
                     <>
                       <Building2 size={12} />
-                      <span>Property Lister / Landlord</span>
+                      <span>Landlord</span>
                     </>
                   ) : (
                     <>
                       <User size={12} />
-                      <span>Tenant / Renter</span>
+                      <span>Tenant</span>
                     </>
                   )}
                 </span>
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                  <ShieldCheck size={12} /> Verified User
+                  <ShieldCheck size={12} /> Verified Account
                 </span>
               </div>
 
@@ -236,46 +239,50 @@ function ProfileContent() {
           {isLister && (
             <button
               type="button"
-              className="inline-flex items-center gap-2 py-3 px-6 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-950 text-xs font-bold tracking-tight shadow-md transition-all active:scale-95 cursor-pointer self-stretch sm:self-auto justify-center"
-              onClick={() => router.push('/dashboard/properties')}
+              className="inline-flex items-center gap-2 py-2.5 px-5 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-zinc-950 text-xs font-bold tracking-tight shadow-md transition-all active:scale-95 cursor-pointer self-start md:self-auto shrink-0"
+              onClick={() => navigateWithCurtains('/dashboard/properties', 'My Properties')}
             >
-              <Building2 size={15} /> My Properties in Dashboard
+              <Building2 size={14} />
+              <span>Manage Properties</span>
             </button>
           )}
         </div>
+      </div>
 
-        {/* Apple Segmented Control Tabs */}
-        <div className="inline-flex p-1.5 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 mb-8 max-w-full overflow-x-auto">
-          <button
-            type="button"
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap active:scale-95 ${
-              activeTab === 'personal'
-                ? 'bg-white dark:bg-zinc-950 text-zinc-950 dark:text-white shadow-xs'
-                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white'
-            }`}
-            onClick={() => setActiveTab('personal')}
-          >
-            <User size={14} /> Profile Details &amp; Preferences
-          </button>
+      {/* 2. Apple Segmented Control Tabs */}
+      <div className="inline-flex p-1.5 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 max-w-full overflow-x-auto">
+        <button
+          type="button"
+          className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap active:scale-95 ${
+            activeTab === 'personal'
+              ? 'bg-white dark:bg-zinc-950 text-zinc-950 dark:text-white shadow-xs'
+              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white'
+          }`}
+          onClick={() => setActiveTab('personal')}
+        >
+          <User size={14} />
+          <span>Profile Details &amp; Preferences</span>
+        </button>
 
-          <button
-            type="button"
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap active:scale-95 ${
-              activeTab === 'security'
-                ? 'bg-white dark:bg-zinc-950 text-zinc-950 dark:text-white shadow-xs'
-                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white'
-            }`}
-            onClick={() => setActiveTab('security')}
-          >
-            <Lock size={14} /> Security &amp; Password
-          </button>
-        </div>
+        <button
+          type="button"
+          className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap active:scale-95 ${
+            activeTab === 'security'
+              ? 'bg-white dark:bg-zinc-950 text-zinc-950 dark:text-white shadow-xs'
+              : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white'
+          }`}
+          onClick={() => setActiveTab('security')}
+        >
+          <Lock size={14} />
+          <span>Security &amp; Password</span>
+        </button>
+      </div>
 
-        <BlurFade key={activeTab} delay={0.05} inView>
+      <BlurFade key={activeTab} delay={0.05} inView>
         {/* TAB 1: Personal Details & Preferences */}
         {activeTab === 'personal' && (
           <div className="max-w-3xl">
-            <div className="p-6 sm:p-9 rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-[#211E1B] shadow-sm">
+            <div className="p-6 sm:p-9 rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white/90 dark:bg-[#211E1B] shadow-xs">
               <div className="mb-6 pb-4 border-b border-zinc-100 dark:border-zinc-850">
                 <h2 className="text-xl sm:text-2xl font-black text-zinc-950 dark:text-white tracking-tight">
                   Personal Information
@@ -436,10 +443,11 @@ function ProfileContent() {
         {/* TAB 2: Security & Password */}
         {activeTab === 'security' && (
           <div className="max-w-xl">
-            <div className="p-6 sm:p-9 rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-zinc-950 shadow-sm">
+            <div className="p-6 sm:p-9 rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-[#211E1B] shadow-xs">
               <div className="mb-6 pb-4 border-b border-zinc-100 dark:border-zinc-850">
-                <h2 className="text-xl sm:text-2xl font-black text-zinc-950 dark:text-white tracking-tight">
-                  Change Password
+                <h2 className="text-xl sm:text-2xl font-black text-zinc-950 dark:text-white tracking-tight flex items-center gap-2">
+                  <KeyRound size={20} className="text-zinc-500" />
+                  <span>Change Password</span>
                 </h2>
                 <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 mt-1">
                   Update your account password using secure hashing algorithms.
@@ -507,18 +515,17 @@ function ProfileContent() {
             </div>
           </div>
         )}
-        </BlurFade>
-      </div>
+      </BlurFade>
     </div>
   );
 }
 
-export default function ProfilePage() {
+export default function DashboardProfilePage() {
   return (
     <Suspense
       fallback={
-        <div className="max-w-4xl mx-auto px-4 py-24 text-center">
-          <p className="text-xs text-zinc-500 font-mono">Loading profile...</p>
+        <div className="w-full max-w-5xl mx-auto py-20 text-center">
+          <p className="text-xs text-zinc-500 font-mono">Loading profile details...</p>
         </div>
       }
     >
@@ -526,3 +533,4 @@ export default function ProfilePage() {
     </Suspense>
   );
 }
+

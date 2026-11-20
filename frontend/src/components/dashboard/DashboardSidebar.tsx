@@ -364,8 +364,8 @@ export function DashboardSidebar({
         <SidebarButton
           icon={Settings}
           label="Settings"
-          active={pathname === '/profile'}
-          onClick={() => handleNavClick('/profile?tab=security', 'Settings')}
+          active={pathname === '/dashboard/profile'}
+          onClick={() => handleNavClick('/dashboard/profile?tab=security', 'Settings')}
           isExpanded={isExpanded}
         />
       </div>

@@ -103,7 +103,7 @@ export default function TenantDashboardView() {
 
           <button
             type="button"
-            onClick={() => navigateWithCurtains('/profile?tab=preferences', 'Preferences')}
+            onClick={() => navigateWithCurtains('/dashboard/profile?tab=preferences', 'Preferences')}
             className="inline-flex items-center gap-1.5 text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white transition-colors cursor-pointer font-medium active:scale-95"
           >
             <SlidersHorizontal size={13} />
@@ -182,7 +182,7 @@ export default function TenantDashboardView() {
 
         {/* Metric 4: Renter Verification */}
         <div
-          onClick={() => navigateWithCurtains('/profile?tab=personal', 'Profile')}
+          onClick={() => navigateWithCurtains('/dashboard/profile?tab=personal', 'Profile')}
           className="group p-6 rounded-3xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/60 hover:border-zinc-400 dark:hover:border-zinc-700 transition-all duration-200 cursor-pointer shadow-2xs hover:-translate-y-0.5 active:scale-[0.98]"
         >
           <div className="flex items-center justify-between">

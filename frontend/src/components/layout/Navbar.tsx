@@ -88,8 +88,8 @@ export default function Navbar({
         navigateWithCurtains('/dashboard/explore', 'Find Properties');
       } else if (targetPage === 'shortlist') {
         navigateWithCurtains('/dashboard/shortlist', 'My Shortlist');
-      } else if (targetPage === 'profile') {
-        navigateWithCurtains(extraTab ? `/profile?tab=${extraTab}` : '/profile', 'Dashboard & Profile');
+      } else if (targetPage === 'profile' || targetPage === 'dashboard/profile') {
+        navigateWithCurtains(extraTab ? `/dashboard/profile?tab=${extraTab}` : '/dashboard/profile', 'Profile & Settings');
       } else if (targetPage === 'login') {
         navigateWithCurtains('/login', 'Login');
       } else if (targetPage === 'signup') {
