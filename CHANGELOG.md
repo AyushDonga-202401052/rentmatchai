@@ -5,6 +5,13 @@ All notable changes to RentMatch AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.24] - 2026-11-20
+
+### Changed
+- Moved Property Description textarea from Section 4 into Section 1 ("Basic Information & Location") directly beneath Listing Title in `PropertyFormModal.tsx`.
+- Increased modal maximum width from `max-w-2xl` (672px) to `max-w-4xl` (896px) for an expansive, comfortable editing layout.
+- Renamed Section 4 to "Listing Photos & Presets".
+
 ## [0.1.23] - 2026-11-20
 
 ### Added
